@@ -11,6 +11,7 @@ var Global = {
  */
 Global.init = function () {
     Global.countdown();
+    Global.lunbotu();
 }
 
 /**
@@ -61,6 +62,22 @@ Global.countdown = function () {
             clearInterval(timeid);
         }
     }, 1000);
+}
+
+/**
+ * 功能:头部轮播图
+ */
+Global.lunbotu = function () {
+    var mySwiper = new Swiper('.swiper-container', {
+        direction: 'horizontal',
+        loop: true,
+        autoplay:{
+            delay: 1000,
+            stopOnLastSlide: false,
+            disableOnInteraction: false,
+        },
+    })
+
 }
 
 //------------------------------------代码执行-------------------
