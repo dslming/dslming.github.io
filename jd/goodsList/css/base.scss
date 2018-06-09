@@ -1,0 +1,36 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+a{
+  text-decoration: none;
+  color: inherit;
+  display: block;
+
+  // a标签在移动端上的点击高亮 
+  // -webkit-tap-highlight-color: transparent;
+}
+ul{
+  list-style: none;
+}
+img{
+  width: 100%;
+  // 去除掉图片的默认3px
+  // display: block;
+  vertical-align: middle;   
+}
+input{
+  border:none;
+  outline: none;
+}
+
+.clearfix::after{
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+}
+
