@@ -188,7 +188,7 @@ $blueColor: #3dbcc6;
 .sq_area{
     background-color: #fff;
     padding-bottom: 5%;
-
+    overflow: hidden;
     .box_title{
         padding: 15px;
         span{
@@ -243,6 +243,7 @@ $blueColor: #3dbcc6;
 }
 
 .hz_area{
+    overflow: hidden;
     background-color: #fff;
     padding-bottom: 5%;
     .box_title{

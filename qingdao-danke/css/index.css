@@ -253,6 +253,7 @@ p {
 .sq_area {
   background-color: #fff;
   padding-bottom: 5%;
+  overflow: hidden;
 }
 
 .sq_area .box_title {
@@ -310,6 +311,7 @@ p {
 }
 
 .hz_area {
+  overflow: hidden;
   background-color: #fff;
   padding-bottom: 5%;
 }
