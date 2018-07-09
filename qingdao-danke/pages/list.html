@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>个人房屋出租_房屋出租信息_公寓出租-蜗壳公寓官网</title>
+    <link rel="stylesheet" href="../lib/mui/css/mui.css">
+    <link rel="stylesheet" href="../css/index.css">
+    <link rel="stylesheet" href="../lib/fontawesome/css/font-awesome.css">
+    <link rel="stylesheet" href="../lib/font_pioddhbyrzd/iconfont.css">
+    <link rel="stylesheet" href="../lib/swiper/swiper.css">
+    <link rel="stylesheet" href="../lib/semantic/semantic.css">
+    <link rel="stylesheet" href="../css/list.css">
+
+</head>
+
+<body>
+
+
+    <div class="view">
+        <header class="woke_header">
+            <div class="logo">蜗壳公寓</div>
+            <div class="city">
+                <span class="fa fa-map-marker"></span>
+                <p>青岛</p>
+                <span class="fa fa-angle-down"></span>
+            </div>
+        </header>
+
+
+        <div id="dropdown">
+            <div class="d_title">
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+            </div>
+
+            <div class="d_content">
+                <div class="c1">
+                    1
+                </div>
+                <div class="c1">
+                    2
+                </div>
+                <div class="c1">
+                    3
+                </div>
+            </div>
+        </div>
+
+        <select class="ui dropdown">
+                <option value="">Gender</option>
+                <option value="1">Male</option>
+                <option value="0">Female</option>
+              </select>
+    </div>
+</body>
+
+<script src="../lib/mui/js/mui.js"></script>
+<script src="../lib/zepto/zepto.js"></script>
+<script src="../lib/swiper/swiper.js"></script>
+<script src="../lib/juqery/jquery.js"></script>
+<script src="../lib/semantic/semantic.js"></script>
+<script>
+    $('.ui.dropdown').dropdown();
+    $(".d_content").hide();
+
+    $(".d_title span").on("click",function(){
+        console.log($(this).text());
+        var index = $(this).text();
+
+        $(".d_content").show();
+        console.log($(".d_content div").eq(index-1));
+        $(".d_content div").addClass("hide");
+        $(".d_content div").eq(index-1).addClass("show");
+        $(".d_content div").eq(index-1).removeClass("hide");
+       
+    });
+
+
+</script>
+
+</html>
