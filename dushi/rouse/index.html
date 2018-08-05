@@ -11,6 +11,12 @@
 
 <body>
     <style>
+        html,body{
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
         p {
             font-size: 14px;
             font-weight: 600;
@@ -38,9 +44,21 @@
         svg {
             flex: 1
         }
+
+        .bigBox{
+            /* style="width:400px;margin:0 auto;" */
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        canvas{
+            width: 100%;
+            height: 100%;
+        }
     </style>
-    <div style="width:500px;margin:0 auto;">
+    <div class="bigBox">
         <canvas id="c"></canvas>
+
         <div class="box" style="text-align:center;">
             <span class="ming">Ming</span>
             <span class=" heart animated infinite bounce delay-2s">
