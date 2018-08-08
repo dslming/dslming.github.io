@@ -9,6 +9,10 @@ import {baseUrl} from '@/config/env.js'
 
 axios.defaults.baseURL = 'https://news-at.zhihu.com/';
 
+axios.defaults.header = {
+    "Access-Control-Allow-Origin":"*",
+};
+
 /**
  * 获取所有新闻列表
  */
