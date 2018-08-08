@@ -9,16 +9,20 @@ import {baseUrl} from '@/config/env.js'
 
 axios.defaults.baseURL = 'https://news-at.zhihu.com/';
 
-axios.defaults.header = {
-    "Access-Control-Allow-Origin":"*",
-};
+// axios.defaults.header = {
+//     "Access-Control-Allow-Origin":"*",
+// };
 
 /**
  * 获取所有新闻列表
  */
 export const getNews = () => {
     var random = ("?v=" + Math.random()).replace(".","");
-    return axios.get('/api/4/news/latest'+random).then(res => res.data);
+    return axios.get('/api/4/news/latest'+random,{
+        headers:{
+            "Access-Control-Allow-Origin":"*",
+        }
+    }).then(res => res.data);
 }
 
 /**
