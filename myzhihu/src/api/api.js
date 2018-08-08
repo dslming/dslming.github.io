@@ -7,7 +7,7 @@ import {baseUrl} from '@/config/env.js'
 //     console.log(baseUrl);
 // }
 
-axios.defaults.baseURL = 'http://news-at.zhihu.com/api/';
+axios.defaults.baseURL = 'http://news-at.zhihu.com/';
 
 /**
  * 获取所有新闻列表
