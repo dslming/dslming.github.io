@@ -10,17 +10,29 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    
+    proxyTable: {
+      '/api': {
+        // target: 'http://wx.4006188666.com/api/', //设置调用接口域名和端口号别忘了加http
+        target: 'http://news-at.zhihu.com/api/',  // 知乎日报
+        // target: 'http://zhihuapi.herokuapp.com/api',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '/' //这里理解成用‘/api’代替target里面的地址，组件中我们调接口时直接用api代替
+          // 比如我要调用'http://0.0:300/user/add'，直接写‘/api/user/add’即可
+        }
+      }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    port: 8081, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
 
-    
+
     /**
      * Source Maps
      */
