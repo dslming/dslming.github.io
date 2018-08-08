@@ -1,5 +1,13 @@
 import axios from 'axios'
+import {baseUrl} from '@/config/env.js'
 
+// +function(){
+//     if(baseUrl)
+    
+//     console.log(baseUrl);
+// }
+
+axios.defaults.baseURL = 'http://news-at.zhihu.com/api/';
 
 /**
  * 获取所有新闻列表
