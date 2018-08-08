@@ -48,19 +48,7 @@ module.exports = {
     cssSourceMap: true,
 
 
-    // 增加跨域支持
-    proxyTable: {
-      '/api': {
-        // target: 'http://wx.4006188666.com/api/', //设置调用接口域名和端口号别忘了加http
-        target: 'http://news-at.zhihu.com/api/',  // 知乎日报
-        // target: 'http://zhihuapi.herokuapp.com/api',
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': '/' //这里理解成用‘/api’代替target里面的地址，组件中我们调接口时直接用api代替
-          // 比如我要调用'http://0.0:300/user/add'，直接写‘/api/user/add’即可
-        }
-      }
-    },
+    
   },
 
   build: {
@@ -91,6 +79,19 @@ module.exports = {
     // View the bundle analyzer report after build finishes:
     // `npm run build --report`
     // Set to `true` or `false` to always turn it on or off
-    bundleAnalyzerReport: process.env.npm_config_report
+    bundleAnalyzerReport: process.env.npm_config_report,
+    // 增加跨域支持
+    proxyTable: {
+      '/api': {
+        // target: 'http://wx.4006188666.com/api/', //设置调用接口域名和端口号别忘了加http
+        target: 'http://news-at.zhihu.com/api/',  // 知乎日报
+        // target: 'http://zhihuapi.herokuapp.com/api',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '/' //这里理解成用‘/api’代替target里面的地址，组件中我们调接口时直接用api代替
+          // 比如我要调用'http://0.0:300/user/add'，直接写‘/api/user/add’即可
+        }
+      }
+    },
   }
 }
