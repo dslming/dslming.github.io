@@ -1,16 +1,17 @@
 <template>
     <div>
-        <head></head>
+        <headTop></headTop>
     </div>
 </template>
 
 <script>
-import head from '@/components/head'
+import headTop from "@/components/head";
 export default {
-
-}
+  components: {
+    headTop
+  }
+};
 </script>
 
 <style>
-
 </style>
