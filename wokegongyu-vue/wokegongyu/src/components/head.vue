@@ -1,40 +1,33 @@
 <template>
-     <header class="woke_header" @maskClick="maskClick11">
-          <div class="logo">蜗壳公寓</div>
-            <div class="city">
-                <span class="fa fa-map-marker"></span>
-                <mySelect :showFlag="cityShow"></mySelect>
-                <p @click="changeCity">青岛</p>
-                <span class="fa fa-angle-down"></span>
+     <header class="woke_header"  >
+          <div class="logo">xxx</div>
+            <div class="city" @click="changeCity">
+                <!-- 城市选择 -->
+                <woke-select :showFlag="cityShow" @select="select"></woke-select>
+                <p>{{city}}</p>
             </div>
      </header>
 </template>
 
 <script>
-import mySelect from "@/components/select";
+import wokeSelect from "@/components/select";
 export default {
-      data() {
+  data() {
     return {
-      options: [2013, 2014, 2015, 2016, 2017, 2018],
-      value: 2016,
-      title: '入职时间',
-      placeholder: '请选择入职时间',
-      autoPop: false,
-      disabled: false,
-      cityShow:false,
-    }
+      cityShow: false,
+      city:"青岛"
+    };
   },
   methods: {
     changeCity() {
       this.cityShow = !this.cityShow;
     },
-    maskClick11(){
-       this.cityShow = !this.cityShow;
-        console.log("xiix");
+    select(city) {
+     this.city = city;
     }
   },
   components: {
-    mySelect
+    wokeSelect
   }
 };
 </script>
@@ -58,7 +51,7 @@ $blueColor: #3dbcc6;
   }
 
   .city {
-    width: 25%;
+    width: 20%;
     height: 55%;
     display: flex;
     justify-content: space-around;
