@@ -9,6 +9,7 @@
       <div class="area_ctrl" v-if="isOpened > 0" v-show="show">
         <div class="area_btn_box">
           <div class="area_btn larea_cancel" @click="close">取消</div>
+          <p class="title">请选择所在城市</p>
           <div class="area_btn larea_finish" @click="finish">确定</div>
         </div>
         
@@ -386,7 +387,7 @@
   background-color: rgba(0, 0, 0, 0.2);
   display: block;
   position: fixed;
-  top: 0;
+  top: 0; 
   left: 0;
   width: 100%;
   height: 100%;
@@ -400,7 +401,6 @@
   font-size: 12px;
   vertical-align: middle;
   background-color: #d5d8df;
-  color: #000;
   margin: 0;
   height: auto;
   width: 100%;
@@ -410,6 +410,7 @@
   bottom: 0;
   z-index: 9901;
   overflow: hidden;
+  color: #3dbcc6;
   /* -webkit-transform: translate3d(0, 100%, 0);
   transform: translate3d(0, 100%, 0) */
 }
@@ -481,11 +482,16 @@
 }
 
 .area_btn {
-  color: #0575f2;
-  font-size: 1.6em;
+  color: #666;
+  font-size: 1.2em;
   line-height: 1em;
   text-align: center;
-  padding: .8em 1em
+  padding: .6em 0.8em
+}
+.title{
+    padding: .5em 0.8em;
+   font-size: 1.4em;
+  line-height: 1em;
 }
 
 .area_btn_box:before,
@@ -515,7 +521,7 @@
   -ms-flex-align: stretch;
   align-items: stretch;
   background-color: #f1f2f4;
-  position: relative
+  position: relative;
 }
 
 .area_btn_box:before {

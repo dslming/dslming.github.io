@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import headTop from "@/components/head";
+import headTop from "@/components/header/head";
 export default {
   components: {
     headTop
