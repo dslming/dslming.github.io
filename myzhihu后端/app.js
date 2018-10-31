@@ -16,7 +16,7 @@ app.get('/api/4/news/latest', function (req, res) {
 });
 
 try{
-    app.listen(8080, ()=>{
+    app.listen(80, ()=>{
         console.log("running");
     });
 }

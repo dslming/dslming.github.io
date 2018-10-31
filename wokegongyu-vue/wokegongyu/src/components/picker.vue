@@ -546,7 +546,6 @@
   display: -webkit-flex;
   display: -ms-flexbox;
   display: flex;
-  line-clamp: 1;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   -webkit-flex-direction: column;

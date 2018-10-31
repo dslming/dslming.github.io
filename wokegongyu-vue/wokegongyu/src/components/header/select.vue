@@ -1,8 +1,8 @@
 <template>
-    <woke-popup :showFlag="showFlag" @mask-click="maskClick">
+    <woke-popup  @on-mask="maskClick" :show="showMask">
        <transition name="fade" >
              <woke-picker
-              :show="showFlag"
+              :show="show"
               :columns="columns"
               :defaultData="defaultData"
               :selectData="pickData"
@@ -21,14 +21,19 @@ const EVENT_CHANGE = "change";
 const EVENT_CANCEL = "select-cancel";
 export default {
   props: {
-    showFlag: {
+    show: {
       type: Boolean,
       default: false
     }
   },
+  watch:{
+    show(val){
+      this.showMask = val;
+    }
+  },
   data(){
     return {
-      show:this.showFlag,
+      showMask:this.show,
       columns: 1,
       defaultData: [
         {
@@ -70,17 +75,17 @@ export default {
   },
   methods: {
     maskClick() {
-      this.show = false;
+      this.showMask = false;
+      this.$emit("on-cancel");
     },
     close() {
-      this.show = false;
+      this.showMask = false;
     },
     confirmFn(val) {
-      this.show = false;
+      this.showMask = false;
       this.res = val.select1.value;
       this.defaultData = [val.select1];
-      // console.log(this.res);
-      this.$emit("select",this.res);
+      this.$emit("on-select",this.res);
       
     },
   }
