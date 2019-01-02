@@ -158,7 +158,6 @@ Ball = function(){
 	for (var i=0; i< woolNodes; i++	){
 		var v = new THREE.Vector3(0, -i*woolSegLength, 0);
 		stringGeom.vertices.push(v);
-
 		var woolV = new WoolVert();
 		woolV.x = woolV.oldx = v.x;
 		woolV.y = woolV.oldy = v.y;
@@ -174,7 +173,7 @@ Ball = function(){
 
   	// body
   	var bodyGeom = new THREE.SphereGeometry(this.ballRay, 5,4);
-	this.body = new THREE.Mesh(bodyGeom, redMat);
+	  this.body = new THREE.Mesh(bodyGeom, redMat);
   	this.body.position.y = -woolSegLength*woolNodes;
 
   	var wireGeom = new THREE.TorusGeometry( this.ballRay, .5, 3, 10, Math.PI*2 );
