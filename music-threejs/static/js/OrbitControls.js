@@ -519,7 +519,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	function handleMouseWheel( event ) {
-
 		// console.log( 'handleMouseWheel' );
 
 		if ( event.deltaY < 0 ) {
