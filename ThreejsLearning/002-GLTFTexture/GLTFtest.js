@@ -28,7 +28,7 @@ class GLTFtest {
 
     // 3D object
     var loader = new THREE.GLTFLoader().setPath( 'models/' );
-    loader.load('DOM.gltf', gltf => {
+    loader.load('Duck.gltf', gltf => {
       console.error(gltf, 'loading over...')
       this.scene.add( gltf.scene );
     },v=>{
@@ -36,11 +36,17 @@ class GLTFtest {
     },e=>{
       console.error(e)
     })
-
+    this.initControl()
     // run
     this.run()
   }
 
+  initControl() {
+    this.control = new THREE.OrbitControls(this.camera, this.container)
+    this.control.autoRotate = false
+    this.control.enabled = true
+  }
+  
   run() {
     that.renderer.render(that.scene, that.camera)
     requestAnimationFrame(that.run)
