@@ -1,5 +1,3 @@
-> 感谢: https://blog.csdn.net/iispring/article/details/27970937
-
 ### three.js 中 shader 的使用
 
 #### 1、OpenGL中六种常见坐标系
