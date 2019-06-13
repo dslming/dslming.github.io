@@ -30,3 +30,37 @@
 #### 5、WebGLRenderer.js
 > 文件位置: src/renderers/
 - [x] drawArrays()
+
+#### 6、Object3D.js
+> 文件位置: src/core/
+
+内置unifrom
+```js
+// vec3
+position: {
+    configurable: true,
+    enumerable: true,
+    value: position
+},
+rotation: {
+    configurable: true,
+    enumerable: true,
+    value: rotation
+},
+quaternion: {
+    configurable: true,
+    enumerable: true,
+    value: quaternion
+},
+scale: {
+    configurable: true,
+    enumerable: true,
+    value: scale
+},
+modelViewMatrix: {
+    value: new Matrix4()
+},
+normalMatrix: {
+    value: new Matrix3()
+}
+```
