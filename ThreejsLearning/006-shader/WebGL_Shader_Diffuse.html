@@ -112,7 +112,7 @@
         } 
     
         gl_Position = projectionMatrix * modelViewMatrix * vPosition;
-        
+        // 环境光 + 漫反射 + 高光反射
         fColor = ambient + diffuse +specular;
         
         fColor.a = 1.0;
