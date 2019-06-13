@@ -6,6 +6,7 @@
 - 创建shader对象: Object createShader (enum type)
 - 附加: void shaderSource(Object shader, string source)
 - 编译程序: compileShader(Object shader)
+
 ```js
 // Vertex Shader
 var vertCode =
