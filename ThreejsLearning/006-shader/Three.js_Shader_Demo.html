@@ -8,6 +8,7 @@
     <script src='../lib/three(105).js'></script>
 </head>
 <body>
+    <p>three.js 使用shader显示图片</p>
     <script id="fragShader" type="shader-code">
         uniform vec2 resolution;
         uniform float time;
@@ -28,11 +29,11 @@
         // First we initialize the scene and our camera
         const scene = new THREE.Scene();
         window.scene = scene
-        const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        const camera = new THREE.PerspectiveCamera( 75, 500/500, 0.1, 1000 );
 
         // We create the WebGL renderer and add it to the document
         const renderer = new THREE.WebGLRenderer();
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize( 500, 500);
         document.body.appendChild( renderer.domElement );
 
         /** Configure our shader **/
@@ -48,7 +49,7 @@
         const uniforms = {
         resolution: {
             type: 'v2',
-            value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+            value: new THREE.Vector2(500, 500),
         },
         time: {
             type: 'f',
