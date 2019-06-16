@@ -45,5 +45,8 @@ import meshlambert_vert from './ShaderLib/meshlambert_vert.glsl.js';
 import meshlambert_frag from './ShaderLib/meshlambert_frag.glsl.js';
 ```
 
+#### 3) lights_lambert_vertex.glsl.js
+>文件位置: src/renderers/shaders/shaderChunk
+
 ### babylon.js 中 shader
 > 在线编辑器: https://cyos.babylonjs.com/
