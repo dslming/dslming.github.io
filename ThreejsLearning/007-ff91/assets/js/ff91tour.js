@@ -581,7 +581,7 @@ var Controls = /** @class */ (function () {
             { name: "shadow", type: "texture", ext: "jpg" },
             { name: "led", type: "texture", ext: "png" },
         ];
-        var path = "../assets/";
+        var path = "./assets/";
         this.assetLoader = new assetLoader_1.AssetLoader(path, manifesto, this.preloadComplete.bind(this));
         this.assetLoader.start();
     };
@@ -1988,7 +1988,7 @@ var Grid = /** @class */ (function () {
         this.mouseTarget = new THREE.Vector2(THREE.Math.randInt(-40, 40), THREE.Math.randInt(-40, 40));
         this.tempVec = new THREE.Vector2();
         // Define material
-        this.sprite = new THREE.TextureLoader().load("../assets/textures/led.png");
+        this.sprite = new THREE.TextureLoader().load("./assets/textures/led.png");
         this.shaderMat = new THREE.RawShaderMaterial({
             uniforms: {
                 color: { value: new THREE.Color(0xffffff) },
