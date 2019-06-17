@@ -2066,7 +2066,7 @@ var Skybox = /** @class */ (function () {
             },
             vertexShader: shaderVert,
             fragmentShader: shaderFrag,
-            side: THREE.BackSide,
+            side: THREE.BackSide,  
             depthTest: true,
             depthWrite: false,
             fog: false

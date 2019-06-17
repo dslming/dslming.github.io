@@ -366,8 +366,10 @@
 
             eye = vec3(radius*Math.sin(theta)*Math.cos(phi),
                 radius*Math.sin(theta)*Math.sin(phi), radius*Math.cos(theta));
+            // console.error(eye, 'eye') // (0, 0, 1.5)
 
             modelViewMatrix = lookAt(eye, at , up);
+            // console.error(modelViewMatrix, 'modelViewMatrix')
             projectionMatrix = ortho(left, right, bottom, ytop, near, far);
             normalMatrix = [
                 vec3(modelViewMatrix[0][0], modelViewMatrix[0][1], modelViewMatrix[0][2]),
