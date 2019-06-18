@@ -221,30 +221,27 @@ for webgl-utils, m3, m4, and webgl-lessons-ui.
         requestAnimationFrame(drawScene);
 
         // Draw the scene.
-        function drawScene(time) {
-            time *= 0.0005;
-
+        function drawScene() {
             webglUtils.resizeCanvasToDisplaySize(gl.canvas);
-
             // Tell WebGL how to convert from clip space to pixels
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
             gl.enable(gl.CULL_FACE);
             gl.enable(gl.DEPTH_TEST);
-
             // Clear the canvas AND the depth buffer.
             gl.clearColor(0, 0, 0, 1);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
             // Compute the projection matrix
             var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-            var projectionMatrix =
-                m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
+
+            // 投影矩阵
+            var projectionMatrix = m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
 
             // Compute the camera's matrix using look at.
             var cameraPosition = [0, -200, 0];
             var target = [0, 0, 0];
             var up = [0, 0, 1];
+            // 视图矩阵
             var cameraMatrix = m4.lookAt(cameraPosition, target, up);
 
             // Make a view matrix from the camera matrix.
