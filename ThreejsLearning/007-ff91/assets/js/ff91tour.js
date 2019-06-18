@@ -2072,6 +2072,7 @@ var Skybox = /** @class */ (function () {
             fog: false
         });
         var boxMesh = new THREE.Mesh(boxGeom, this.boxMat);
+        boxMesh.name = 'boxMesh'
         boxGeom.removeAttribute('normal');
         boxGeom.removeAttribute('uv');
         _scene.add(boxMesh);
