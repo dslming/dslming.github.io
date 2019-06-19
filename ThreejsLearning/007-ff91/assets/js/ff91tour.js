@@ -1171,10 +1171,10 @@
                     this.lightsCtrlHead = new THREE.Vector4();
                     this.prevHeadlightState = undefined;
                     this.prevTurnState = undefined;
-                    this.addMeshMaterials();
-                    this.addHeadFlares(_cargo.getTexture("flareHead"));
-                    this.addStopMesh(_cargo.getTexture("lightStop"));
-                    this.addTurnFlares(_cargo.getTexture("flareTurn"), _cargo.getTexture("lightTurn"));
+                    //this.addMeshMaterials();
+                    //this.addHeadFlares(_cargo.getTexture("flareHead"));
+                    //this.addStopMesh(_cargo.getTexture("lightStop"));
+                    //this.addTurnFlares(_cargo.getTexture("flareTurn"), _cargo.getTexture("lightTurn"));
                 }
                 ////////////////// SOLID LIGHT MESHES //////////////////
                 CarLights.prototype.addMeshMaterials = function () {
@@ -1333,8 +1333,8 @@
                             this.flareHeadPoints.visible = false;
                             break;
                         case 2:
-                            this.lightsCtrlHead.set(1, 1, 0, 0);
-                            this.flareHeadPoints.visible = true;
+                            //this.lightsCtrlHead.set(1, 1, 0, 0);
+                            //this.flareHeadPoints.visible = true;
                             break;
                         case 3:
                             this.lightsCtrlHead.set(1, 1, 1, 0);
@@ -1368,7 +1368,7 @@
                         this.meshStopGlow.visible = true;
                         this.lightsCtrlOther.x = 1;
                     }
-                    else if (!_props.braking && this.meshStopGlow.visible) {
+                    else if (!_props.braking && this.meshStopGlow && this.meshStopGlow.visible ) {
                         this.meshStopGlow.visible = false;
                         this.lightsCtrlOther.x = 0;
                     }
