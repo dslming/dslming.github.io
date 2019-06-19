@@ -3,8 +3,9 @@ var Wheels_1 = require('./29');
 var Lights_1 = require('./27');
 var Motors_1 = require('./28');
 var Batts_1 = require('./25');
-var CarBody = function () {
-  function CarBody(_scene, _cargo) {
+
+class CarBody {
+  constructor(_scene, _cargo) {
     this.parent = _scene;
     this.carWhole = new THREE.Group();
     this.carWhole.position.x = -1.56;
@@ -17,7 +18,8 @@ var CarBody = function () {
     this.carMotors = new Motors_1.default(this.carChassis, _cargo.getMesh('xrays'));
     this.carBatts = new Batts_1.default(this.carWhole, _cargo.getMesh('xrays'));
   }
-  CarBody.prototype.buildCarChassis = function (_bodyGeom, _cubeText) {
+
+  buildCarChassis(_bodyGeom, _cubeText) {
     _bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
     _bodyGeom.position.set(1.56, 0, 0);
     this.envCube = _cubeText;
@@ -57,8 +59,9 @@ var CarBody = function () {
     _bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
     _bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
     return _bodyGeom;
-  };
-  CarBody.prototype.addShadow = function (_shad) {
+  }
+  
+  addShadow(_shad) {
     var shadowPlane = new THREE.PlaneBufferGeometry(6.5, 6.5, 1, 1);
     shadowPlane.rotateX(-Math.PI / 2);
     shadowPlane.translate(1.56, 0, 0);
@@ -69,11 +72,13 @@ var CarBody = function () {
     });
     var shadowMesh = new THREE.Mesh(shadowPlane, shadowMat);
     this.carWhole.add(shadowMesh);
-  };
-  CarBody.prototype.onWindowResize = function (_vpH) {
+  }
+
+  onWindowResize(_vpH) {
     this.carLights.onWindowResize(_vpH);
-  };
-  CarBody.prototype.update = function (_props) {
+  }
+
+  update(_props) {
     this.carWhole.rotation.y = _props.theta;
     if (_props.longitMomentum !== 0) {
       this.carChassis.rotation.z = _props.longitMomentum * 0.0015;
@@ -81,7 +86,7 @@ var CarBody = function () {
     this.carChassis.rotation.x = _props.lateralMomentum * 0.002;
     this.carWheels.update(_props);
     this.carLights.update(_props);
-  };
-  return CarBody;
-}();
+  }
+}
+
 exports.default = CarBody;

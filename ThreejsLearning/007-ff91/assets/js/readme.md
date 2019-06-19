@@ -2,24 +2,27 @@
 debundle -i ff91tour.js -o dist/ -c 1.json
 
 # 36 initApp
+程序入口。
  - [ ] 4 control
 
 ## 4 control
- - [ ] 38 ViewTour
+ - [x] 38 ViewTour
  - [ ] 37 ViewPreload
  - [ ] 32 Nav
  - [ ] 31 CardControls
- - [ ] 40 assetLoader
+ - [x] 40 assetLoader (资源加载)
  - [ ] 42 Monoc
  - [ ] 39 Analytics
  - [ ] 2 CardProps
 
 ### 38 ViewTour
+CSS3DRenderer
+
 依赖模块：
 - [x] 30 Card
 - [ ] 2 Desktop,Mobile
 - [ ] 1 CarProps
-- [ ] 26 CarBody
+- [x] 26 CarBody
 - [ ] 33 Floor
 - [x] 35 Skybox
 
@@ -30,6 +33,7 @@ debundle -i ff91tour.js -o dist/ -c 1.json
 - 天空盒
 
 ### 37 ViewPreload
+加载之前的显示内容
 - [ ] 34 Grid
 - [ ] 0 Time
 
@@ -54,8 +58,8 @@ debundle -i ff91tour.js -o dist/ -c 1.json
 - [ ] 19 glsl
 
 #### 35 Skybox
-- [ ] 24 glsl
-- [ ] 23 glsl
+- [x] 24 glsl
+- [x] 23 glsl
 
 #### 34 Grid
 - [ ] 22 glsl
@@ -66,16 +70,16 @@ debundle -i ff91tour.js -o dist/ -c 1.json
 - [ ] 0 Time
 
 ##### 27 CarLights
-- [ ] 10 glsl
-- [ ] 9 glsl
-- [ ] 16 glsl
-- [ ] 14 glsl
-- [ ] 15 glsl
-- [ ] 8 glsl
-- [ ] 7 glsl
-- [ ] 18 glsl
-- [ ] 13 glsl
-- [ ] 17 glsl
+- [ ] 10 glsl (headLightsVS)
+- [ ] 9 glsl (headLightsFS)
+- [ ] 16 glsl (tailLightVS)
+- [ ] 14 glsl (tailGridVS)
+- [ ] 15 glsl (tailGridFS)
+- [ ] 8 glsl (flareVS)
+- [ ] 7 glsl (flareFS)
+- [ ] 18 glsl (turnBarVS)
+- [ ] 13 glsl (stopBarVS)
+- [ ] 17 glsl (turnBarFS)
 
 ##### 28 Motors
 - [ ] 0 Time

@@ -42,9 +42,11 @@ var ViewTour = function () {
     this.card = new Card_1.default(this.sceneCSS);
     this.carProps = new Props_1.CarProps();
     this.dirLight = new THREE.DirectionalLight(0, 0.7);
+    this.dirLight.name = 'dirLight'
     this.dirLight.position.set(0, 1, 1);
     this.sceneWGL.add(this.dirLight);
     this.ambLight = new THREE.AmbientLight(0, 0.5);
+    this.ambLight.name = 'ambLight'
     this.sceneWGL.add(this.ambLight);
     this.skybox = new Skybox_1.default(this.sceneWGL, this.dirLight.color);
   }

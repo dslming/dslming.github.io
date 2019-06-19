@@ -8,8 +8,9 @@ var flareFS = require('./7');
 var turnBarVS = require('./18');
 var stopBarVS = require('./13');
 var turnBarFS = require('./17');
-export var CarLights = function () {
-  function CarLights(_carChassis, _cargo) {
+
+export class CarLights {
+  constructor(_carChassis, _cargo) {
     this.lfTimer = 0;
     this.rtTimer = 0;
     this.carChassis = _carChassis;
@@ -23,10 +24,12 @@ export var CarLights = function () {
     this.addStopMesh(_cargo.getTexture('lightStop'));
     this.addTurnFlares(_cargo.getTexture('flareTurn'), _cargo.getTexture('lightTurn'));
   }
-  CarLights.prototype.addMeshMaterials = function () {
+
+  addMeshMaterials() {
     var headLights = this.carChassis.getObjectByName('HeadLights');
     var tailLights = this.carChassis.getObjectByName('TailLights');
     var tailGrid = this.carChassis.getObjectByName('TailGrid');
+    
     tailGrid.geometry.computeVertexNormals();
     headLights.material = new THREE.ShaderMaterial({
       uniforms: {
@@ -52,8 +55,9 @@ export var CarLights = function () {
       vertexShader: tailGridVS,
       fragmentShader: tailGridFS
     });
-  };
-  CarLights.prototype.addHeadFlares = function (_tex) {
+  }
+
+  addHeadFlares(_tex) {
     this.headFlareMat = new THREE.ShaderMaterial({
       uniforms: {
         texture: { value: _tex },
@@ -100,8 +104,9 @@ export var CarLights = function () {
     flareHeadGeom.addAttribute('normal', new THREE.BufferAttribute(normArray, 3));
     this.flareHeadPoints = new THREE.Points(flareHeadGeom, this.headFlareMat);
     this.carChassis.add(this.flareHeadPoints);
-  };
-  CarLights.prototype.addStopMesh = function (_tex) {
+  }
+
+  addStopMesh(_tex) {
     this.meshStopGlow = this.carChassis.getObjectByName('Stop');
     this.meshStopGlow.material = new THREE.ShaderMaterial({
       uniforms: { texture: { value: _tex } },
@@ -112,8 +117,9 @@ export var CarLights = function () {
       depthTest: false
     });
     ;
-  };
-  CarLights.prototype.addTurnFlares = function (_tex1, _tex2) {
+  }
+
+  addTurnFlares(_tex1, _tex2) {
     var posArray = new Float32Array([
       -4755,
       2227,
@@ -425,8 +431,9 @@ export var CarLights = function () {
       transparent: true,
       depthTest: false
     });
-  };
-  CarLights.prototype.turnSignalsBlink = function (_angle, _tDelta) {
+  }
+
+  turnSignalsBlink(_angle, _tDelta) {
     this.lightsCtrlTurn.x = Math.sign(_angle);
     if (_angle > 0) {
       this.lfTimer = (this.lfTimer + _tDelta * 2) % 2;
@@ -441,15 +448,17 @@ export var CarLights = function () {
     }
     this.turnLeftPoints.visible = this.lightsCtrlTurn.y ? true : false;
     this.turnRightPoints.visible = this.lightsCtrlTurn.z ? true : false;
-  };
-  CarLights.prototype.turnSignalsClear = function () {
+  }
+
+  turnSignalsClear() {
     this.lightsCtrlTurn.set(0, 0, 0);
     this.lfTimer = 0;
     this.rtTimer = 0;
     this.turnLeftPoints.visible = false;
     this.turnRightPoints.visible = false;
-  };
-  CarLights.prototype.headlightsChanged = function (_newState) {
+  }
+
+  headlightsChanged(_newState) {
     switch (_newState) {
     case 0:
       this.lightsCtrlHead.set(0, 0, 0, 0);
@@ -473,12 +482,14 @@ export var CarLights = function () {
       break;
     }
     this.prevHeadlightState = _newState;
-  };
-  CarLights.prototype.onWindowResize = function (_vpH) {
+  }
+
+  onWindowResize(_vpH) {
     this.headFlareMat.uniforms['vpH'].value = _vpH;
     this.turnPointMaterial.uniforms['vpH'].value = _vpH;
-  };
-  CarLights.prototype.update = function (_props) {
+  }
+
+  update(_props) {
     if (_props.wAngleTarg !== 0) {
       this.turnSignalsBlink(_props.wAngleTarg, _props.time.delta);
     } else if (this.lightsCtrlTurn.x !== 0) {
@@ -494,6 +505,5 @@ export var CarLights = function () {
       this.meshStopGlow.visible = false;
       this.lightsCtrlOther.x = 0;
     }
-  };
-  return CarLights;
-}();
+  }
+}

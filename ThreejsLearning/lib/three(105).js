@@ -16892,7 +16892,7 @@
 	function WebGLShader( gl, type, string, debug ) {
 
 		var shader = gl.createShader( type );
-		console.error(string,'WebGLShader')
+		// console.error(string,'WebGLShader')
 		gl.shaderSource( shader, string );
 		gl.compileShader( shader );
 
