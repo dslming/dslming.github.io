@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    // "outDir": "./dist",
+    "outFile": "./dist/ff91.js",
     "target": "ES5",
     "module": "amd",
     "strict": true,

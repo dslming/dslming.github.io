@@ -5,13 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <script src='../lib/three(105).js'></script>
 </head>
 <body>
+    <style>
+        html,body{
+            margin: 0;
+            padding: 0;
+            border: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+    </style>
+    <div id="GLCanvas"></div>
+    <div id="CSSCanvas"></div>
+
     <script data-main="dist/ff91" src="static/js/require.min.js"></script>
     <script>
         require(["ff91"], (v)=>{
             window.ff91 = v
             let a = new ff91.Control()
+            window.lm = a
         })
     </script>
 </body>
