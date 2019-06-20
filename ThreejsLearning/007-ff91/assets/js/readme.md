@@ -11,7 +11,7 @@ debundle -i ff91tour.js -o dist/ -c 1.json
  - [ ] 32 Nav
  - [ ] 31 CardControls
  - [x] 40 assetLoader (资源加载)
- - [ ] 42 Monoc
+ - [ ] 42 Monoc (相机)
  - [ ] 39 Analytics
  - [ ] 2 CardProps
 
