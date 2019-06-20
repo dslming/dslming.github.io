@@ -1171,7 +1171,9 @@
                     this.lightsCtrlHead = new THREE.Vector4();
                     this.prevHeadlightState = undefined;
                     this.prevTurnState = undefined;
-                    //this.addMeshMaterials();
+                    // 增加一圈边光
+                    this.addMeshMaterials();
+                    // 增加大灯
                     //this.addHeadFlares(_cargo.getTexture("flareHead"));
                     //this.addStopMesh(_cargo.getTexture("lightStop"));
                     //this.addTurnFlares(_cargo.getTexture("flareTurn"), _cargo.getTexture("lightTurn"));
@@ -1184,7 +1186,9 @@
                     tailGrid.geometry.computeVertexNormals();
                     headLights.material = new THREE.ShaderMaterial({
                         uniforms: {
+                            // 光的开关
                             lightsT: { value: this.lightsCtrlTurn },
+                            // 光的强度
                             lightsS: { value: this.lightsCtrlHead }
                         },
                         vertexShader: headLightsVS,
@@ -1322,19 +1326,23 @@
                     this.turnLeftPoints.visible = false;
                     this.turnRightPoints.visible = false;
                 };
+
+
                 CarLights.prototype.headlightsChanged = function (_newState) {
                     switch (_newState) {
                         case 0:
                             this.lightsCtrlHead.set(0, 0, 0, 0);
-                            this.flareHeadPoints.visible = false;
+                            this.flareHeadPoints && (this.flareHeadPoints.visible = false)
                             break;
                         case 1:
                             this.lightsCtrlHead.set(1, 0, 0, 0);
                             this.flareHeadPoints.visible = false;
                             break;
+
+                        // 默认值
                         case 2:
-                            //this.lightsCtrlHead.set(1, 1, 0, 0);
-                            //this.flareHeadPoints.visible = true;
+                            this.lightsCtrlHead.set(1, 1, 0, 0);
+                            this.flareHeadPoints && (this.flareHeadPoints.visible = true)
                             break;
                         case 3:
                             this.lightsCtrlHead.set(1, 1, 1, 0);

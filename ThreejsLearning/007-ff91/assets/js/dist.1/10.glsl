@@ -6,8 +6,9 @@ float normFloat(float n, float minVal, float maxVal){
 float checkType(float type, float val){
 	return step(val - 0.1, type) * step(type, val + 0.1);
 }
-
+ // 光的开关
 uniform vec3 lightsT;	// Lights Turn | x: anyTurn, y: left turn, z: right turn
+// 光的强度
 uniform vec4 lightsS;	// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs
 attribute float type;
 varying float wht;
