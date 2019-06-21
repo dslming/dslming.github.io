@@ -2854,6 +2854,7 @@
             var CamControl_1 = __webpack_require__(41);
             var __1 = __webpack_require__(0);
             var Monoc = /** @class */ (function (_super) {
+                debugger
                 __extends(Monoc, _super);
                 function Monoc(options) {
                     var _this = _super.call(this, options) || this;
