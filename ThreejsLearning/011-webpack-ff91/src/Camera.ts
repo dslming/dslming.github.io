@@ -1,4 +1,4 @@
-const THREE = (window as any).THREE
+let THREE = (window as any).THREE
 
 class Camera {
     // __extends(Monoc, _super);
