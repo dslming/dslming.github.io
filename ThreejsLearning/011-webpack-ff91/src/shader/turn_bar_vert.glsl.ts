@@ -1,3 +1,5 @@
+export default
+`
 uniform vec3 lightsT;
 varying float brightness;
 varying vec2 vUV;
@@ -20,3 +22,4 @@ void main() {
     vec4 mvPosition = viewMatrix * realPos;
     gl_Position = projectionMatrix * mvPosition;
 }
+`

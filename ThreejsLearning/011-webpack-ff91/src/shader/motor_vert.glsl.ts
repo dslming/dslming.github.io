@@ -1,3 +1,4 @@
+export default `
 precision highp float;
 
 float normFloat(float n, float minVal, float maxVal){
@@ -26,3 +27,4 @@ void main() {
 
 	gl_Position = projectionMatrix * viewMatrix * realPos;
 }
+`

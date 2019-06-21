@@ -1,3 +1,5 @@
+export default
+`
 uniform vec3 color;
 uniform sampler2D texture;
 
@@ -13,3 +15,4 @@ void main() {
     gl_FragColor = texture2D( texture, gl_PointCoord);
     gl_FragColor.a = normFloat(opacity, 0.01, 0.1);
 }
+`

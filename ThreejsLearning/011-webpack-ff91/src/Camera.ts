@@ -1,18 +1,33 @@
+import CameraControl from './CameraControl'
+import { zTween } from './Tool'
+
 let THREE = (window as any).THREE
 
-class Camera {
-    // __extends(Monoc, _super);
+export default class Camera extends CameraControl {
+    camera: any;
+    vpW: any;
+    vpH: any;
+    forceUpdate: any;
+    focusActual: any;
+    gyro: any;
+    rotActual: any;
+    quatX: any;
+    quatY: any;
+    distActual: any;
+    distTarget: any;
+
     constructor(options:any) {
-      var _this = _super.call(this, options) || this;
-      _this.camera = new THREE.PerspectiveCamera(_this.options.fov, _this.vpW / _this.vpH, 0.1, 100);
-      return _this;
+      super(options)
+      this.camera = new THREE.PerspectiveCamera(this.options.fov, this.vpW / this.vpH, 0.1, 100);
     }
-    Monoc.prototype.onWindowResize = function (vpW, vpH) {
-      _super.prototype.onWindowResize.call(this, vpW, vpH);
+    
+    onWindowResize(vpW:any, vpH:any) {
+      super.onWindowResize(vpW, vpH);
       this.camera.aspect = this.vpW / this.vpH;
       this.camera.updateProjectionMatrix();
     };
-    Monoc.prototype.update = function () {
+    
+    update() {
       if (!this.forceUpdate && !this.changesOccurred()) {
         return false;
       }
@@ -20,23 +35,22 @@ class Camera {
       this.camera.position.copy(this.focusActual);
       if (this.gyro.alpha && this.gyro.beta && this.gyro.gamma) {
         this.camera.setRotationFromEuler(this.defaultEuler);
-        this.camera.rotateZ(this.gyro.alpha * CamControl_1.default.RADIANS);
-        this.camera.rotateX(this.gyro.beta * CamControl_1.default.RADIANS);
-        this.camera.rotateY(this.gyro.gamma * CamControl_1.default.RADIANS);
+        this.camera.rotateZ(this.gyro.alpha * CameraControl.RADIANS);
+        this.camera.rotateX(this.gyro.beta * CameraControl.RADIANS);
+        this.camera.rotateY(this.gyro.gamma * CameraControl.RADIANS);
         this.camera.rotation.z += this.gyro.orient;
       } else {
         this.rotActual.lerp(this.rotTarget, 0.05);
-        this.quatX.setFromAxisAngle(CamControl_1.default.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
-        this.quatY.setFromAxisAngle(CamControl_1.default.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
+        this.quatX.setFromAxisAngle(CameraControl.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
+        this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
         this.quatY.multiply(this.quatX);
         this.camera.quaternion.copy(this.quatY);
       }
       if (this.distActual !== this.distTarget) {
-        this.distActual = __1.zTween(this.distActual, this.distTarget, 0.05);
+        this.distActual = zTween(this.distActual, this.distTarget, 0.05);
       }
       this.camera.translateZ(this.distActual);
       this.forceUpdate = false;
       return true;
-    };
-    return Monoc;
-  }(CamControl_1.default);
+    }
+}

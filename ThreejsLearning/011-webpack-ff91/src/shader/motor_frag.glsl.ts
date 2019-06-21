@@ -1,3 +1,4 @@
+export default `
 #extension GL_OES_standard_derivatives : enable
 precision highp float;
 
@@ -21,3 +22,4 @@ void main() {
 
 	gl_FragColor = vec4(0.627, 0.443, 0.341, alpha);
 }
+`

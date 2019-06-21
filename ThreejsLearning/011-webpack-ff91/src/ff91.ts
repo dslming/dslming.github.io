@@ -1,5 +1,6 @@
 import headLightsVS from './shader/head_light_frag.glsl'
 import headLightsFS from './shader/head_light_vert.glsl'
+import Camera from './Camera'
 
 import AssetLoader from './AssetLoader'
 
@@ -11,6 +12,7 @@ export class Control {
     assetLoader: AssetLoader
     rendererWGL: any
     continer: any
+    cam:any
 
     constructor() {
         // 资源加载
@@ -46,5 +48,23 @@ export class Control {
         this.rendererWGL.setSize(this.vp.x, this.vp.y);
         this.continer = document.getElementById("GLCanvas")
         this.continer.appendChild(this.rendererWGL.domElement);
+
+        // 相机
+        let camOptions = {
+            distance: this.vp.y > 550 ? 8 : 6,
+            rotRange: {
+              xMin: -30,
+              xMax: 30,
+              yMin: -30,
+              yMax: 30
+            },
+            distRange: {
+              max: 20,
+              min: 3
+            }
+        }
+        this.cam = new Camera(camOptions)
+        this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
+        this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
     }
 }

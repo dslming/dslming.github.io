@@ -1,3 +1,5 @@
+export default
+`
 precision highp float;
 
 float normFloat(float n, float minVal, float maxVal){
@@ -28,3 +30,4 @@ void main() {
 	brightness = normFloat(-brightness, 0.8, 0.3);	// Back side
 	gl_Position = projectionMatrix * viewMatrix * realPos;
 }
+`

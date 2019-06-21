@@ -1,3 +1,5 @@
+export default
+`
 uniform sampler2D texture;
 varying float brightness;
 varying vec2 vUV;
@@ -20,3 +22,4 @@ void main() {
 	gl_FragColor *= 1.0 - vec4( color, 1.0 );
 	gl_FragColor += 1.0; */
 }
+`

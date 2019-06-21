@@ -1,9 +1,7 @@
-#define PI 3.1415926
-
-uniform float vpH;
-uniform float size;
-uniform float brightness;
-varying float opacity;
+export default
+`
+varying float brightness;
+varying vec2 vUV;
 
 // Normalizes a value between 0 - 1
 float normFloat(float n, float minVal, float maxVal){
@@ -11,14 +9,15 @@ float normFloat(float n, float minVal, float maxVal){
 }
 
 void main() {
+	vUV = uv;
     vec4 realPos = modelMatrix * vec4(position, 1.0);
     vec3 realNorm = normalize(vec3(modelMatrix * vec4(normal, 0.0)));
 
     vec3 lightVector = normalize(cameraPosition - realPos.xyz);
-    opacity = dot(realNorm, lightVector);
-    opacity = normFloat(opacity, 0.5, 1.0) * brightness;
+    float diffuse = dot(realNorm, lightVector);
+    brightness = normFloat(diffuse, 0.0, 0.5);
 
     vec4 mvPosition = viewMatrix * realPos;
     gl_Position = projectionMatrix * mvPosition;
-    gl_PointSize = max((vpH * size / -mvPosition.z) * opacity, 0.0);
 }
+`

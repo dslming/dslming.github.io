@@ -1,3 +1,5 @@
+export default
+`
 #define NIGHTLIGHT 0.4
 
 float normFloat(float n, float minVal, float maxVal){
@@ -46,3 +48,4 @@ void main(){
 	
 	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );
 }
+`
