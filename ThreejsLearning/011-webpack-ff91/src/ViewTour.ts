@@ -1,8 +1,9 @@
 
-const THREE = (window as any).THREE
-const TweenLite = (window as any).TweenLite
 import Body from './CarBody'
 import Skybox from './Skybox'
+
+const THREE = (window as any).THREE
+const TweenLite = (window as any).TweenLite
 
 // var Card_1 = require('./30');
 // var CardProps = require('./2');
@@ -27,18 +28,7 @@ export default class ViewTour{
     skybox: any;
     car: any;
     floor: any;
-    // initMeshes: (_cargo: { getMesh: (arg0: string) => void; getCubeTexture: (arg0: string) => void; }) => void;
-    // car: any;
-    // floor: any;
-    // goToSection: (index: string | number) => void;
-    // moveCamera(sectProps: any) {
-    //     throw new Error("Method not implemented.");
-    // }
-    // enterFreeDriving: (sectProps: { camPos: any; }) => void;
-    // knobMoved: (_knobPos: any) => void;
-    // frontLightsClicked: (_index: any) => void;
-    // onWindowResize: (_vp: { x: number; y: number; }) => void;
-    // update: (t: any) => boolean;
+    continer: any
 
   constructor(_scene: any, _renderer: any, _cam: any, _vp: { x: number; y: number; }) {
     this.sceneWGL = _scene;
@@ -46,7 +36,8 @@ export default class ViewTour{
     this.sceneCSS = new THREE.Scene();
     this.rendererCSS = new THREE.CSS3DRenderer();
     this.rendererCSS.setSize(_vp.x, _vp.y);
-    // document.getElementById('CSSCanvas').appendChild(this.rendererCSS.domElement))
+    this.continer = document.getElementById('CSSCanvas')
+    this.continer.appendChild(this.rendererCSS.domElement)
     var camOptions = {
       distance: 6,
       focusPos: {
@@ -83,7 +74,7 @@ export default class ViewTour{
     this.ambLight = new THREE.AmbientLight(0, 0.5);
     this.ambLight.name = 'ambLight'
     this.sceneWGL.add(this.ambLight);
-    // this.skybox = new Skybox_1.default(this.sceneWGL, this.dirLight.color);
+    this.skybox = new Skybox(this.sceneWGL, this.dirLight.color);
   }
 
   moveCamera(_cardProps: any) {
@@ -233,20 +224,20 @@ export default class ViewTour{
   }
 
   update(t: any) {
-    if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
-      this.cam.forceUpdate = true;
-    }
+    // if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
+    //   this.cam.forceUpdate = true;
+    // }
     if (this.cam.update() === false) {
       return false;
     }
-    this.carProps.update(t);
-    this.car.update(this.carProps);
+    // this.carProps.update(t);
+    // this.car.update(this.carProps);
     this.dirLight.position.copy(this.cam.camera.position);
     this.dirLight.position.multiplyScalar(0.5);
     this.dirLight.position.y += 1;
     this.rendererWGL.render(this.sceneWGL, this.cam.camera);
     // this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
-    this.rendererCSS.render(this.sceneCSS, this.cam.camera);
+    // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
     return true;
   }
 }

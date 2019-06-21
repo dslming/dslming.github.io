@@ -6,6 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <script src='../lib/three(105).js'></script>
+    <script src='../lib/OrbitControls.js'></script>
+    <script src='./static/js/CSS3DRenderer.js'></script>
+    <script src="./static/js/TweenMax.min.js"></script>
 </head>
 <body>
     <style>
@@ -22,10 +25,23 @@
 
     <script data-main="dist/ff91" src="static/js/require.min.js"></script>
     <script>
-        require(["ff91"], (v)=>{
-            window.ff91 = v
-            let a = new ff91.Control()
-            window.lm = a
+        require(["ff91"], (ff91)=>{
+            TweenLite.defaultEase = Power2.easeInOut;
+            var control;
+
+            function initApp() {
+                control = new ff91.Control()
+                window.lm = control
+                window.scene = lm.sceneWGL
+                render(window.performance.now());
+            }
+
+            function render(t) {
+                control.update(t * 0.001);
+                requestAnimationFrame(render);
+            }
+
+            initApp();
         })
     </script>
 </body>

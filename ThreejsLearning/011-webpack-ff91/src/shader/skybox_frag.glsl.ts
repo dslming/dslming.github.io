@@ -1,3 +1,4 @@
+export default `
 #define DARK_BLUE vec3(0.063, 0.075, 0.094)
 // 6个面的贴图纹理
 uniform samplerCube tCube;
@@ -12,3 +13,4 @@ void main() {
 	gl_FragColor = textureCube( tCube, vec3( tFlip * vWorldPosition.x, vWorldPosition.yz ) );
 	gl_FragColor.rgb *= color;
 }
+`

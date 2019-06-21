@@ -22,7 +22,7 @@ export default class Batts{
     this.parent = _parent;
     this.singleBatt = _object.getObjectByName('Batt');
     this.singleGeom = this.singleBatt.geometry;
-    scaleAndCenter(this.singleGeom, { x: FF91Props.WheelBase * 0.65 / 6 }, {});
+    scaleAndCenter(this.singleGeom, { x: FF91Props.WheelBase * 0.65 / 6 }, "");
     this.singleGeom.computeVertexNormals();
     this.cloneBatts();
   }

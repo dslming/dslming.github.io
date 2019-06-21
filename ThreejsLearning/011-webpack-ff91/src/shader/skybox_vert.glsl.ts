@@ -1,3 +1,4 @@
+export default `
 varying vec3 vWorldPosition;
 
 vec3 transformDirection( in vec3 dir, in mat4 matrix ) {
@@ -11,3 +12,4 @@ void main() {
 	gl_Position = projectionMatrix * mvPosition;
 	gl_Position.z = gl_Position.w; // set z to camera.far
 }
+`

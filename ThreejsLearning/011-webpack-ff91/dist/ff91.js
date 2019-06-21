@@ -1,4 +1,3 @@
-"use strict";
 define("AssetLoader", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -116,6 +115,355 @@ define("AssetLoader", ["require", "exports"], function (require, exports) {
         return AssetLoader;
     }());
     exports.default = AssetLoader;
+});
+define("Tool", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    function normalize(val, min, max) {
+        return Math.max(0, Math.min(1, (val - min) / (max - min)));
+    }
+    exports.normalize = normalize;
+    function normalizeQuadIn(val, min, max) {
+        return Math.pow(normalize(val, min, max), 2);
+    }
+    exports.normalizeQuadIn = normalizeQuadIn;
+    function normalizeQuadOut(val, min, max) {
+        var x = normalize(val, min, max);
+        return x * (2 - x);
+    }
+    exports.normalizeQuadOut = normalizeQuadOut;
+    function shuffle(array) {
+        var m = array.length, t, i;
+        while (m) {
+            i = Math.floor(Math.random() * m--);
+            t = array[m];
+            array[m] = array[i];
+            array[i] = t;
+        }
+        return array;
+    }
+    exports.shuffle = shuffle;
+    function mod(n, m) {
+        return (n % m + m) % m;
+    }
+    exports.mod = mod;
+    function scaleAndCenter(_geometry, _bounds, _center) {
+        if (_center === void 0) {
+            _center = 'xyz';
+        }
+        if (_bounds.x === undefined)
+            _bounds.x = Infinity;
+        if (_bounds.y === undefined)
+            _bounds.y = Infinity;
+        if (_bounds.z === undefined)
+            _bounds.z = Infinity;
+        if (_bounds.x === _bounds.y && _bounds.y === _bounds.z && _bounds.z === Infinity) {
+            return null;
+        }
+        _geometry.computeBoundingBox();
+        var geomMin = _geometry.boundingBox.min;
+        var geomMax = _geometry.boundingBox.max;
+        var width = geomMax.x - geomMin.x;
+        var height = geomMax.z - geomMin.z;
+        var depth = geomMax.y - geomMin.y;
+        var avgX = _center.indexOf('x') > -1 ? (geomMax.x + geomMin.x) / 2 : 0;
+        var avgY = _center.indexOf('y') > -1 ? (geomMax.y + geomMin.y) / 2 : 0;
+        var avgZ = _center.indexOf('z') > -1 ? (geomMax.z + geomMin.z) / 2 : 0;
+        _geometry.translate(-avgX, -avgY, -avgZ);
+        var xDiff = _bounds.x / width;
+        var yDiff = _bounds.y / height;
+        var zDiff = _bounds.z / depth;
+        var geoScale = Math.min(xDiff, yDiff, zDiff);
+        _geometry.scale(geoScale, geoScale, geoScale);
+    }
+    exports.scaleAndCenter = scaleAndCenter;
+    function zTween(_val, _target, _ratio) {
+        return Math.abs(_target - _val) < 0.00001 ? _target : _val + (_target - _val) * Math.min(_ratio, 1);
+    }
+    exports.zTween = zTween;
+    var Time = /** @class */ (function () {
+        function Time(timeFactor) {
+            this.fallBackRates = [
+                60,
+                40,
+                30,
+                20,
+                15
+            ];
+            this.prev = 0;
+            this.prevBreak = 0;
+            this.delta = 0;
+            this.timeFact = typeof timeFactor === 'undefined' ? 1 : timeFactor;
+            this.frameCount = 0;
+            this.fallBackIndex = 0;
+            this.setFPS(60);
+        }
+        Time.prototype.update = function (_newTime) {
+            this.deltaBreak = Math.min(_newTime - this.prevBreak, 1);
+            if (this.deltaBreak > this.spf) {
+                this.delta = Math.min(_newTime - this.prev, 1);
+                this.prev = _newTime;
+                this.prevBreak = _newTime - this.deltaBreak % this.spf;
+                return true;
+            }
+            else {
+                return false;
+            }
+        };
+        Time.prototype.checkFPS = function () {
+            if (this.delta > this.spf * 2) {
+                this.frameCount++;
+                console.log(this.frameCount);
+                if (this.frameCount > 30) {
+                    this.frameCount = 0;
+                    this.fallBackIndex++;
+                    this.setFPS(this.fallBackRates[this.fallBackIndex]);
+                }
+            }
+        };
+        Time.prototype.setFPS = function (_newVal) {
+            this.fps = _newVal;
+            this.spf = 1 / this.fps;
+        };
+        return Time;
+    }());
+    exports.Time = Time;
+});
+define("Props", ["require", "exports", "Tool"], function (require, exports, Tool_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var THREE = window.THREE;
+    var FF91Props = /** @class */ (function () {
+        function FF91Props() {
+        }
+        FF91Props.Accel = 5;
+        FF91Props.Decel = -10;
+        FF91Props.MaxVel = 70 * 1610 / 3600;
+        FF91Props.MaxTurn = Math.PI * 0.2;
+        FF91Props.Length = 5.25;
+        FF91Props.Width = 2.283;
+        FF91Props.WheelTrack = 1.72;
+        FF91Props.WheelBase = 3.2;
+        FF91Props.WheelDiam = 0.78;
+        FF91Props.WheelCirc = FF91Props.WheelDiam * Math.PI;
+        return FF91Props;
+    }());
+    exports.FF91Props = FF91Props;
+    var CarProps = /** @class */ (function () {
+        function CarProps() {
+            this.time = new Tool_1.Time(undefined);
+            this.velocity = new THREE.Vector2();
+            this.speed = 1;
+            this.accel = 0;
+            this.pos = new THREE.Vector2();
+            this.longitMomentum = 0;
+            this.lateralMomentum = 0;
+            this.wAngleInner = 0;
+            this.wAngleOuter = 0;
+            this.wAngleTarg = 0;
+            this.joyVec = new THREE.Vector2();
+            this.keys = new Array();
+            this.braking = false;
+            this.headLights = 2;
+            this.omega = 0;
+            this.theta = 0;
+        }
+        CarProps.prototype.onKeyDown = function (evt) {
+            if (this.keys.indexOf(evt.keyCode) === -1) {
+                this.keys.push(evt.keyCode);
+            }
+        };
+        CarProps.prototype.onKeyUp = function (evt) {
+            this.keys.splice(this.keys.indexOf(evt.keyCode), 1);
+        };
+        CarProps.prototype.readKeyboardInput = function () {
+            for (var i = 0; i < this.keys.length; i++) {
+                switch (this.keys[i]) {
+                    case 38:
+                        this.accel += FF91Props.Accel;
+                        this.accel *= Tool_1.normalizeQuadIn(this.speed, FF91Props.MaxVel, FF91Props.MaxVel - 10);
+                        break;
+                    case 40:
+                        this.accel += FF91Props.Decel;
+                        break;
+                    case 37:
+                        this.wAngleTarg += FF91Props.MaxTurn;
+                        break;
+                    case 39:
+                        this.wAngleTarg -= FF91Props.MaxTurn;
+                        break;
+                }
+            }
+        };
+        CarProps.prototype.onJoystickMove = function (_vec) {
+            this.joyVec.x = _vec.x / -40;
+            this.joyVec.y = _vec.y / -40;
+            if (Math.abs(this.joyVec.x) > 0.85) {
+                this.joyVec.y = 0;
+            }
+            if (Math.abs(this.joyVec.y) > 0.95) {
+                this.joyVec.x = 0;
+            }
+        };
+        CarProps.prototype.onKnobMove = function (_vec, _section) {
+            this.joyVec.x = _vec.x / -150;
+            this.joyVec.y = _vec.y / -150;
+            if (_section === 5 && Math.abs(this.joyVec.x) < 0.1) {
+                this.joyVec.x = 0;
+            }
+        };
+        CarProps.prototype.readJoyStickInput = function () {
+            this.wAngleTarg = this.joyVec.x * FF91Props.MaxTurn;
+            if (this.joyVec.y >= 0) {
+                this.accel = this.joyVec.y * FF91Props.Accel;
+                this.accel *= Tool_1.normalizeQuadIn(this.speed, FF91Props.MaxVel, FF91Props.MaxVel - 10);
+            }
+            else {
+                this.accel = this.joyVec.y * -FF91Props.Decel;
+            }
+        };
+        CarProps.prototype.changeHeadlights = function (_new) {
+            this.headLights = THREE.Math.clamp(Math.round(_new), 0, 4);
+        };
+        CarProps.prototype.update = function (_time) {
+            if (this.time.update(_time) === false) {
+                return false;
+            }
+            this.accel = 0;
+            this.wAngleTarg = 0;
+            if (this.keys.length > 0) {
+                this.readKeyboardInput();
+            }
+            else if (this.joyVec.x != 0 || this.joyVec.y != 0) {
+                this.readJoyStickInput();
+            }
+            this.accel *= this.time.delta;
+            this.speed += this.accel;
+            this.braking = this.accel < 0;
+            if (this.speed < 0) {
+                this.speed = 0;
+                this.accel = 0;
+            }
+            this.frameDist = this.speed * this.time.delta;
+            this.wAngleTarg *= Tool_1.normalizeQuadIn(this.speed, FF91Props.MaxVel + 10, 3);
+            this.wAngleInner = Tool_1.zTween(this.wAngleInner, this.wAngleTarg, this.time.delta * 2);
+            this.wAngleSign = this.wAngleInner > 0.001 ? 1 : this.wAngleInner < -0.001 ? -1 : 0;
+            this.omega = this.wAngleInner * this.speed / FF91Props.WheelBase;
+            this.theta += this.omega * this.time.delta;
+            this.velocity.set(Math.cos(this.theta) * this.frameDist, -Math.sin(this.theta) * this.frameDist);
+            this.pos.add(this.velocity);
+            this.longitMomentum = Tool_1.zTween(this.longitMomentum, this.accel / this.time.delta, this.time.delta * 6);
+            this.lateralMomentum = this.omega * this.speed;
+            if (this.wAngleSign) {
+                this.radFrontIn = FF91Props.WheelBase / Math.sin(this.wAngleInner);
+                this.radBackIn = FF91Props.WheelBase / Math.tan(this.wAngleInner);
+                this.radBackOut = this.radBackIn + FF91Props.WheelTrack * this.wAngleSign;
+                this.wAngleOuter = Math.atan(FF91Props.WheelBase / this.radBackOut);
+                this.radFrontOut = FF91Props.WheelBase / Math.sin(this.wAngleOuter);
+            }
+            else {
+                this.radFrontOut = 100;
+                this.radBackOut = 100;
+                this.radBackIn = 100;
+                this.radFrontIn = 100;
+                this.wAngleOuter = 0;
+            }
+            return true;
+        };
+        return CarProps;
+    }());
+    exports.CarProps = CarProps;
+});
+define("shader/batt_vert.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nprecision highp float;\n\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nuniform vec3 cameraPosition;\nuniform mat4 modelMatrix;\nuniform mat4 viewMatrix;\nuniform mat4 projectionMatrix;\nuniform float progress;\n\nattribute vec3 position;\nattribute vec3 normal;\nattribute vec3 offset;\nattribute float battID;\n\nvarying float brightness;\n\nvoid main() {\n\tfloat prog = normFloat(progress, battID, battID + 5.0);\n \tvec4 realPos = modelMatrix * vec4(offset + position * prog, 1.0);\n\tvec3 realNorm = normalize(vec3(modelMatrix * vec4(normal, 0.0)));\n\n\tvec3 lightVector = normalize(cameraPosition - realPos.xyz);\n\tbrightness = dot(realNorm, lightVector);\n\t// brightness = normFloat(brightness, 0.8, 0.3);\t// Front side\n\tbrightness = normFloat(-brightness, 0.8, 0.3);\t// Back side\n\tgl_Position = projectionMatrix * viewMatrix * realPos;\n}\n";
+});
+define("shader/batt_frag.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nprecision highp float;\nvarying float brightness;\n\nvoid main() {\n\t// gl_FragColor = vec4(0.627, 0.443, 0.341, brightness); // Copper\n\tgl_FragColor = vec4(0.29, 0.82, 0.95, brightness);\t// Blue\n}\n";
+});
+define("Batts", ["require", "exports", "tslib", "Tool", "Props", "shader/batt_vert.glsl", "shader/batt_frag.glsl"], function (require, exports, tslib_1, Tool_2, Props_1, batt_vert_glsl_1, batt_frag_glsl_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    batt_vert_glsl_1 = tslib_1.__importDefault(batt_vert_glsl_1);
+    batt_frag_glsl_1 = tslib_1.__importDefault(batt_frag_glsl_1);
+    var THREE = window.THREE;
+    var Power2 = window.Power2;
+    var TweenLite = window.TweenLite;
+    var Batts = /** @class */ (function () {
+        function Batts(_parent, _object) {
+            this.showing = false;
+            this.parent = _parent;
+            this.singleBatt = _object.getObjectByName('Batt');
+            this.singleGeom = this.singleBatt.geometry;
+            Tool_2.scaleAndCenter(this.singleGeom, { x: Props_1.FF91Props.WheelBase * 0.65 / 6 }, "");
+            this.singleGeom.computeVertexNormals();
+            this.cloneBatts();
+        }
+        Batts.prototype.cloneBatts = function () {
+            this.stringGeom = new THREE.InstancedBufferGeometry();
+            this.stringGeom.index = this.singleGeom.index;
+            this.stringGeom.attributes.position = this.singleGeom.attributes.position;
+            this.stringGeom.attributes.normal = this.singleGeom.attributes.normal;
+            var offsets = [];
+            var battID = [];
+            var xSpacing = Props_1.FF91Props.WheelBase * 0.7 / 6;
+            var zSpacing = Props_1.FF91Props.WheelTrack * 0.7 / 6;
+            for (var x = 0, i = 0; x < 6; x++) {
+                for (var z = 0; z < 6; z++, i++) {
+                    offsets.push(-x * xSpacing, z * zSpacing, 0);
+                    battID.push(i);
+                }
+            }
+            this.stringGeom.addAttribute('offset', new THREE.InstancedBufferAttribute(new Float32Array(offsets), 3));
+            this.stringGeom.addAttribute('battID', new THREE.InstancedBufferAttribute(new Float32Array(battID), 1));
+            this.stringMat = new THREE.RawShaderMaterial({
+                uniforms: { progress: { value: 0 } },
+                vertexShader: batt_vert_glsl_1.default,
+                fragmentShader: batt_frag_glsl_1.default,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthTest: false,
+                side: THREE.BackSide
+            });
+            this.progUniform = this.stringMat.uniforms['progress'];
+            this.stringMesh = new THREE.Mesh(this.stringGeom, this.stringMat);
+            this.stringMesh.applyMatrix(this.singleBatt.matrix);
+            this.stringMesh.position.set(0.65, 0.35, -0.5);
+            this.stringMesh.visible = false;
+            this.parent.add(this.stringMesh);
+        };
+        Batts.prototype.show = function () {
+            if (!this.showing) {
+                this.showing = true;
+                this.stringMesh.visible = true;
+                TweenLite.killTweensOf(this);
+                TweenLite.to(this.progUniform, 1, {
+                    value: 36 + 4,
+                    ease: Power2.easeInOut
+                });
+            }
+        };
+        Batts.prototype.hide = function () {
+            var _this = this;
+            if (this.showing) {
+                this.showing = false;
+                TweenLite.killTweensOf(this);
+                TweenLite.to(this.progUniform, 1, {
+                    value: 0,
+                    ease: Power2.easeInOut,
+                    onComplete: function () {
+                        _this.stringMesh.visible = false;
+                    }
+                });
+            }
+        };
+        ;
+        return Batts;
+    }());
+    exports.default = Batts;
 });
 define("CameraControl", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -301,126 +649,13 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
     }());
     exports.default = CameraControl;
 });
-define("Tool", ["require", "exports"], function (require, exports) {
+define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], function (require, exports, tslib_2, CameraControl_1, Tool_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    function normalize(val, min, max) {
-        return Math.max(0, Math.min(1, (val - min) / (max - min)));
-    }
-    exports.normalize = normalize;
-    function normalizeQuadIn(val, min, max) {
-        return Math.pow(normalize(val, min, max), 2);
-    }
-    exports.normalizeQuadIn = normalizeQuadIn;
-    function normalizeQuadOut(val, min, max) {
-        var x = normalize(val, min, max);
-        return x * (2 - x);
-    }
-    exports.normalizeQuadOut = normalizeQuadOut;
-    function shuffle(array) {
-        var m = array.length, t, i;
-        while (m) {
-            i = Math.floor(Math.random() * m--);
-            t = array[m];
-            array[m] = array[i];
-            array[i] = t;
-        }
-        return array;
-    }
-    exports.shuffle = shuffle;
-    function mod(n, m) {
-        return (n % m + m) % m;
-    }
-    exports.mod = mod;
-    function scaleAndCenter(_geometry, _bounds, _center) {
-        if (_center === void 0) {
-            _center = 'xyz';
-        }
-        if (_bounds.x === undefined)
-            _bounds.x = Infinity;
-        if (_bounds.y === undefined)
-            _bounds.y = Infinity;
-        if (_bounds.z === undefined)
-            _bounds.z = Infinity;
-        if (_bounds.x === _bounds.y && _bounds.y === _bounds.z && _bounds.z === Infinity) {
-            return null;
-        }
-        _geometry.computeBoundingBox();
-        var geomMin = _geometry.boundingBox.min;
-        var geomMax = _geometry.boundingBox.max;
-        var width = geomMax.x - geomMin.x;
-        var height = geomMax.z - geomMin.z;
-        var depth = geomMax.y - geomMin.y;
-        var avgX = _center.indexOf('x') > -1 ? (geomMax.x + geomMin.x) / 2 : 0;
-        var avgY = _center.indexOf('y') > -1 ? (geomMax.y + geomMin.y) / 2 : 0;
-        var avgZ = _center.indexOf('z') > -1 ? (geomMax.z + geomMin.z) / 2 : 0;
-        _geometry.translate(-avgX, -avgY, -avgZ);
-        var xDiff = _bounds.x / width;
-        var yDiff = _bounds.y / height;
-        var zDiff = _bounds.z / depth;
-        var geoScale = Math.min(xDiff, yDiff, zDiff);
-        _geometry.scale(geoScale, geoScale, geoScale);
-    }
-    exports.scaleAndCenter = scaleAndCenter;
-    function zTween(_val, _target, _ratio) {
-        return Math.abs(_target - _val) < 0.00001 ? _target : _val + (_target - _val) * Math.min(_ratio, 1);
-    }
-    exports.zTween = zTween;
-    var Time = /** @class */ (function () {
-        function Time(timeFactor) {
-            this.fallBackRates = [
-                60,
-                40,
-                30,
-                20,
-                15
-            ];
-            this.prev = 0;
-            this.prevBreak = 0;
-            this.delta = 0;
-            this.timeFact = typeof timeFactor === 'undefined' ? 1 : timeFactor;
-            this.frameCount = 0;
-            this.fallBackIndex = 0;
-            this.setFPS(60);
-        }
-        Time.prototype.update = function (_newTime) {
-            this.deltaBreak = Math.min(_newTime - this.prevBreak, 1);
-            if (this.deltaBreak > this.spf) {
-                this.delta = Math.min(_newTime - this.prev, 1);
-                this.prev = _newTime;
-                this.prevBreak = _newTime - this.deltaBreak % this.spf;
-                return true;
-            }
-            else {
-                return false;
-            }
-        };
-        Time.prototype.checkFPS = function () {
-            if (this.delta > this.spf * 2) {
-                this.frameCount++;
-                console.log(this.frameCount);
-                if (this.frameCount > 30) {
-                    this.frameCount = 0;
-                    this.fallBackIndex++;
-                    this.setFPS(this.fallBackRates[this.fallBackIndex]);
-                }
-            }
-        };
-        Time.prototype.setFPS = function (_newVal) {
-            this.fps = _newVal;
-            this.spf = 1 / this.fps;
-        };
-        return Time;
-    }());
-    exports.Time = Time;
-});
-define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], function (require, exports, tslib_1, CameraControl_1, Tool_1) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    CameraControl_1 = tslib_1.__importDefault(CameraControl_1);
+    CameraControl_1 = tslib_2.__importDefault(CameraControl_1);
     var THREE = window.THREE;
     var Camera = /** @class */ (function (_super) {
-        tslib_1.__extends(Camera, _super);
+        tslib_2.__extends(Camera, _super);
         function Camera(options) {
             var _this = _super.call(this, options) || this;
             _this.camera = new THREE.PerspectiveCamera(_this.options.fov, _this.vpW / _this.vpH, 0.1, 100);
@@ -453,7 +688,7 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
                 this.camera.quaternion.copy(this.quatY);
             }
             if (this.distActual !== this.distTarget) {
-                this.distActual = Tool_1.zTween(this.distActual, this.distTarget, 0.05);
+                this.distActual = Tool_3.zTween(this.distActual, this.distTarget, 0.05);
             }
             this.camera.translateZ(this.distActual);
             this.forceUpdate = false;
@@ -463,152 +698,7 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
     }(CameraControl_1.default));
     exports.default = Camera;
 });
-define("Props", ["require", "exports", "Tool"], function (require, exports, Tool_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var THREE = window.THREE;
-    var FF91Props = /** @class */ (function () {
-        function FF91Props() {
-        }
-        FF91Props.Accel = 5;
-        FF91Props.Decel = -10;
-        FF91Props.MaxVel = 70 * 1610 / 3600;
-        FF91Props.MaxTurn = Math.PI * 0.2;
-        FF91Props.Length = 5.25;
-        FF91Props.Width = 2.283;
-        FF91Props.WheelTrack = 1.72;
-        FF91Props.WheelBase = 3.2;
-        FF91Props.WheelDiam = 0.78;
-        FF91Props.WheelCirc = FF91Props.WheelDiam * Math.PI;
-        return FF91Props;
-    }());
-    exports.FF91Props = FF91Props;
-    var CarProps = /** @class */ (function () {
-        function CarProps() {
-            this.time = new Tool_2.Time(undefined);
-            this.velocity = new THREE.Vector2();
-            this.speed = 1;
-            this.accel = 0;
-            this.pos = new THREE.Vector2();
-            this.longitMomentum = 0;
-            this.lateralMomentum = 0;
-            this.wAngleInner = 0;
-            this.wAngleOuter = 0;
-            this.wAngleTarg = 0;
-            this.joyVec = new THREE.Vector2();
-            this.keys = new Array();
-            this.braking = false;
-            this.headLights = 2;
-            this.omega = 0;
-            this.theta = 0;
-        }
-        CarProps.prototype.onKeyDown = function (evt) {
-            if (this.keys.indexOf(evt.keyCode) === -1) {
-                this.keys.push(evt.keyCode);
-            }
-        };
-        CarProps.prototype.onKeyUp = function (evt) {
-            this.keys.splice(this.keys.indexOf(evt.keyCode), 1);
-        };
-        CarProps.prototype.readKeyboardInput = function () {
-            for (var i = 0; i < this.keys.length; i++) {
-                switch (this.keys[i]) {
-                    case 38:
-                        this.accel += FF91Props.Accel;
-                        this.accel *= Tool_2.normalizeQuadIn(this.speed, FF91Props.MaxVel, FF91Props.MaxVel - 10);
-                        break;
-                    case 40:
-                        this.accel += FF91Props.Decel;
-                        break;
-                    case 37:
-                        this.wAngleTarg += FF91Props.MaxTurn;
-                        break;
-                    case 39:
-                        this.wAngleTarg -= FF91Props.MaxTurn;
-                        break;
-                }
-            }
-        };
-        CarProps.prototype.onJoystickMove = function (_vec) {
-            this.joyVec.x = _vec.x / -40;
-            this.joyVec.y = _vec.y / -40;
-            if (Math.abs(this.joyVec.x) > 0.85) {
-                this.joyVec.y = 0;
-            }
-            if (Math.abs(this.joyVec.y) > 0.95) {
-                this.joyVec.x = 0;
-            }
-        };
-        CarProps.prototype.onKnobMove = function (_vec, _section) {
-            this.joyVec.x = _vec.x / -150;
-            this.joyVec.y = _vec.y / -150;
-            if (_section === 5 && Math.abs(this.joyVec.x) < 0.1) {
-                this.joyVec.x = 0;
-            }
-        };
-        CarProps.prototype.readJoyStickInput = function () {
-            this.wAngleTarg = this.joyVec.x * FF91Props.MaxTurn;
-            if (this.joyVec.y >= 0) {
-                this.accel = this.joyVec.y * FF91Props.Accel;
-                this.accel *= Tool_2.normalizeQuadIn(this.speed, FF91Props.MaxVel, FF91Props.MaxVel - 10);
-            }
-            else {
-                this.accel = this.joyVec.y * -FF91Props.Decel;
-            }
-        };
-        CarProps.prototype.changeHeadlights = function (_new) {
-            this.headLights = THREE.Math.clamp(Math.round(_new), 0, 4);
-        };
-        CarProps.prototype.update = function (_time) {
-            if (this.time.update(_time) === false) {
-                return false;
-            }
-            this.accel = 0;
-            this.wAngleTarg = 0;
-            if (this.keys.length > 0) {
-                this.readKeyboardInput();
-            }
-            else if (this.joyVec.x != 0 || this.joyVec.y != 0) {
-                this.readJoyStickInput();
-            }
-            this.accel *= this.time.delta;
-            this.speed += this.accel;
-            this.braking = this.accel < 0;
-            if (this.speed < 0) {
-                this.speed = 0;
-                this.accel = 0;
-            }
-            this.frameDist = this.speed * this.time.delta;
-            this.wAngleTarg *= Tool_2.normalizeQuadIn(this.speed, FF91Props.MaxVel + 10, 3);
-            this.wAngleInner = Tool_2.zTween(this.wAngleInner, this.wAngleTarg, this.time.delta * 2);
-            this.wAngleSign = this.wAngleInner > 0.001 ? 1 : this.wAngleInner < -0.001 ? -1 : 0;
-            this.omega = this.wAngleInner * this.speed / FF91Props.WheelBase;
-            this.theta += this.omega * this.time.delta;
-            this.velocity.set(Math.cos(this.theta) * this.frameDist, -Math.sin(this.theta) * this.frameDist);
-            this.pos.add(this.velocity);
-            this.longitMomentum = Tool_2.zTween(this.longitMomentum, this.accel / this.time.delta, this.time.delta * 6);
-            this.lateralMomentum = this.omega * this.speed;
-            if (this.wAngleSign) {
-                this.radFrontIn = FF91Props.WheelBase / Math.sin(this.wAngleInner);
-                this.radBackIn = FF91Props.WheelBase / Math.tan(this.wAngleInner);
-                this.radBackOut = this.radBackIn + FF91Props.WheelTrack * this.wAngleSign;
-                this.wAngleOuter = Math.atan(FF91Props.WheelBase / this.radBackOut);
-                this.radFrontOut = FF91Props.WheelBase / Math.sin(this.wAngleOuter);
-            }
-            else {
-                this.radFrontOut = 100;
-                this.radBackOut = 100;
-                this.radBackIn = 100;
-                this.radFrontIn = 100;
-                this.wAngleOuter = 0;
-            }
-            return true;
-        };
-        return CarProps;
-    }());
-    exports.CarProps = CarProps;
-});
-define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, exports, Tool_3, Props_1) {
+define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, exports, Tool_4, Props_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var THREE = window.THREE;
@@ -621,11 +711,11 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
             this.thread.magFilter = THREE.LinearFilter;
             this.thread.format = THREE.RGBFormat;
             this.ogMatrix = new THREE.Matrix4().set(0.000788, 0, 0, -0.3939, 0, 0, 0.000788, -0.3939, 0, -0.000788, 0, 0.15, 0, 0, 0, 1);
-            this.wPosFr = Props_1.FF91Props.WheelBase;
+            this.wPosFr = Props_2.FF91Props.WheelBase;
             this.wPosBk = 0;
-            this.wPosLf = Props_1.FF91Props.WheelTrack / -2;
-            this.wPosRt = Props_1.FF91Props.WheelTrack / 2;
-            this.wPosY = Props_1.FF91Props.WheelDiam / 2;
+            this.wPosLf = Props_2.FF91Props.WheelTrack / -2;
+            this.wPosRt = Props_2.FF91Props.WheelTrack / 2;
+            this.wPosY = Props_2.FF91Props.WheelDiam / 2;
             var wheelGeom = _cargo.getMesh('wheel');
             this.addWheels(wheelGeom.getObjectByName('Wheel'));
             this.addBrakes(wheelGeom.getObjectByName('Brake'));
@@ -720,7 +810,7 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
         };
         ;
         CarWheels.prototype.turnByRadiusRatio = function (_props) {
-            this.rotOverall = -_props.frameDist / Props_1.FF91Props.WheelCirc * Math.PI * 2;
+            this.rotOverall = -_props.frameDist / Props_2.FF91Props.WheelCirc * Math.PI * 2;
             this.rotFL = this.rotBL = this.rotFR = this.rotBR = Math.max(this.rotOverall, -this.maxWheelTurn);
             if (_props.wAngleSign !== 0) {
                 this.ratioFO = _props.radFrontOut / _props.radBackIn;
@@ -747,7 +837,7 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
                     this.brakeFL.rotation.y = _props.wAngleOuter;
                     this.brakeFR.rotation.y = -_props.wAngleInner;
                 }
-                this.brakeBL.rotation.y = this.wheelBR.rotation.y = this.wheelBL.rotation.y = Tool_3.normalize(_props.speed, 22.2, 0) * _props.wAngleInner * -0.09;
+                this.brakeBL.rotation.y = this.wheelBR.rotation.y = this.wheelBL.rotation.y = Tool_4.normalize(_props.speed, 22.2, 0) * _props.wAngleInner * -0.09;
                 this.brakeBR.rotation.y = -this.wheelBL.rotation.y;
             }
             this.wheelFL.rotateZ(this.rotFL);
@@ -763,95 +853,6 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
         return CarWheels;
     }());
     exports.default = CarWheels;
-});
-define("CarBody", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var Lights_1 = require('./27');
-    var Motors_1 = require('./28');
-    var Batts_1 = require('./25');
-    var CarBody = /** @class */ (function () {
-        function CarBody(_scene, _cargo) {
-            this.parent = _scene;
-            this.carWhole = new THREE.Group();
-            this.carWhole.position.x = -1.56;
-            this.parent.add(this.carWhole);
-            this.carChassis = this.buildCarChassis(_cargo.getMesh('body'), _cargo.getCubeTexture('envReflection'));
-            this.carWhole.add(this.carChassis);
-            this.addShadow(_cargo.getTexture('shadow'));
-            this.carLights = new Lights_1.default(this.carChassis, _cargo);
-            this.carWheels = new Wheels_1.default(this.carWhole, _cargo);
-            this.carMotors = new Motors_1.default(this.carChassis, _cargo.getMesh('xrays'));
-            this.carBatts = new Batts_1.default(this.carWhole, _cargo.getMesh('xrays'));
-        }
-        CarBody.prototype.buildCarChassis = function (_bodyGeom, _cubeText) {
-            _bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
-            _bodyGeom.position.set(1.56, 0, 0);
-            this.envCube = _cubeText;
-            this.envCube.format = THREE.RGBFormat;
-            this.matBodySilver = new THREE.MeshStandardMaterial({
-                color: 12303291,
-                metalness: 0.7,
-                roughness: 0.7
-            });
-            if (window['EXT_STLOD_SUPPORT'] === false) {
-                this.envCube.minFilter = THREE.LinearFilter;
-                this.matBodySilver.metalness = 0.05;
-                this.matBodySilver.roughness = 0.8;
-                this.matBodySilver.color = new THREE.Color(7829367);
-            }
-            this.matBodyBlack = new THREE.MeshLambertMaterial({
-                color: 2236962,
-                reflectivity: 0.8,
-                envMap: this.envCube
-            });
-            this.matGlassTinted = new THREE.MeshLambertMaterial({
-                color: 6710886,
-                reflectivity: 1,
-                envMap: this.envCube
-            });
-            this.matUndercarriage = new THREE.MeshBasicMaterial({ color: 0 });
-            this.matGlassTransp = new THREE.MeshLambertMaterial({
-                color: 6710886,
-                reflectivity: 1,
-                envMap: this.envCube,
-                transparent: true,
-                blending: THREE.AdditiveBlending
-            });
-            _bodyGeom.getObjectByName('BodyBlack').material = this.matBodyBlack;
-            _bodyGeom.getObjectByName('BodySilver').material = this.matBodySilver;
-            _bodyGeom.getObjectByName('GlassTransparent').material = this.matGlassTransp;
-            _bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
-            _bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
-            return _bodyGeom;
-        };
-        CarBody.prototype.addShadow = function (_shad) {
-            var shadowPlane = new THREE.PlaneBufferGeometry(6.5, 6.5, 1, 1);
-            shadowPlane.rotateX(-Math.PI / 2);
-            shadowPlane.translate(1.56, 0, 0);
-            var shadowMat = new THREE.MeshBasicMaterial({
-                map: _shad,
-                blending: THREE.MultiplyBlending,
-                transparent: true
-            });
-            var shadowMesh = new THREE.Mesh(shadowPlane, shadowMat);
-            this.carWhole.add(shadowMesh);
-        };
-        CarBody.prototype.onWindowResize = function (_vpH) {
-            this.carLights.onWindowResize(_vpH);
-        };
-        CarBody.prototype.update = function (_props) {
-            this.carWhole.rotation.y = _props.theta;
-            if (_props.longitMomentum !== 0) {
-                this.carChassis.rotation.z = _props.longitMomentum * 0.0015;
-            }
-            this.carChassis.rotation.x = _props.lateralMomentum * 0.002;
-            this.carWheels.update(_props);
-            this.carLights.update(_props);
-        };
-        return CarBody;
-    }());
-    exports.default = CarBody;
 });
 define("shader/head_light_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -873,80 +874,44 @@ define("shader/tail_grid_vert.glsl", ["require", "exports"], function (require, 
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.default = "\n#define NIGHTLIGHT 0.4\n#define NIGHTLIGHT 0.4\n\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n\nuniform vec3 lightsT;\nuniform vec3 lightsO;\nattribute float type;\n\nvarying float redVal;\nvarying float ambVal;\nvarying float whtVal;\nvarying float brightness;\n\nvoid main(){\n\n \tvec4 realPos = modelMatrix * vec4(position, 1.0);\n\tvec3 realNorm = normalize(vec3(modelMatrix * vec4(normal, 0.0)));\n\n\tvec3 lightVector = normalize(cameraPosition - realPos.xyz);\n\tbrightness = dot(realNorm, lightVector);\n\tbrightness = normFloat(brightness, 0.3, 0.2) + 0.5;\n\tbrightness *= brightness * brightness;\n\t\n\t// Type 0: FF logo\t\n\tredVal = checkType(type, 0.0);\n\t// FF brightens on stop light\n\tredVal += redVal * lightsO.x;\n\n\t// Type 1: center grid\n\tredVal += checkType(type, 1.0) * NIGHTLIGHT;\n\n\t// Type 2: Right blinker\n\tredVal += (checkType(type, 2.0) * NIGHTLIGHT) * step(0.0, lightsT.x);\n\tambVal = checkType(type, 2.0) * lightsT.z;\n\n\t// Type 3: Left blinker\n\tredVal += (checkType(type, 3.0) * NIGHTLIGHT) * step(lightsT.x, 0.0);\n\tambVal += checkType(type, 3.0) * lightsT.y;\n\t\n\tbrightness = clamp(brightness, 0.0, 1.0);\n\n\tgl_Position = projectionMatrix * viewMatrix * realPos;\n}\n";
 });
-define;
-RED_COLOR;
-vec3(1.0, 0.1, 0.1); // red
-define;
-AMB_COLOR;
-vec3(1.0, 0.6, 0.1); // amber
-define;
-WHT;
-vec3(1.0, 1.0, 1.0); // white
-varying;
-float;
-redVal;
-varying;
-float;
-ambVal;
-varying;
-float;
-whtVal;
-varying;
-float;
-brightness;
-void main();
-{
-    gl_FragColor = vec4((RED_COLOR * redVal + AMB_COLOR * ambVal) * brightness, 1.0);
-}
-define;
-PI;
-3.1415926;
-uniform;
-float;
-vpH;
-uniform;
-float;
-size;
-uniform;
-float;
-brightness;
-varying;
-float;
-opacity;
-// Normalizes a value between 0 - 1
-float;
-normFloat(float, n, float, minVal, float, maxVal);
-{
-    return max(0.0, min(1.0, (n - minVal) / (maxVal - minVal)));
-}
-void main();
-{
-    vec4;
-    realPos = modelMatrix * vec4(position, 1.0);
-    vec3;
-    realNorm = normalize(vec3(modelMatrix * vec4(normal, 0.0)));
-    vec3;
-    lightVector = normalize(cameraPosition - realPos.xyz);
-    opacity = dot(realNorm, lightVector);
-    opacity = normFloat(opacity, 0.5, 1.0) * brightness;
-    vec4;
-    mvPosition = viewMatrix * realPos;
-    gl_Position = projectionMatrix * mvPosition;
-    gl_PointSize = max((vpH * size / -mvPosition.z) * opacity, 0.0);
-}
-define("CarLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl", "shader/head_light_frag.glsl", "shader/tail_light_vert.glsl", "shader/tail_grid_vert.glsl", "./shader/tail_grid_frag.glsl", "./shader/flare_vert.glsl", "./shader/flare_vert.glsl"], function (require, exports, tslib_2, head_light_vert_glsl_1, head_light_frag_glsl_1, tail_light_vert_glsl_1, tail_grid_vert_glsl_1, tail_grid_frag_glsl_1, flare_vert_glsl_1, flare_vert_glsl_2) {
+define("shader/tail_grid_frag.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    head_light_vert_glsl_1 = tslib_2.__importDefault(head_light_vert_glsl_1);
-    head_light_frag_glsl_1 = tslib_2.__importDefault(head_light_frag_glsl_1);
-    tail_light_vert_glsl_1 = tslib_2.__importDefault(tail_light_vert_glsl_1);
-    tail_grid_vert_glsl_1 = tslib_2.__importDefault(tail_grid_vert_glsl_1);
-    tail_grid_frag_glsl_1 = tslib_2.__importDefault(tail_grid_frag_glsl_1);
-    flare_vert_glsl_1 = tslib_2.__importDefault(flare_vert_glsl_1);
-    flare_vert_glsl_2 = tslib_2.__importDefault(flare_vert_glsl_2);
-    // var turnBarVS = require('./18');
-    // var stopBarVS = require('./13');
-    // var turnBarFS = require('./17');
+    exports.default = "\n#define RED_COLOR vec3(1.0, 0.1, 0.1) // red\n#define AMB_COLOR vec3(1.0, 0.6, 0.1)\t// amber\n#define WHT vec3(1.0, 1.0, 1.0)\t// white\n\nvarying float redVal;\nvarying float ambVal;\nvarying float whtVal;\nvarying float brightness;\n\nvoid main() {\n\tgl_FragColor = vec4((RED_COLOR * redVal + AMB_COLOR * ambVal) * brightness, 1.0);\n}\n";
+});
+define("shader/flare_vert.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\n#define PI 3.1415926\n#define PI 3.1415926\n\nuniform float vpH;\nuniform float size;\nuniform float brightness;\nvarying float opacity;\n\n// Normalizes a value between 0 - 1\nfloat normFloat(float n, float minVal, float maxVal){\n    return max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nvoid main() {\n    vec4 realPos = modelMatrix * vec4(position, 1.0);\n    vec3 realNorm = normalize(vec3(modelMatrix * vec4(normal, 0.0)));\n\n    vec3 lightVector = normalize(cameraPosition - realPos.xyz);\n    opacity = dot(realNorm, lightVector);\n    opacity = normFloat(opacity, 0.5, 1.0) * brightness;\n\n    vec4 mvPosition = viewMatrix * realPos;\n    gl_Position = projectionMatrix * mvPosition;\n    gl_PointSize = max((vpH * size / -mvPosition.z) * opacity, 0.0);\n}\n";
+});
+define("shader/flare_frag.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nuniform vec3 color;\nuniform sampler2D texture;\n\nvarying float opacity;\n\n// Normalizes a value between 0 - 1\nfloat normFloat(float n, float minVal, float maxVal){\n    return max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nvoid main() {\n\t// Additive\n    gl_FragColor = texture2D( texture, gl_PointCoord);\n    gl_FragColor.a = normFloat(opacity, 0.01, 0.1);\n}\n";
+});
+define("shader/turn_bar_vert.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nuniform vec3 lightsT;\nvarying float brightness;\nvarying vec2 vUV;\n\n// Normalizes a value between 0 - 1\nfloat normFloat(float n, float minVal, float maxVal){\n    return max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nvoid main() {\n\tvUV = uv;\n    vec4 realPos = modelMatrix * vec4(position, 1.0);\n    vec3 realNorm = normalize(vec3(modelMatrix * vec4(normal, 0.0)));\n\n    vec3 lightVector = normalize(cameraPosition - realPos.xyz);\n    float diffuse = dot(realNorm, lightVector);\n    brightness = step(2000.0, position.y) * lightsT.z + step(position.y, 2000.0) * lightsT.y;\n    brightness *= normFloat(diffuse, 0.0, 0.5);\n\n    vec4 mvPosition = viewMatrix * realPos;\n    gl_Position = projectionMatrix * mvPosition;\n}\n";
+});
+define("shader/turn_bar_frag.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nuniform sampler2D texture;\nvarying float brightness;\nvarying vec2 vUV;\n\n// Normalizes a value between 0 - 1\nfloat normFloat(float n, float minVal, float maxVal){\n    return max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nvoid main() {\n\t// Additive\n    gl_FragColor = texture2D( texture, vUV) * brightness;\n\n\t// Subtractive\n\t// gl_FragColor = texture2D( texture, gl_PointCoord ) - vec4( color, 1.0 );\n\t// gl_FragColor *= opacity;\n\n\t// Multip\n\t/* gl_FragColor = -texture2D( texture, gl_PointCoord ) * opacity;\n\tgl_FragColor *= 1.0 - vec4( color, 1.0 );\n\tgl_FragColor += 1.0; */\n}\n";
+});
+define("carLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl", "shader/head_light_frag.glsl", "shader/tail_light_vert.glsl", "shader/tail_grid_vert.glsl", "shader/tail_grid_frag.glsl", "shader/flare_vert.glsl", "shader/flare_frag.glsl", "shader/turn_bar_vert.glsl", "shader/turn_bar_vert.glsl", "shader/turn_bar_frag.glsl"], function (require, exports, tslib_3, head_light_vert_glsl_1, head_light_frag_glsl_1, tail_light_vert_glsl_1, tail_grid_vert_glsl_1, tail_grid_frag_glsl_1, flare_vert_glsl_1, flare_frag_glsl_1, turn_bar_vert_glsl_1, turn_bar_vert_glsl_2, turn_bar_frag_glsl_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    head_light_vert_glsl_1 = tslib_3.__importDefault(head_light_vert_glsl_1);
+    head_light_frag_glsl_1 = tslib_3.__importDefault(head_light_frag_glsl_1);
+    tail_light_vert_glsl_1 = tslib_3.__importDefault(tail_light_vert_glsl_1);
+    tail_grid_vert_glsl_1 = tslib_3.__importDefault(tail_grid_vert_glsl_1);
+    tail_grid_frag_glsl_1 = tslib_3.__importDefault(tail_grid_frag_glsl_1);
+    flare_vert_glsl_1 = tslib_3.__importDefault(flare_vert_glsl_1);
+    flare_frag_glsl_1 = tslib_3.__importDefault(flare_frag_glsl_1);
+    turn_bar_vert_glsl_1 = tslib_3.__importDefault(turn_bar_vert_glsl_1);
+    turn_bar_vert_glsl_2 = tslib_3.__importDefault(turn_bar_vert_glsl_2);
+    turn_bar_frag_glsl_1 = tslib_3.__importDefault(turn_bar_frag_glsl_1);
     var THREE = window.THREE;
     var CarLights = /** @class */ (function () {
         function CarLights(_carChassis, _cargo) {
@@ -1002,7 +967,7 @@ define("CarLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
                     brightness: { value: 1 }
                 },
                 vertexShader: flare_vert_glsl_1.default,
-                fragmentShader: flare_vert_glsl_2.default,
+                fragmentShader: flare_frag_glsl_1.default,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
                 depthTest: false
@@ -1045,8 +1010,8 @@ define("CarLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
             this.meshStopGlow = this.carChassis.getObjectByName('Stop');
             this.meshStopGlow.material = new THREE.ShaderMaterial({
                 uniforms: { texture: { value: _tex } },
-                vertexShader: stopBarVS,
-                fragmentShader: turnBarFS,
+                vertexShader: turn_bar_vert_glsl_2.default,
+                fragmentShader: turn_bar_frag_glsl_1.default,
                 blending: THREE.AdditiveBlending,
                 transparent: true,
                 depthTest: false
@@ -1359,8 +1324,8 @@ define("CarLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
                     texture: { value: _tex2 },
                     lightsT: { value: this.lightsCtrlTurn }
                 },
-                vertexShader: turnBarVS,
-                fragmentShader: turnBarFS,
+                vertexShader: turn_bar_vert_glsl_1.default,
+                // fragmentShader: turnBarFS, 有问题
                 blending: THREE.AdditiveBlending,
                 transparent: true,
                 depthTest: false
@@ -1440,11 +1405,250 @@ define("CarLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
         };
         return CarLights;
     }());
-    exports.CarLights = CarLights;
+    exports.default = CarLights;
 });
-define("ViewTour", ["require", "exports"], function (require, exports) {
+define("shader/motor_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nprecision highp float;\n\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nuniform vec3 cameraPosition;\nuniform mat4 modelMatrix;\nuniform mat4 viewMatrix;\nuniform mat4 projectionMatrix;\nuniform float progress;\n\nattribute vec3 position;\n\nvarying float prog;\nvarying vec3 viewPos;\nvarying vec3 camPos;\n\nvoid main() {\n\tvec4 realPos = modelMatrix * vec4(position, 1.0);\n\t\n\tviewPos = realPos.xyz;\n\tcamPos = cameraPosition;\n\tprog = ((progress * 0.5) - 0.25);\n\tprog = normFloat(position.x, prog + 0.01, prog);\n\n\tgl_Position = projectionMatrix * viewMatrix * realPos;\n}\n";
+});
+define("shader/motor_frag.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\n#extension GL_OES_standard_derivatives : enable\nprecision highp float;\n\nvarying float prog;\nvarying vec3 viewPos;\nvarying vec3 camPos;\n\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\nvoid main() {\n\tvec3 xTangent = dFdx( viewPos );\n\tvec3 yTangent = dFdy( viewPos );\n\tvec3 faceNormal = normalize( cross( xTangent, yTangent ) );\n\tvec3 lightVector = normalize(camPos - faceNormal);\n\n\tfloat alpha = dot(faceNormal, lightVector);\n\talpha = normFloat(alpha, 0.5, 1.0) * prog;\n\t// alpha = normFloat(alpha, 1.0, 0.5) * prog;\n\n\tgl_FragColor = vec4(0.627, 0.443, 0.341, alpha);\n}\n";
+});
+define("Motors", ["require", "exports", "tslib", "shader/motor_vert.glsl", "shader/motor_frag.glsl", "Tool", "Props"], function (require, exports, tslib_4, motor_vert_glsl_1, motor_frag_glsl_1, Tool_5, Props_3) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    motor_vert_glsl_1 = tslib_4.__importDefault(motor_vert_glsl_1);
+    motor_frag_glsl_1 = tslib_4.__importDefault(motor_frag_glsl_1);
+    var THREE = window.THREE;
+    var Power2 = window.Power2;
+    var TweenLite = window.TweenLite;
+    var Motors = /** @class */ (function () {
+        function Motors(_parent, _object) {
+            this.showing = false;
+            this.parent = _parent;
+            this.motorFrontSm = _object.getObjectByName('MotorFront');
+            this.geomFront = this.motorFrontSm.geometry;
+            this.motorBackR = _object.getObjectByName('MotorBack');
+            this.geomBack = this.motorBackR.geometry;
+            this.buildMotors();
+        }
+        Motors.prototype.buildMotors = function () {
+            Tool_5.scaleAndCenter(this.geomFront, { z: Props_3.FF91Props.WheelTrack / 6 }, 'xz');
+            Tool_5.scaleAndCenter(this.geomBack, { z: Props_3.FF91Props.WheelTrack / 4 }, 'xz');
+            var wPosY = Props_3.FF91Props.WheelDiam / 2;
+            var wPosF = Props_3.FF91Props.WheelBase / 2;
+            this.motorBackL = this.motorBackR.clone(true);
+            this.motorBackL.scale.x = -1;
+            this.motorBackL.rotateZ(Math.PI);
+            this.motorBackL.position.set(-wPosF, wPosY, 0);
+            this.motorBackR.position.set(-wPosF, wPosY, 0);
+            this.motorFrontLg = this.motorBackR.clone(true);
+            this.motorFrontLg.scale.y = -1;
+            this.motorFrontLg.scale.x = -1;
+            this.motorFrontLg.position.set(wPosF, wPosY, 0);
+            this.motorFrontSm.position.set(wPosF, wPosY, -0.1);
+            this.material = new THREE.RawShaderMaterial({
+                uniforms: { progress: { value: 0 } },
+                vertexShader: motor_vert_glsl_1.default,
+                fragmentShader: motor_frag_glsl_1.default,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthTest: false
+            });
+            this.progUniform = this.material.uniforms['progress'];
+            this.motorFrontSm.material = this.motorFrontLg.material = this.motorBackR.material = this.motorBackL.material = this.material;
+            this.group = new THREE.Group();
+            this.group.visible = false;
+            this.group.add(this.motorBackR);
+            this.group.add(this.motorBackL);
+            this.group.add(this.motorFrontSm);
+            this.group.add(this.motorFrontLg);
+            this.group.scale.set(2000, 2000, 2000);
+            this.group.position.setX(wPosF);
+            this.parent.add(this.group);
+        };
+        Motors.prototype.show = function () {
+            if (!this.showing) {
+                this.showing = true;
+                this.group.visible = true;
+                TweenLite.killTweensOf(this);
+                TweenLite.to(this.progUniform, 2, {
+                    value: 1,
+                    ease: Power2.easeOut
+                });
+            }
+        };
+        Motors.prototype.hide = function () {
+            var _this = this;
+            if (this.showing) {
+                this.showing = false;
+                TweenLite.killTweensOf(this);
+                TweenLite.to(this.progUniform, 1, {
+                    value: 0,
+                    ease: Power2.easeInOut,
+                    onComplete: function () {
+                        _this.group.visible = false;
+                    }
+                });
+            }
+        };
+        ;
+        return Motors;
+    }());
+    exports.default = Motors;
+});
+define("CarBody", ["require", "exports", "tslib", "CarWheels", "carLights", "Motors", "Batts"], function (require, exports, tslib_5, CarWheels_1, carLights_1, Motors_1, Batts_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    CarWheels_1 = tslib_5.__importDefault(CarWheels_1);
+    carLights_1 = tslib_5.__importDefault(carLights_1);
+    Motors_1 = tslib_5.__importDefault(Motors_1);
+    Batts_1 = tslib_5.__importDefault(Batts_1);
+    var THREE = window.THREE;
+    var CarBody = /** @class */ (function () {
+        function CarBody(_scene, _cargo) {
+            this.parent = _scene;
+            this.carWhole = new THREE.Group();
+            this.carWhole.position.x = -1.56;
+            this.parent.add(this.carWhole);
+            this.carChassis = this.buildCarChassis(_cargo.getMesh('body'), _cargo.getCubeTexture('envReflection'));
+            this.carWhole.add(this.carChassis);
+            this.addShadow(_cargo.getTexture('shadow'));
+            this.carLights = new carLights_1.default(this.carChassis, _cargo);
+            this.carWheels = new CarWheels_1.default(this.carWhole, _cargo);
+            this.carMotors = new Motors_1.default(this.carChassis, _cargo.getMesh('xrays'));
+            this.carBatts = new Batts_1.default(this.carWhole, _cargo.getMesh('xrays'));
+        }
+        CarBody.prototype.buildCarChassis = function (_bodyGeom, _cubeText) {
+            _bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
+            _bodyGeom.position.set(1.56, 0, 0);
+            this.envCube = _cubeText;
+            this.envCube.format = THREE.RGBFormat;
+            this.matBodySilver = new THREE.MeshStandardMaterial({
+                color: 12303291,
+                metalness: 0.7,
+                roughness: 0.7
+            });
+            // if (window['EXT_STLOD_SUPPORT'] === false) {
+            //   this.envCube.minFilter = THREE.LinearFilter;
+            //   this.matBodySilver.metalness = 0.05;
+            //   this.matBodySilver.roughness = 0.8;
+            //   this.matBodySilver.color = new THREE.Color(7829367);
+            // }
+            this.matBodyBlack = new THREE.MeshLambertMaterial({
+                color: 2236962,
+                reflectivity: 0.8,
+                envMap: this.envCube
+            });
+            this.matGlassTinted = new THREE.MeshLambertMaterial({
+                color: 6710886,
+                reflectivity: 1,
+                envMap: this.envCube
+            });
+            this.matUndercarriage = new THREE.MeshBasicMaterial({ color: 0 });
+            this.matGlassTransp = new THREE.MeshLambertMaterial({
+                color: 6710886,
+                reflectivity: 1,
+                envMap: this.envCube,
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+            _bodyGeom.getObjectByName('BodyBlack').material = this.matBodyBlack;
+            _bodyGeom.getObjectByName('BodySilver').material = this.matBodySilver;
+            _bodyGeom.getObjectByName('GlassTransparent').material = this.matGlassTransp;
+            _bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
+            _bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
+            return _bodyGeom;
+        };
+        CarBody.prototype.addShadow = function (_shad) {
+            var shadowPlane = new THREE.PlaneBufferGeometry(6.5, 6.5, 1, 1);
+            shadowPlane.rotateX(-Math.PI / 2);
+            shadowPlane.translate(1.56, 0, 0);
+            var shadowMat = new THREE.MeshBasicMaterial({
+                map: _shad,
+                blending: THREE.MultiplyBlending,
+                transparent: true
+            });
+            var shadowMesh = new THREE.Mesh(shadowPlane, shadowMat);
+            this.carWhole.add(shadowMesh);
+        };
+        CarBody.prototype.onWindowResize = function (_vpH) {
+            this.carLights.onWindowResize(_vpH);
+        };
+        CarBody.prototype.update = function (_props) {
+            this.carWhole.rotation.y = _props.theta;
+            if (_props.longitMomentum !== 0) {
+                this.carChassis.rotation.z = _props.longitMomentum * 0.0015;
+            }
+            this.carChassis.rotation.x = _props.lateralMomentum * 0.002;
+            this.carWheels.update(_props);
+            this.carLights.update(_props);
+        };
+        return CarBody;
+    }());
+    exports.default = CarBody;
+});
+define("shader/skybox_vert.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\nvarying vec3 vWorldPosition;\n\nvec3 transformDirection( in vec3 dir, in mat4 matrix ) {\n\treturn normalize( ( matrix * vec4( dir, 0.0 ) ).xyz );\n}\n\nvoid main() {\n\tvWorldPosition = transformDirection( position, modelMatrix );\n\tvec3 transformed = vec3( position );\n\tvec4 mvPosition = modelViewMatrix * vec4( transformed, 1.0 );\n\tgl_Position = projectionMatrix * mvPosition;\n\tgl_Position.z = gl_Position.w; // set z to camera.far\n}\n";
+});
+define("shader/skybox_frag.glsl", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.default = "\n#define DARK_BLUE vec3(0.063, 0.075, 0.094)\n// 6\u4E2A\u9762\u7684\u8D34\u56FE\u7EB9\u7406\nuniform samplerCube tCube;\n// tFlip = -1\nuniform float tFlip;\nuniform vec3 color;\n\nvarying vec3 vWorldPosition;\n\nvoid main() {\n\t// float multiColor = DARK_BLUE * light;\n\tgl_FragColor = textureCube( tCube, vec3( tFlip * vWorldPosition.x, vWorldPosition.yz ) );\n\tgl_FragColor.rgb *= color;\n}\n";
+});
+define("Skybox", ["require", "exports", "tslib", "shader/skybox_vert.glsl", "shader/skybox_frag.glsl"], function (require, exports, tslib_6, skybox_vert_glsl_1, skybox_frag_glsl_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    skybox_vert_glsl_1 = tslib_6.__importDefault(skybox_vert_glsl_1);
+    skybox_frag_glsl_1 = tslib_6.__importDefault(skybox_frag_glsl_1);
+    var THREE = window.THREE;
+    var TweenLite = window.TweenLite;
+    var Skybox = /** @class */ (function () {
+        function Skybox(_scene, _color) {
+            var boxGeom = new THREE.BoxBufferGeometry(1, 1, 1);
+            this.boxMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    tCube: { value: null },
+                    tFlip: { value: -1 },
+                    color: { value: _color }
+                },
+                vertexShader: skybox_vert_glsl_1.default,
+                fragmentShader: skybox_frag_glsl_1.default,
+                side: THREE.BackSide,
+                depthTest: true,
+                depthWrite: false,
+                fog: false
+            });
+            var boxMesh = new THREE.Mesh(boxGeom, this.boxMat);
+            boxMesh.name = 'boxMesh';
+            boxGeom.removeAttribute('normal');
+            boxGeom.removeAttribute('uv');
+            _scene.add(boxMesh);
+            boxMesh.onBeforeRender = function (renderer, scene, camera) {
+                this.matrixWorld.copyPosition(camera.matrixWorld);
+            };
+        }
+        Skybox.prototype.updateLight = function (_newVal) {
+            this.boxMat.uniforms.light.value = _newVal;
+        };
+        ;
+        Skybox.prototype.setCubeTexture = function (_cubeTex) {
+            this.boxMat.uniforms.tCube.value = _cubeTex;
+        };
+        return Skybox;
+    }());
+    exports.default = Skybox;
+});
+define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox"], function (require, exports, tslib_7, CarBody_1, Skybox_1) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    CarBody_1 = tslib_7.__importDefault(CarBody_1);
+    Skybox_1 = tslib_7.__importDefault(Skybox_1);
     var THREE = window.THREE;
     var TweenLite = window.TweenLite;
     // var Card_1 = require('./30');
@@ -1454,25 +1658,14 @@ define("ViewTour", ["require", "exports"], function (require, exports) {
     // var Floor_1 = require('./33');
     // var Skybox_1 = require('./35');
     var ViewTour = /** @class */ (function () {
-        // initMeshes: (_cargo: { getMesh: (arg0: string) => void; getCubeTexture: (arg0: string) => void; }) => void;
-        // car: any;
-        // floor: any;
-        // goToSection: (index: string | number) => void;
-        // moveCamera(sectProps: any) {
-        //     throw new Error("Method not implemented.");
-        // }
-        // enterFreeDriving: (sectProps: { camPos: any; }) => void;
-        // knobMoved: (_knobPos: any) => void;
-        // frontLightsClicked: (_index: any) => void;
-        // onWindowResize: (_vp: { x: number; y: number; }) => void;
-        // update: (t: any) => boolean;
         function ViewTour(_scene, _renderer, _cam, _vp) {
             this.sceneWGL = _scene;
             this.rendererWGL = _renderer;
             this.sceneCSS = new THREE.Scene();
             this.rendererCSS = new THREE.CSS3DRenderer();
             this.rendererCSS.setSize(_vp.x, _vp.y);
-            // document.getElementById('CSSCanvas').appendChild(this.rendererCSS.domElement))
+            this.continer = document.getElementById('CSSCanvas');
+            this.continer.appendChild(this.rendererCSS.domElement);
             var camOptions = {
                 distance: 6,
                 focusPos: {
@@ -1509,7 +1702,7 @@ define("ViewTour", ["require", "exports"], function (require, exports) {
             this.ambLight = new THREE.AmbientLight(0, 0.5);
             this.ambLight.name = 'ambLight';
             this.sceneWGL.add(this.ambLight);
-            // this.skybox = new Skybox_1.default(this.sceneWGL, this.dirLight.color);
+            this.skybox = new Skybox_1.default(this.sceneWGL, this.dirLight.color);
         }
         ViewTour.prototype.moveCamera = function (_cardProps) {
             var _this = this;
@@ -1548,7 +1741,7 @@ define("ViewTour", ["require", "exports"], function (require, exports) {
         ;
         ViewTour.prototype.initMeshes = function (_cargo) {
             var xrayMesh = _cargo.getMesh('xrays');
-            // this.car = new Body_1.default(this.sceneWGL, _cargo);
+            this.car = new CarBody_1.default(this.sceneWGL, _cargo);
             // this.floor = new Floor_1.default(this.sceneWGL, this.carProps.pos, _cargo);
             this.skybox.setCubeTexture(_cargo.getCubeTexture('envSkybox'));
             // var freeProps = this.mobileView ? CardProps.Mobile[7] : CardProps.Desktop[7];
@@ -1655,34 +1848,67 @@ define("ViewTour", ["require", "exports"], function (require, exports) {
             // }
         };
         ViewTour.prototype.update = function (t) {
-            if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
-                this.cam.forceUpdate = true;
-            }
+            // if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
+            //   this.cam.forceUpdate = true;
+            // }
             if (this.cam.update() === false) {
                 return false;
             }
-            this.carProps.update(t);
-            this.car.update(this.carProps);
+            // this.carProps.update(t);
+            // this.car.update(this.carProps);
             this.dirLight.position.copy(this.cam.camera.position);
             this.dirLight.position.multiplyScalar(0.5);
             this.dirLight.position.y += 1;
             this.rendererWGL.render(this.sceneWGL, this.cam.camera);
             // this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
-            this.rendererCSS.render(this.sceneCSS, this.cam.camera);
+            // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
             return true;
         };
         return ViewTour;
     }());
     exports.default = ViewTour;
 });
-define("ff91", ["require", "exports", "tslib", "Camera", "AssetLoader"], function (require, exports, tslib_3, Camera_1, AssetLoader_1) {
+define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoader"], function (require, exports, tslib_8, Camera_1, ViewTour_1, AssetLoader_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    Camera_1 = tslib_3.__importDefault(Camera_1);
-    AssetLoader_1 = tslib_3.__importDefault(AssetLoader_1);
+    Camera_1 = tslib_8.__importDefault(Camera_1);
+    ViewTour_1 = tslib_8.__importDefault(ViewTour_1);
+    AssetLoader_1 = tslib_8.__importDefault(AssetLoader_1);
     var THREE = window.THREE;
     var Control = /** @class */ (function () {
         function Control() {
+            var _this = this;
+            this.disableRender = false;
+            // 场景
+            this.sceneWGL = new THREE.Scene();
+            this.sceneWGL.name = 'sceneWGL';
+            // 渲染
+            this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight);
+            this.sceneWGL.background = new THREE.Color(0x000000);
+            this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
+            this.rendererWGL.setSize(this.vp.x, this.vp.y);
+            this.container = document.getElementById("GLCanvas");
+            this.container.appendChild(this.rendererWGL.domElement);
+            // 相机
+            var camOptions = {
+                distance: this.vp.y > 550 ? 8 : 6,
+                rotRange: {
+                    xMin: -30,
+                    xMax: 30,
+                    yMin: -30,
+                    yMax: 30
+                },
+                distRange: {
+                    max: 20,
+                    min: 3
+                }
+            };
+            this.cam = new Camera_1.default(camOptions);
+            this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
+            this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
+            var control = new THREE.OrbitControls(this.cam.camera, this.container);
+            control.autoRotate = false;
+            control.enabled = true;
             // 资源加载
             var manifesto = [
                 // Cube textures
@@ -1702,36 +1928,17 @@ define("ff91", ["require", "exports", "tslib", "Camera", "AssetLoader"], functio
                 { name: "shadow", type: "texture", ext: "jpg" },
                 { name: "led", type: "texture", ext: "png" },
             ];
-            this.assetLoader = new AssetLoader_1.default("./static/", manifesto, function () { console.error('load over...'); });
+            this.assetLoader = new AssetLoader_1.default("./static/", manifesto, function () {
+                console.error('load over...');
+                _this.viewTour = new ViewTour_1.default(_this.sceneWGL, _this.rendererWGL, _this.cam, _this.vp);
+                _this.viewTour.initMeshes(_this.assetLoader.cargo);
+                _this.disableRender = true;
+            });
             this.assetLoader.start();
-            // 场景
-            this.sceneWGL = new THREE.Scene();
-            this.sceneWGL.name = 'sceneWGL';
-            // 渲染
-            this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight);
-            this.sceneWGL.background = new THREE.Color(0x000000);
-            this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
-            this.rendererWGL.setSize(this.vp.x, this.vp.y);
-            this.continer = document.getElementById("GLCanvas");
-            this.continer.appendChild(this.rendererWGL.domElement);
-            // 相机
-            var camOptions = {
-                distance: this.vp.y > 550 ? 8 : 6,
-                rotRange: {
-                    xMin: -30,
-                    xMax: 30,
-                    yMin: -30,
-                    yMax: 30
-                },
-                distRange: {
-                    max: 20,
-                    min: 3
-                }
-            };
-            this.cam = new Camera_1.default(camOptions);
-            this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
-            this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
         }
+        Control.prototype.update = function (t) {
+            this.disableRender && (this.viewTour.update(t));
+        };
         return Control;
     }());
     exports.Control = Control;

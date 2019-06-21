@@ -1,20 +1,55 @@
-import headLightsVS from './shader/head_light_frag.glsl'
-import headLightsFS from './shader/head_light_vert.glsl'
-import Camera from './Camera'
 
+import Camera from './Camera'
+import ViewTour from './ViewTour'
 import AssetLoader from './AssetLoader'
 
 const THREE = (window as any).THREE
 
 export class Control {
     vp: any;
-    sceneWGL: any
-    assetLoader: AssetLoader
-    rendererWGL: any
-    continer: any
     cam:any
+    sceneWGL: any
+    container: any
+    viewTour!: ViewTour
+    rendererWGL: any
+    assetLoader: AssetLoader
+    disableRender: boolean
 
     constructor() {
+        this.disableRender = false
+        // 场景
+        this.sceneWGL = new THREE.Scene()
+        this.sceneWGL.name = 'sceneWGL'
+
+        // 渲染
+        this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight)
+        this.sceneWGL.background = new THREE.Color(0x000000);
+        this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
+        this.rendererWGL.setSize(this.vp.x, this.vp.y);
+        this.container = document.getElementById("GLCanvas")
+        this.container.appendChild(this.rendererWGL.domElement);
+
+        // 相机
+        let camOptions = {
+            distance: this.vp.y > 550 ? 8 : 6,
+            rotRange: {
+              xMin: -30,
+              xMax: 30,
+              yMin: -30,
+              yMax: 30
+            },
+            distRange: {
+              max: 20,
+              min: 3
+            }
+        }
+        this.cam = new Camera(camOptions)
+        this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
+        this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
+        let control = new THREE.OrbitControls(this.cam.camera, this.container)
+        control.autoRotate = false
+        control.enabled = true
+
         // 资源加载
         let manifesto = [
             // Cube textures
@@ -34,37 +69,15 @@ export class Control {
             { name: "shadow", type: "texture", ext: "jpg" },
             { name: "led", type: "texture", ext: "png" },
         ];
-        this.assetLoader = new AssetLoader("./static/", manifesto, ()=>{console.error('load over...')})
+        this.assetLoader = new AssetLoader("./static/", manifesto, ()=>{
+            console.error('load over...')
+            this.viewTour = new ViewTour(this.sceneWGL, this.rendererWGL, this.cam, this.vp);
+            this.viewTour.initMeshes(this.assetLoader.cargo);
+            this.disableRender = true
+        })
         this.assetLoader.start()
-
-        // 场景
-        this.sceneWGL = new THREE.Scene()
-        this.sceneWGL.name = 'sceneWGL'
-
-        // 渲染
-        this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight)
-        this.sceneWGL.background = new THREE.Color(0x000000);
-        this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
-        this.rendererWGL.setSize(this.vp.x, this.vp.y);
-        this.continer = document.getElementById("GLCanvas")
-        this.continer.appendChild(this.rendererWGL.domElement);
-
-        // 相机
-        let camOptions = {
-            distance: this.vp.y > 550 ? 8 : 6,
-            rotRange: {
-              xMin: -30,
-              xMax: 30,
-              yMin: -30,
-              yMax: 30
-            },
-            distRange: {
-              max: 20,
-              min: 3
-            }
-        }
-        this.cam = new Camera(camOptions)
-        this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
-        this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
+    }
+    update(t:any) {
+        this.disableRender && (this.viewTour.update(t))
     }
 }

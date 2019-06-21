@@ -4,10 +4,10 @@ import tailLightVS from './shader/tail_light_vert.glsl'
 import tailGridVS from './shader/tail_grid_vert.glsl'
 import tailGridFS from './shader/tail_grid_frag.glsl'
 import flareVS from './shader/flare_vert.glsl'
-import flareFS from './shader/flare_vert.glsl'
+import flareFS from './shader/flare_frag.glsl'
 import turnBarVS from './shader/turn_bar_vert.glsl'
 import stopBarVS from './shader/turn_bar_vert.glsl'
-import turnBarFS from './shader/turn_bar_vert.glsl'
+import turnBarFS from './shader/turn_bar_frag.glsl'
 
 const THREE = (window as any).THREE
 
@@ -82,7 +82,7 @@ export default class CarLights {
         brightness: { value: 1 }
       },
       vertexShader: flareVS,
-      fragmentShader: flareFS,
+      fragmentShader: flareFS, // 有问题
       blending: THREE.AdditiveBlending,
       transparent: true,
       depthTest: false
@@ -442,7 +442,7 @@ export default class CarLights {
         lightsT: { value: this.lightsCtrlTurn }
       },
       vertexShader: turnBarVS,
-      fragmentShader: turnBarFS,
+      // fragmentShader: turnBarFS, 有问题
       blending: THREE.AdditiveBlending,
       transparent: true,
       depthTest: false

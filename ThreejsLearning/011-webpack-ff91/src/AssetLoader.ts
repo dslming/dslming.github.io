@@ -29,7 +29,7 @@ export default class AssetLoader {
   private path: any
   private manifesto: any;
   private callback: any;
-  private cargo: Cargo;
+  public cargo: Cargo;
   private assetCount: number;
   private assetTotal: any;
   private loaderText: any;
