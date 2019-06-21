@@ -9,7 +9,7 @@
     <script src='../lib/OrbitControls.js'></script>
 </head>
 <body>
-    <p>纹理贴图</p>
+    <p>Three.js shader 模拟漫反射</p>
     <style>
         #Wrapper {
             width: 500px;
@@ -17,136 +17,60 @@
         }
     </style>
     <div id="Wrapper"></div>
-
-    <script id="vertShader" type="shader-code">
-        float normFloat(float n, float minVal, float maxVal){
-            return max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));
-        }
-        
-        // Returns 1 if type matches val, 0 if not
-        float checkType(float type, float val){
-            return step(val - 0.1, type) * step(type, val + 0.1);
-        }
-        
-        uniform vec3 lightsT;	// Lights Turn | x: anyTurn, y: left turn, z: right turn
-        uniform vec4 lightsS;	// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs
-        attribute float type;
-        varying float wht;
-        varying float amb;
-        
-        // z-up position because Blender is weird like that
+    <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec4 lmtest;
+    void main() {
+        lmtest = vec4(1, 0, 0, 1.0);
+        vec3 pos = (modelViewMatrix * vec4(position, 1.0)).xyz;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+    </script>
+    
+    <script id="fragShader" type="x-shader/x-fragment">
+        varying vec4 lmtest;
         void main() {
-            vec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);
-            float distOrigin = distance(posXY, vec2(0.0));   // FF Logo
-        
-            // 0: Daytime running lights
-            wht = checkType(type, 0.0) * lightsS.x;
-            
-            // 1: nightlights
-            wht += checkType(type, 1.0) * lightsS.y;
-            
-            // 2: high beams
-            wht += checkType(type, 2.0) * lightsS.z;
-            
-            // 3: right turn signal
-            wht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;
-            amb = checkType(type, 3.0) * lightsT.z;
-            
-            // 4: left turn signal
-            wht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;
-            amb += checkType(type, 4.0) * lightsT.y;
-        
-            // 5: fog lamps
-            wht += checkType(type, 5.0) * lightsS.w;
-        
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );
+            gl_FragColor = lmtest;
         }
     </script>
 
-    <script id="fragShader" type="shader-code">
-        #define RED vec3(1.0, 0.1, 0.1) // red
-        #define AMB vec3(1.0, 0.6, 0.1)	// amber
-        #define WHT vec3(1.0, 1.0, 1.0)	// white
-
-        varying float wht;
-        varying float amb;
-
-        void main() {
-            gl_FragColor = vec4((WHT * wht + AMB * amb), 1.0);
-        }
-      </script>
-
     <script>
-        // 场景
+        /** Set up Three.js **/
+        // First we initialize the scene and our camera
         const scene = new THREE.Scene();
         window.scene = scene
-
-        // 相机
         const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-        camera.name = 'camera'
+     
         scene.add(camera);
-
-        // 渲染
         let container = document.querySelector('#Wrapper')
         const renderer = new THREE.WebGLRenderer();
         renderer.setSize(500, 500 );
         container.appendChild( renderer.domElement );
 
-        // 光
-        var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-        directionalLight.name = 'directionalLight'
-        scene.add( directionalLight );
+        // light
+        let light = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+        this.scene.add( light );
+        light = new THREE.DirectionalLight( 0xffffff );
+        light.position.set(0.5, 0, 0.866);
+        this.scene.add( light );
 
-        // 纹理
-        var texture = new THREE.TextureLoader().load( './img/flareHead.jpg' );
-
-        // 材质
-        let headFlareMat = new THREE.ShaderMaterial({
-            uniforms: {
-                texture: { value: texture },
-                vpH: { value: window.innerHeight },
-                size: { value: 1.5 },
-                brightness: { value: 1 }
-            },
-            vertexShader: document.getElementById('vertShader').innerHTML,
+        /** Set up the scene **/
+        const cubeGeometry = new THREE.BoxGeometry( 10, 10, 10 );
+        // let cubeMaterial = new THREE.MeshBasicMaterial({color:0xeeefff})
+        const cubeMaterial = new THREE.ShaderMaterial( { 
+            vertexShader: document.getElementById('vertexShader').innerHTML,
             fragmentShader: document.getElementById('fragShader').innerHTML,
-            blending: THREE.AdditiveBlending,
-            transparent: true,
-            depthTest: false,
-        });
-        // Make positions
-        var posArray = new Float32Array([
-            4000, 1875, 1700,
-            4300, 1800, 1700,
-            4000, 1875, -1700,
-            4300, 1800, -1700,
-        ]);
-        // Make normals
-        var normArray = new Float32Array([
-            0.87, 0.22, 0.44,
-            0.87, 0.22, 0.44,
-            0.87, 0.22, -0.44,
-            0.87, 0.22, -0.44,
-        ]);
-        var flareHeadGeom = new THREE.BufferGeometry();
-        flareHeadGeom.addAttribute("position", new THREE.BufferAttribute(posArray, 3));
-        flareHeadGeom.addAttribute("normal", new THREE.BufferAttribute(normArray, 3));
-        let flareHeadPoints = new THREE.Points(flareHeadGeom, headFlareMat);
-        scene.add(flareHeadPoints);
+            } );
+        const cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
+        scene.add( cube );
+        cube.position.z = -2; // Shift the cube back so we can see it
 
-        this.lightsCtrlHead.set(1, 1, 0, 0);
-        this.flareHeadPoints.visible = true;
-
-        // 相机控制
         let control = new THREE.OrbitControls(camera, container)
-        control.autoRotate = true
+        control.autoRotate = false
         control.enabled = true
-        camera.position.copy(new THREE.Vector3(1.24, 0.8, 0))
-     
-
-
+        camera.position.copy(new THREE.Vector3(0, 0, 14))
         /** Start animating **/
         const render = () => {
+            cube.rotation.y += 0.01;
             requestAnimationFrame( render );
             renderer.render( scene, camera );
         };
@@ -156,7 +80,10 @@
         // Listen for resize event to update resolution uniforms.
         window.onresize = function(event){
             renderer.setSize(window.innerWidth, window.innerHeight);
+
         }
     </script>
+
+   
 </body>
 </html>

@@ -14,9 +14,12 @@ uniform vec4 lightsS;	// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fo
 attribute float type;
 varying float wht;
 varying float amb;
+varying vec4 lmtest;
+
 
 // z-up position because Blender is weird like that
 void main() {
+	lmtest = vec4(0, 0, 0, 1.0);
 	vec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);
 	float distOrigin = distance(posXY, vec2(0.0));   // FF Logo
 
