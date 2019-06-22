@@ -1331,24 +1331,30 @@
 
                 CarLights.prototype.headlightsChanged = function (_newState) {
                     switch (_newState) {
+                        // 全部关闭
                         case 0:
                             this.lightsCtrlHead.set(0, 0, 0, 0);
                             this.flareHeadPoints && (this.flareHeadPoints.visible = false)
                             break;
+                        // Daytime
                         case 1:
                             this.lightsCtrlHead.set(1, 0, 0, 0);
                             this.flareHeadPoints.visible = false;
                             break;
 
-                        // 默认值
+                        // Daytime + Low beams
                         case 2:
                             this.lightsCtrlHead.set(1, 1, 0, 0);
                             this.flareHeadPoints && (this.flareHeadPoints.visible = true)
                             break;
+
+                        // Daytime + Low beams + high beams                        
                         case 3:
                             this.lightsCtrlHead.set(1, 1, 1, 0);
                             this.flareHeadPoints.visible = true;
                             break;
+
+                        // Daytime + Low beams + high beams + fog lamps                     
                         case 4:
                             this.lightsCtrlHead.set(1, 1, 1, 1);
                             this.flareHeadPoints.visible = true;

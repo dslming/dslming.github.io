@@ -477,6 +477,7 @@ export default class CarLights {
   }
 
   headlightsChanged(_newState: any) {
+    console.error(_newState)
     switch (_newState) {
     case 0:
       this.lightsCtrlHead.set(0, 0, 0, 0);

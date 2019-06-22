@@ -1647,6 +1647,7 @@ define("carLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
             this.turnRightPoints.visible = false;
         };
         CarLights.prototype.headlightsChanged = function (_newState) {
+            console.error(_newState);
             switch (_newState) {
                 case 0:
                     this.lightsCtrlHead.set(0, 0, 0, 0);

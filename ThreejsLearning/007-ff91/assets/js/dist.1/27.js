@@ -491,11 +491,14 @@ export class CarLights {
 
   update(_props) {
     if (_props.wAngleTarg !== 0) {
+      console.error(_props.wAngleTarg, 'wAngletarg')
       this.turnSignalsBlink(_props.wAngleTarg, _props.time.delta);
     } else if (this.lightsCtrlTurn.x !== 0) {
       this.turnSignalsClear();
     }
     if (this.prevHeadlightState !== _props.headLights) {
+      console.error(_props.headLights, 'headLights')
+      
       this.headlightsChanged(_props.headLights);
     }
     if (_props.braking && !this.meshStopGlow.visible) {
