@@ -26,6 +26,7 @@ export default class CarLights {
     turnPointMaterial: any;
     turnLeftPoints: any;
     turnRightPoints: any;
+    
   constructor(_carChassis: any, _cargo: { getTexture: { (arg0: string): void; (arg0: string): void; (arg0: string): void; (arg0: string): void; }; }) {
     this.lfTimer = 0;
     this.rtTimer = 0;

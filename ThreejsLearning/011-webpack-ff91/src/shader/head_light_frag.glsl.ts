@@ -7,7 +7,6 @@ varying float wht;
 varying float amb;
 varying vec4 lmtest;
 void main() {
-	// gl_FragColor = vec4((WHT * wht + AMB * amb), 1.0);
-	gl_FragColor = lmtest;
+	gl_FragColor = vec4((WHT * wht + AMB * amb), 1.0);
 }
 `

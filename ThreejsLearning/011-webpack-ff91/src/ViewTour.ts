@@ -1,7 +1,7 @@
 
 import Body from './CarBody'
 import Skybox from './Skybox'
-
+import {CardProps} from './Props'
 const THREE = (window as any).THREE
 const TweenLite = (window as any).TweenLite
 
@@ -66,7 +66,7 @@ export default class ViewTour{
     this.mobileView = _vp.x <= _vp.y * 1.2 ? true : false;
     this.sectionPrev = this.sectionActive = -1;
     // this.card = new Card_1.default(this.sceneCSS);
-    // this.carProps = new Props_1.CarProps();
+    this.carProps = new CardProps()
     this.dirLight = new THREE.DirectionalLight(0, 0.7);
     this.dirLight.name = 'dirLight'
     this.dirLight.position.set(0, 1, 1);
@@ -114,7 +114,7 @@ export default class ViewTour{
     this.car = new Body(this.sceneWGL, _cargo);
     // this.floor = new Floor_1.default(this.sceneWGL, this.carProps.pos, _cargo);
     this.skybox.setCubeTexture(_cargo.getCubeTexture('envSkybox'));
-    // var freeProps = this.mobileView ? CardProps.Mobile[7] : CardProps.Desktop[7];
+    var freeProps = this.mobileView ? CardProps.Mobile[7] : CardProps.Desktop[7];
     TweenLite.to(this.dirLight.color, 3, {
       r: 1,
       g: 1,
@@ -129,9 +129,9 @@ export default class ViewTour{
       x: -125,
       y: 5
     });
-    // TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y });
-    // TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist });
-    // this.cam.setDistRange(freeProps.camDist + 1, freeProps.camDist - 1);
+    TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y });
+    TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist });
+    this.cam.setDistRange(freeProps.camDist + 1, freeProps.camDist - 1);
   }
 
   goToSection(index: string | number) {
@@ -212,31 +212,31 @@ export default class ViewTour{
     // this.rendererCSS.setSize(_vp.x, _vp.y);
     // if (this.sectionActive === -1)
     //   return;
-    // if (_vp.x <= _vp.y * 1.2 && this.mobileView !== true) {
-    //   this.mobileView = true;
-    //   this.moveCamera(CardProps.Mobile[this.sectionActive]);
-    //   this.card.setPosition(CardProps.Mobile[this.sectionActive].position);
-    // } else if (_vp.x > _vp.y * 1.2 && this.mobileView !== false) {
-    //   this.mobileView = false;
-    //   this.moveCamera(CardProps.Desktop[this.sectionActive]);
-    //   this.card.setPosition(CardProps.Desktop[this.sectionActive].position);
-    // }
+    if (_vp.x <= _vp.y * 1.2 && this.mobileView !== true) {
+      this.mobileView = true;
+      this.moveCamera(CardProps.Mobile[this.sectionActive]);
+      this.card.setPosition(CardProps.Mobile[this.sectionActive].position);
+    } else if (_vp.x > _vp.y * 1.2 && this.mobileView !== false) {
+      this.mobileView = false;
+      this.moveCamera(CardProps.Desktop[this.sectionActive]);
+      this.card.setPosition(CardProps.Desktop[this.sectionActive].position);
+    }
   }
 
   update(t: any) {
-    // if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
-    //   this.cam.forceUpdate = true;
-    // }
+    if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
+      this.cam.forceUpdate = true;
+    }
     if (this.cam.update() === false) {
       return false;
     }
-    // this.carProps.update(t);
-    // this.car.update(this.carProps);
+    this.carProps.update(t);
+    this.car.update(this.carProps);
     this.dirLight.position.copy(this.cam.camera.position);
     this.dirLight.position.multiplyScalar(0.5);
     this.dirLight.position.y += 1;
     this.rendererWGL.render(this.sceneWGL, this.cam.camera);
-    // this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
+    this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
     // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
     return true;
   }

@@ -9,6 +9,7 @@
     <script src='../lib/OrbitControls.js'></script>
     <script src='./static/js/CSS3DRenderer.js'></script>
     <script src="./static/js/TweenMax.min.js"></script>
+    <script src="./static/js/hammer.js"></script>
 </head>
 <body>
     <style>
@@ -18,6 +19,11 @@
             border: 0;
             box-sizing: border-box;
             overflow: hidden;
+        }
+        #GLCanvas, #CSSCanvas {
+            position: absolute;
+            left: 0;
+            right: 0;
         }
     </style>
     <div id="GLCanvas"></div>

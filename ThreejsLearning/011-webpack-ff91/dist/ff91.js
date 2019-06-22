@@ -249,8 +249,296 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
         return FF91Props;
     }());
     exports.FF91Props = FF91Props;
-    var CarProps = /** @class */ (function () {
-        function CarProps() {
+    var Desktop = [
+        {
+            name: 'dimensions',
+            size: {
+                w: 930,
+                h: 480
+            },
+            position: {
+                x: 2,
+                y: -1,
+                z: 1
+            },
+            orientation: {
+                x: -45,
+                y: 35,
+                z: 30
+            },
+            camDist: 6,
+            camPos: {
+                x: 2,
+                y: 0,
+                z: 1
+            },
+            camRot: {
+                x: -45,
+                y: 20
+            },
+            camRotRange: {
+                x: 10,
+                y: 10
+            }
+        },
+        {
+            name: 'battery',
+            size: {
+                w: 1000,
+                h: 550
+            },
+            position: {
+                x: 0,
+                y: 0,
+                z: 2.3
+            },
+            orientation: {
+                x: -90,
+                y: 0,
+                z: 0
+            },
+            camDist: 5.7,
+            camPos: {
+                x: 0,
+                y: 0.5,
+                z: 1
+            },
+            camRot: {
+                x: 0,
+                y: 80
+            },
+            camRotRange: {
+                x: 40,
+                y: 50
+            }
+        },
+        {
+            name: 'powertrain',
+            size: {
+                w: 800,
+                h: 540
+            },
+            position: {
+                x: 2,
+                y: 1,
+                z: 2.8
+            },
+            orientation: {
+                x: 0,
+                y: -90,
+                z: 0
+            },
+            camDist: 5,
+            camPos: {
+                x: -1,
+                y: 1,
+                z: 1.5
+            },
+            camRot: {
+                x: 80,
+                y: 0
+            },
+            camRotRange: {
+                x: 10,
+                y: 30
+            }
+        },
+        {
+            name: 'steering',
+            size: {
+                w: 900,
+                h: 570
+            },
+            position: {
+                x: 2,
+                y: 1,
+                z: -2.75
+            },
+            orientation: {
+                x: 0,
+                y: -90,
+                z: 0
+            },
+            camDist: 5,
+            camPos: {
+                x: -1,
+                y: 1,
+                z: -1.5
+            },
+            camRot: {
+                x: 100,
+                y: 0
+            },
+            camRotRange: {
+                x: 10,
+                y: 10
+            }
+        },
+        {
+            name: 'front-lighting',
+            size: {
+                w: 930,
+                h: 520
+            },
+            position: {
+                x: 0,
+                y: 2.8,
+                z: 0
+            },
+            orientation: {
+                x: 0,
+                y: 90,
+                z: 0
+            },
+            camDist: 5,
+            camPos: {
+                x: 1,
+                y: 1.2,
+                z: 0
+            },
+            camRot: {
+                x: -90,
+                y: -5
+            },
+            camRotRange: {
+                x: 30,
+                y: 0
+            },
+            inverted: true
+        },
+        {
+            name: 'rear-lighting',
+            size: {
+                w: 900,
+                h: 400
+            },
+            position: {
+                x: 0,
+                y: 2.8,
+                z: 0
+            },
+            orientation: {
+                x: 0,
+                y: -90,
+                z: 0
+            },
+            camDist: 4,
+            camPos: {
+                x: -1,
+                y: 1.5,
+                z: 0
+            },
+            camRot: {
+                x: 90,
+                y: -5
+            },
+            camRotRange: {
+                x: 30,
+                y: 10
+            },
+            inverted: true
+        },
+        {
+            name: 'aerodynamics',
+            size: {
+                w: 930,
+                h: 490
+            },
+            position: {
+                x: 0,
+                y: 3,
+                z: -2
+            },
+            orientation: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            camDist: 5,
+            camPos: {
+                x: 0,
+                y: 1.5,
+                z: 0
+            },
+            camRot: {
+                x: 0,
+                y: 0
+            },
+            camRotRange: {
+                x: 10,
+                y: 10
+            }
+        },
+        {
+            name: 'free-viewing',
+            size: {
+                w: 465,
+                h: 320
+            },
+            position: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            orientation: {
+                x: 0,
+                y: 0,
+                z: 0
+            },
+            camDist: 6,
+            camPos: {
+                x: 0,
+                y: 1,
+                z: 0
+            }
+        }
+    ];
+    var Mobile = JSON.parse(JSON.stringify(Desktop));
+    Mobile[1].camDist = 6.5;
+    Mobile[2].position = {
+        x: 0,
+        y: 2.8,
+        z: 0.9
+    };
+    Mobile[2].camPos = {
+        x: -1,
+        y: 1.5,
+        z: 1
+    };
+    Mobile[3].position = {
+        x: 2,
+        y: 2.8,
+        z: -1.5
+    };
+    Mobile[3].camRot = {
+        x: 95,
+        y: 0
+    };
+    Mobile[3].camPos = {
+        x: -1,
+        y: 1.5,
+        z: -1.5
+    };
+    Mobile[5].position = {
+        x: 0,
+        y: 3,
+        z: 0
+    };
+    Mobile[5].camDist = 5;
+    Mobile[6].position = {
+        x: 0,
+        y: 3,
+        z: 3
+    };
+    Mobile[6].camPos = {
+        x: 0,
+        y: 2,
+        z: 0
+    };
+    Mobile[6].camDist = 9;
+    Mobile[7].camDist = 8;
+    var CardProps = /** @class */ (function () {
+        function CardProps() {
             this.time = new Tool_1.Time(undefined);
             this.velocity = new THREE.Vector2();
             this.speed = 1;
@@ -268,15 +556,15 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
             this.omega = 0;
             this.theta = 0;
         }
-        CarProps.prototype.onKeyDown = function (evt) {
+        CardProps.prototype.onKeyDown = function (evt) {
             if (this.keys.indexOf(evt.keyCode) === -1) {
                 this.keys.push(evt.keyCode);
             }
         };
-        CarProps.prototype.onKeyUp = function (evt) {
+        CardProps.prototype.onKeyUp = function (evt) {
             this.keys.splice(this.keys.indexOf(evt.keyCode), 1);
         };
-        CarProps.prototype.readKeyboardInput = function () {
+        CardProps.prototype.readKeyboardInput = function () {
             for (var i = 0; i < this.keys.length; i++) {
                 switch (this.keys[i]) {
                     case 38:
@@ -295,7 +583,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 }
             }
         };
-        CarProps.prototype.onJoystickMove = function (_vec) {
+        CardProps.prototype.onJoystickMove = function (_vec) {
             this.joyVec.x = _vec.x / -40;
             this.joyVec.y = _vec.y / -40;
             if (Math.abs(this.joyVec.x) > 0.85) {
@@ -305,14 +593,14 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 this.joyVec.x = 0;
             }
         };
-        CarProps.prototype.onKnobMove = function (_vec, _section) {
+        CardProps.prototype.onKnobMove = function (_vec, _section) {
             this.joyVec.x = _vec.x / -150;
             this.joyVec.y = _vec.y / -150;
             if (_section === 5 && Math.abs(this.joyVec.x) < 0.1) {
                 this.joyVec.x = 0;
             }
         };
-        CarProps.prototype.readJoyStickInput = function () {
+        CardProps.prototype.readJoyStickInput = function () {
             this.wAngleTarg = this.joyVec.x * FF91Props.MaxTurn;
             if (this.joyVec.y >= 0) {
                 this.accel = this.joyVec.y * FF91Props.Accel;
@@ -322,10 +610,10 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 this.accel = this.joyVec.y * -FF91Props.Decel;
             }
         };
-        CarProps.prototype.changeHeadlights = function (_new) {
+        CardProps.prototype.changeHeadlights = function (_new) {
             this.headLights = THREE.Math.clamp(Math.round(_new), 0, 4);
         };
-        CarProps.prototype.update = function (_time) {
+        CardProps.prototype.update = function (_time) {
             if (this.time.update(_time) === false) {
                 return false;
             }
@@ -370,9 +658,12 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
             }
             return true;
         };
-        return CarProps;
+        CardProps.GOLDEN_RATIO = 285;
+        CardProps.Mobile = Mobile;
+        CardProps.Desktop = Desktop;
+        return CardProps;
     }());
-    exports.CarProps = CarProps;
+    exports.CardProps = CardProps;
 });
 define("shader/batt_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -857,12 +1148,12 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
 define("shader/head_light_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = "\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n // \u5149\u7684\u5F00\u5173\nuniform vec3 lightsT;\t// Lights Turn | x: anyTurn, y: left turn, z: right turn\n// \u5149\u7684\u5F3A\u5EA6\nuniform vec4 lightsS;\t// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs\nattribute float type;\nvarying float wht;\nvarying float amb;\nvarying vec4 lmtest;\n\n\n// z-up position because Blender is weird like that\nvoid main() {\n\tlmtest = vec4(0, 0, 0, 1.0);\n\tvec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);\n\tfloat distOrigin = distance(posXY, vec2(0.0));   // FF Logo\n\n\t// 0: Daytime running lights\n\twht = checkType(type, 0.0) * lightsS.x;\n\t\n\t// 1: nightlights\n\twht += checkType(type, 1.0) * lightsS.y;\n\t\n\t// 2: high beams\n\twht += checkType(type, 2.0) * lightsS.z;\n\t\n\t// 3: right turn signal\n\twht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;\n\tamb = checkType(type, 3.0) * lightsT.z;\n\t\n\t// 4: left turn signal\n\twht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;\n\tamb += checkType(type, 4.0) * lightsT.y;\n\n\t// 5: fog lamps\n\twht += checkType(type, 5.0) * lightsS.w;\n\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\n}\n";
+    exports.default = "\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n // \u5149\u7684\u5F00\u5173\nuniform vec3 lightsT;\t// Lights Turn | x: anyTurn, y: left turn, z: right turn\n// \u5149\u7684\u5F3A\u5EA6\nuniform vec4 lightsS;\t// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs\n// attribute float type;\nvarying float wht;\nvarying float amb;\nvarying vec4 lmtest;\n\n\n// z-up position because Blender is weird like that\nvoid main() {\n\tfloat type = 0.0;\n\tlmtest = vec4(0, 0, 0, 1.0);\n\tvec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);\n\tfloat distOrigin = distance(posXY, vec2(0.0));   // FF Logo\n\n\t// 0: Daytime running lights\n\twht = checkType(type, 0.0) * lightsS.x;\n\t\n\t// 1: nightlights\n\twht += checkType(type, 1.0) * lightsS.y;\n\t\n\t// 2: high beams\n\twht += checkType(type, 2.0) * lightsS.z;\n\t\n\t// 3: right turn signal\n\twht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;\n\tamb = checkType(type, 3.0) * lightsT.z;\n\t\n\t// 4: left turn signal\n\twht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;\n\tamb += checkType(type, 4.0) * lightsT.y;\n\n\t// 5: fog lamps\n\twht += checkType(type, 5.0) * lightsS.w;\n\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\n}\n";
 });
 define("shader/head_light_frag.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = "\n#define RED vec3(1.0, 0.1, 0.1) // red\n#define AMB vec3(1.0, 0.6, 0.1)\t// amber\n#define WHT vec3(1.0, 1.0, 1.0)\t// white\n\nvarying float wht;\nvarying float amb;\nvarying vec4 lmtest;\nvoid main() {\n\t// gl_FragColor = vec4((WHT * wht + AMB * amb), 1.0);\n\tgl_FragColor = lmtest;\n}\n";
+    exports.default = "\n#define RED vec3(1.0, 0.1, 0.1) // red\n#define AMB vec3(1.0, 0.6, 0.1)\t// amber\n#define WHT vec3(1.0, 1.0, 1.0)\t// white\n\nvarying float wht;\nvarying float amb;\nvarying vec4 lmtest;\nvoid main() {\n\tgl_FragColor = vec4((WHT * wht + AMB * amb), 1.0);\n}\n";
 });
 define("shader/tail_light_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -1644,7 +1935,7 @@ define("Skybox", ["require", "exports", "tslib", "shader/skybox_vert.glsl", "sha
     }());
     exports.default = Skybox;
 });
-define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox"], function (require, exports, tslib_7, CarBody_1, Skybox_1) {
+define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"], function (require, exports, tslib_7, CarBody_1, Skybox_1, Props_4) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     CarBody_1 = tslib_7.__importDefault(CarBody_1);
@@ -1694,7 +1985,7 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox"], functio
             this.mobileView = _vp.x <= _vp.y * 1.2 ? true : false;
             this.sectionPrev = this.sectionActive = -1;
             // this.card = new Card_1.default(this.sceneCSS);
-            // this.carProps = new Props_1.CarProps();
+            this.carProps = new Props_4.CardProps();
             this.dirLight = new THREE.DirectionalLight(0, 0.7);
             this.dirLight.name = 'dirLight';
             this.dirLight.position.set(0, 1, 1);
@@ -1744,7 +2035,7 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox"], functio
             this.car = new CarBody_1.default(this.sceneWGL, _cargo);
             // this.floor = new Floor_1.default(this.sceneWGL, this.carProps.pos, _cargo);
             this.skybox.setCubeTexture(_cargo.getCubeTexture('envSkybox'));
-            // var freeProps = this.mobileView ? CardProps.Mobile[7] : CardProps.Desktop[7];
+            var freeProps = this.mobileView ? Props_4.CardProps.Mobile[7] : Props_4.CardProps.Desktop[7];
             TweenLite.to(this.dirLight.color, 3, {
                 r: 1,
                 g: 1,
@@ -1759,9 +2050,9 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox"], functio
                 x: -125,
                 y: 5
             });
-            // TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y });
-            // TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist });
-            // this.cam.setDistRange(freeProps.camDist + 1, freeProps.camDist - 1);
+            TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y });
+            TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist });
+            this.cam.setDistRange(freeProps.camDist + 1, freeProps.camDist - 1);
         };
         ViewTour.prototype.goToSection = function (index) {
             // var sectProps = this.mobileView ? CardProps.Mobile[index] : CardProps.Desktop[index];
@@ -1837,30 +2128,31 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox"], functio
             // this.rendererCSS.setSize(_vp.x, _vp.y);
             // if (this.sectionActive === -1)
             //   return;
-            // if (_vp.x <= _vp.y * 1.2 && this.mobileView !== true) {
-            //   this.mobileView = true;
-            //   this.moveCamera(CardProps.Mobile[this.sectionActive]);
-            //   this.card.setPosition(CardProps.Mobile[this.sectionActive].position);
-            // } else if (_vp.x > _vp.y * 1.2 && this.mobileView !== false) {
-            //   this.mobileView = false;
-            //   this.moveCamera(CardProps.Desktop[this.sectionActive]);
-            //   this.card.setPosition(CardProps.Desktop[this.sectionActive].position);
-            // }
+            if (_vp.x <= _vp.y * 1.2 && this.mobileView !== true) {
+                this.mobileView = true;
+                this.moveCamera(Props_4.CardProps.Mobile[this.sectionActive]);
+                this.card.setPosition(Props_4.CardProps.Mobile[this.sectionActive].position);
+            }
+            else if (_vp.x > _vp.y * 1.2 && this.mobileView !== false) {
+                this.mobileView = false;
+                this.moveCamera(Props_4.CardProps.Desktop[this.sectionActive]);
+                this.card.setPosition(Props_4.CardProps.Desktop[this.sectionActive].position);
+            }
         };
         ViewTour.prototype.update = function (t) {
-            // if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
-            //   this.cam.forceUpdate = true;
-            // }
+            if (this.carProps.speed > 0 || this.carProps.wAngleInner !== 0 || this.carProps.longitMomentum !== 0) {
+                this.cam.forceUpdate = true;
+            }
             if (this.cam.update() === false) {
                 return false;
             }
-            // this.carProps.update(t);
-            // this.car.update(this.carProps);
+            this.carProps.update(t);
+            this.car.update(this.carProps);
             this.dirLight.position.copy(this.cam.camera.position);
             this.dirLight.position.multiplyScalar(0.5);
             this.dirLight.position.y += 1;
             this.rendererWGL.render(this.sceneWGL, this.cam.camera);
-            // this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
+            this.cam.camera.position.multiplyScalar(Props_4.CardProps.GOLDEN_RATIO);
             // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
             return true;
         };
@@ -1875,9 +2167,11 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
     ViewTour_1 = tslib_8.__importDefault(ViewTour_1);
     AssetLoader_1 = tslib_8.__importDefault(AssetLoader_1);
     var THREE = window.THREE;
+    var Hammer = window.Hammer;
     var Control = /** @class */ (function () {
         function Control() {
             var _this = this;
+            this.mousePrev = new THREE.Vector2();
             this.disableRender = false;
             // 场景
             this.sceneWGL = new THREE.Scene();
@@ -1933,11 +2227,78 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
                 _this.viewTour = new ViewTour_1.default(_this.sceneWGL, _this.rendererWGL, _this.cam, _this.vp);
                 _this.viewTour.initMeshes(_this.assetLoader.cargo);
                 _this.disableRender = true;
+                window.addEventListener('wheel', _this.firstZoomRef, false);
+                window.addEventListener('wheel', _this.gestureWheel.bind(_this), false);
+                _this.initHammer();
+                _this.hammer.on('pinch', _this.firstZoomRef);
             });
             this.assetLoader.start();
+            this.firstZoomRef = this.hammerFirstZoom.bind(this);
         }
         Control.prototype.update = function (t) {
             this.disableRender && (this.viewTour.update(t));
+        };
+        Control.prototype.initHammer = function () {
+            this.hammer = new Hammer(document.getElementById('CSSCanvas'));
+            this.hammer.get('pan').set({
+                direction: Hammer.DIRECTION_ALL,
+                threshold: 1
+            });
+            this.hammer.get('pinch').set({ enable: true });
+            this.hammer.on('pan', this.hammerPan.bind(this));
+            this.hammer.on('pan', this.hammerFirstPan.bind(this));
+            this.hammer.on('panstart', this.hammerPanStart.bind(this));
+            this.hammer.on('panend', this.hammerPanEnd.bind(this));
+            this.hammer.on('pinch', this.hammerPinch.bind(this));
+            this.hammer.on('pinchstart', this.hammerPinchStart.bind(this));
+        };
+        Control.prototype.hammerPan = function (event) {
+            if (!this.disableHammer) {
+                this.cam.orbitBy((event.center.x - this.mousePrev.x) / this.vp.x * 90, (event.center.y - this.mousePrev.y) / this.vp.y * 90);
+                this.mousePrev.set(event.center.x, event.center.y);
+            }
+            // else {
+            //   this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
+            // }
+        };
+        Control.prototype.hammerPanEnd = function (event) {
+            this.disableHammer = false;
+            // this.cardControls.knobReleased();
+        };
+        Control.prototype.hammerPinchStart = function (event) {
+            this.zoom = this.cam.getDistance();
+            console.error(event);
+        };
+        Control.prototype.hammerPinch = function (event) {
+            this.cam.setDistance(this.zoom / event.scale);
+            // console.error(event, 'hammerPinch')
+        };
+        Control.prototype.hammerPanStart = function (event) {
+            this.mousePrev.set(event.center.x, event.center.y);
+            // console.error(event, 'hammerPanStart')
+        };
+        Control.prototype.hammerFirstZoom = function (event) {
+            // console.error(event, 'hammerFirstZoom')
+            // this.gA.uiEvent('vehicle-zoom', '3DTour');
+            this.hammer.off('pinch', this.firstZoomRef);
+            window.removeEventListener('wheel', this.firstZoomRef, false);
+        };
+        Control.prototype.hammerFirstPan = function (event) {
+            // this.gA.uiEvent('vehicle-move', '3DTour');
+            // this.hammer.off('pan', this.hammerFirstPan.bind(this));
+        };
+        Control.prototype.gestureWheel = function (event) {
+            switch (event.deltaMode) {
+                case WheelEvent.DOM_DELTA_PIXEL:
+                    this.cam.dolly(event.deltaY * 0.002);
+                    break;
+                case WheelEvent.DOM_DELTA_LINE:
+                    this.cam.dolly(event.deltaY * 0.2);
+                    break;
+                case WheelEvent.DOM_DELTA_PAGE:
+                    this.cam.dolly(event.deltaY * 0.4);
+                    break;
+            }
         };
         return Control;
     }());
