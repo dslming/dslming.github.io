@@ -9,25 +9,22 @@ float checkType(float type, float val){
 }
  // 光的开关
 uniform vec3 lightsT;	// Lights Turn | x: anyTurn, y: left turn, z: right turn
-// 光的强度
+// 光的强度, 1 1 0 0 白天行车灯， 近光灯，远光灯, 雾化灯
 uniform vec4 lightsS;	// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs
-// attribute float type;
+attribute float type;
 varying float wht;
 varying float amb;
-varying vec4 lmtest;
-
 
 // z-up position because Blender is weird like that
 void main() {
-	float type = 0.0;
-	lmtest = vec4(0, 0, 0, 1.0);
-	vec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);
-	float distOrigin = distance(posXY, vec2(0.0));   // FF Logo
+	// float type = 0.0;
+	// vec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);
+	// float distOrigin = distance(posXY, vec2(0.0));   // FF Logo
 
 	// 0: Daytime running lights
 	wht = checkType(type, 0.0) * lightsS.x;
 	
-	// 1: nightlights
+	// 1: nightlights 
 	wht += checkType(type, 1.0) * lightsS.y;
 	
 	// 2: high beams
@@ -43,7 +40,6 @@ void main() {
 
 	// 5: fog lamps
 	wht += checkType(type, 5.0) * lightsS.w;
-
 	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );
 }
 `

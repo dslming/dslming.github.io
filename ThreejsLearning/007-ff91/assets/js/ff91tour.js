@@ -318,6 +318,7 @@
                 };
                 /////////////////////////////// LIGHTS ///////////////////////////////
                 CarProps.prototype.changeHeadlights = function (_new) {
+                    console.error(_new, 'changeHeadlights')
                     this.headLights = THREE.Math.clamp(Math.round(_new), 0, 4);
                 };
                 /////////////////////////////// UPDATE ///////////////////////////////
@@ -1174,9 +1175,9 @@
                     // 增加一圈边光
                     this.addMeshMaterials();
                     // 增加大灯
-                    //this.addHeadFlares(_cargo.getTexture("flareHead"));
-                    //this.addStopMesh(_cargo.getTexture("lightStop"));
-                    //this.addTurnFlares(_cargo.getTexture("flareTurn"), _cargo.getTexture("lightTurn"));
+                    this.addHeadFlares(_cargo.getTexture("flareHead"));
+                    this.addStopMesh(_cargo.getTexture("lightStop"));
+                    this.addTurnFlares(_cargo.getTexture("flareTurn"), _cargo.getTexture("lightTurn"));
                 }
                 ////////////////// SOLID LIGHT MESHES //////////////////
                 CarLights.prototype.addMeshMaterials = function () {
@@ -2854,7 +2855,6 @@
             var CamControl_1 = __webpack_require__(41);
             var __1 = __webpack_require__(0);
             var Monoc = /** @class */ (function (_super) {
-                debugger
                 __extends(Monoc, _super);
                 function Monoc(options) {
                     var _this = _super.call(this, options) || this;

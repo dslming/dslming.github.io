@@ -1,5 +1,6 @@
 import headLightsVS from './shader/head_light_vert.glsl'
 import headLightsFS from './shader/head_light_frag.glsl'
+
 import tailLightVS from './shader/tail_light_vert.glsl'
 import tailGridVS from './shader/tail_grid_vert.glsl'
 import tailGridFS from './shader/tail_grid_frag.glsl'
@@ -43,7 +44,7 @@ export default class CarLights {
   }
 
   addMeshMaterials() {
-    var headLights = this.carChassis.getObjectByName('HeadLights');
+    var headLights:any = this.carChassis.getObjectByName('HeadLights');
     var tailLights = this.carChassis.getObjectByName('TailLights');
     var tailGrid = this.carChassis.getObjectByName('TailGrid');
     
@@ -443,7 +444,7 @@ export default class CarLights {
         lightsT: { value: this.lightsCtrlTurn }
       },
       vertexShader: turnBarVS,
-      // fragmentShader: turnBarFS, 有问题
+      fragmentShader: turnBarFS,
       blending: THREE.AdditiveBlending,
       transparent: true,
       depthTest: false
