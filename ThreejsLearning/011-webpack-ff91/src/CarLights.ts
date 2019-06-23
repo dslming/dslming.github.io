@@ -22,6 +22,7 @@ export default class CarLights {
     prevHeadlightState: undefined;
     prevTurnState: undefined;
     headFlareMat: any;
+    // 近光灯
     flareHeadPoints: any;
     meshStopGlow: any;
     turnPointMaterial: any;
@@ -121,6 +122,7 @@ export default class CarLights {
     flareHeadGeom.addAttribute('position', new THREE.BufferAttribute(posArray, 3));
     flareHeadGeom.addAttribute('normal', new THREE.BufferAttribute(normArray, 3));
     this.flareHeadPoints = new THREE.Points(flareHeadGeom, this.headFlareMat);
+    this.flareHeadPoints.name = 'flareHeadPoints'
     this.carChassis.add(this.flareHeadPoints);
   }
 
@@ -479,22 +481,29 @@ export default class CarLights {
   headlightsChanged(_newState: any) {
     console.error(_newState)
     switch (_newState) {
+    // 全部关闭 lightsCtrlHead: lightsS
     case 0:
       this.lightsCtrlHead.set(0, 0, 0, 0);
       this.flareHeadPoints.visible = false;
       break;
+    // 白天行车灯
     case 1:
       this.lightsCtrlHead.set(1, 0, 0, 0);
       this.flareHeadPoints.visible = false;
       break;
+    // 白天行车灯 + 大灯 
     case 2:
       this.lightsCtrlHead.set(1, 1, 0, 0);
       this.flareHeadPoints.visible = true;
       break;
+
+    // 白天行车灯 + 大灯 + 远光灯
     case 3:
       this.lightsCtrlHead.set(1, 1, 1, 0);
       this.flareHeadPoints.visible = true;
       break;
+
+    // 白天行车灯 + 大灯 + 远光灯 + 雾灯
     case 4:
       this.lightsCtrlHead.set(1, 1, 1, 1);
       this.flareHeadPoints.visible = true;

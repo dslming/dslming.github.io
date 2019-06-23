@@ -7,36 +7,33 @@ float normFloat(float n, float minVal, float maxVal){
 float checkType(float type, float val){
 	return step(val - 0.1, type) * step(type, val + 0.1);
 }
- // 光的开关
+ // 光的开关 0, 0, 0
 uniform vec3 lightsT;	// Lights Turn | x: anyTurn, y: left turn, z: right turn
-// 光的强度, 1 1 0 0 白天行车灯， 近光灯，远光灯, 雾化灯
+// 光的强度,                                白天行车灯， 大灯，     远光灯,   雾化灯
 uniform vec4 lightsS;	// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs
+// 在body.json中定义
 attribute float type;
 varying float wht;
 varying float amb;
 
 // z-up position because Blender is weird like that
 void main() {
-	// float type = 0.0;
-	// vec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);
-	// float distOrigin = distance(posXY, vec2(0.0));   // FF Logo
-
 	// 0: Daytime running lights
 	wht = checkType(type, 0.0) * lightsS.x;
 	
 	// 1: nightlights 
-	wht += checkType(type, 1.0) * lightsS.y;
+	// wht += checkType(type, 1.0) * lightsS.y;
 	
-	// 2: high beams
-	wht += checkType(type, 2.0) * lightsS.z;
+	// // 2: high beams
+	// wht += checkType(type, 2.0) * lightsS.z;
 	
-	// 3: right turn signal
+	// // 3: right turn signal
 	wht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;
-	amb = checkType(type, 3.0) * lightsT.z;
+	// amb = checkType(type, 3.0) * lightsT.z;
 	
 	// 4: left turn signal
 	wht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;
-	amb += checkType(type, 4.0) * lightsT.y;
+	// amb += checkType(type, 4.0) * lightsT.y;
 
 	// 5: fog lamps
 	wht += checkType(type, 5.0) * lightsS.w;

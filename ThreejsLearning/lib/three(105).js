@@ -11308,7 +11308,6 @@
 		},
 
 		getAttribute: function ( name ) {
-
 			return this.attributes[ name ];
 
 		},

@@ -1148,12 +1148,12 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
 define("shader/head_light_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = "\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n // \u5149\u7684\u5F00\u5173\nuniform vec3 lightsT;\t// Lights Turn | x: anyTurn, y: left turn, z: right turn\n// \u5149\u7684\u5F3A\u5EA6, 1 1 0 0 \u767D\u5929\u884C\u8F66\u706F\uFF0C \u8FD1\u5149\u706F\uFF0C\u8FDC\u5149\u706F, \u96FE\u5316\u706F\nuniform vec4 lightsS;\t// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs\nattribute float type;\nvarying float wht;\nvarying float amb;\n\n// z-up position because Blender is weird like that\nvoid main() {\n\t// float type = 0.0;\n\t// vec2 posXY = vec2(position.y - 2299.0, position.z - 1355.0);\n\t// float distOrigin = distance(posXY, vec2(0.0));   // FF Logo\n\n\t// 0: Daytime running lights\n\twht = checkType(type, 0.0) * lightsS.x;\n\t\n\t// 1: nightlights \n\twht += checkType(type, 1.0) * lightsS.y;\n\t\n\t// 2: high beams\n\twht += checkType(type, 2.0) * lightsS.z;\n\t\n\t// 3: right turn signal\n\twht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;\n\tamb = checkType(type, 3.0) * lightsT.z;\n\t\n\t// 4: left turn signal\n\twht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;\n\tamb += checkType(type, 4.0) * lightsT.y;\n\n\t// 5: fog lamps\n\twht += checkType(type, 5.0) * lightsS.w;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\n}\n";
+    exports.default = "\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n // \u5149\u7684\u5F00\u5173 0, 0, 0\nuniform vec3 lightsT;\t// Lights Turn | x: anyTurn, y: left turn, z: right turn\n// \u5149\u7684\u5F3A\u5EA6,                                \u767D\u5929\u884C\u8F66\u706F\uFF0C \u5927\u706F\uFF0C     \u8FDC\u5149\u706F,   \u96FE\u5316\u706F\nuniform vec4 lightsS;\t// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs\n// \u5728body.json\u4E2D\u5B9A\u4E49\nattribute float type;\nvarying float wht;\nvarying float amb;\n\n// z-up position because Blender is weird like that\nvoid main() {\n\t// 0: Daytime running lights\n\twht = checkType(type, 0.0) * lightsS.x;\n\t\n\t// 1: nightlights \n\t// wht += checkType(type, 1.0) * lightsS.y;\n\t\n\t// // 2: high beams\n\t// wht += checkType(type, 2.0) * lightsS.z;\n\t\n\t// // 3: right turn signal\n\twht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;\n\t// amb = checkType(type, 3.0) * lightsT.z;\n\t\n\t// 4: left turn signal\n\twht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;\n\t// amb += checkType(type, 4.0) * lightsT.y;\n\n\t// 5: fog lamps\n\twht += checkType(type, 5.0) * lightsS.w;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\n}\n";
 });
 define("shader/head_light_frag.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = "\n#define RED vec3(1.0, 0.1, 0.1) // red\n#define AMB vec3(1.0, 0.6, 0.1)\t// amber\n#define WHT vec3(1.0, 1.0, 1.0)\t// white\n\nvarying float wht;\nvarying float amb;\nvoid main() {\n\tgl_FragColor = vec4((WHT*wht + AMB * amb), 1.0);\n}\n";
+    exports.default = "\n#define RED vec3(1.0, 0.1, 0.1) // red\n#define AMB vec3(1.0, 0.6, 0.1)\t// amber\n#define WHT vec3(1.0, 1.0, 1.0)\t// white\n\nvarying float wht;\nvarying float amb;\nvoid main() {\n\tgl_FragColor = vec4((WHT*wht + AMB * amb), 1.0);\n\t// gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n}\n";
 });
 define("shader/tail_light_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -1295,6 +1295,7 @@ define("carLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
             flareHeadGeom.addAttribute('position', new THREE.BufferAttribute(posArray, 3));
             flareHeadGeom.addAttribute('normal', new THREE.BufferAttribute(normArray, 3));
             this.flareHeadPoints = new THREE.Points(flareHeadGeom, this.headFlareMat);
+            this.flareHeadPoints.name = 'flareHeadPoints';
             this.carChassis.add(this.flareHeadPoints);
         };
         CarLights.prototype.addStopMesh = function (_tex) {
@@ -1649,22 +1650,27 @@ define("carLights", ["require", "exports", "tslib", "shader/head_light_vert.glsl
         CarLights.prototype.headlightsChanged = function (_newState) {
             console.error(_newState);
             switch (_newState) {
+                // 全部关闭 lightsCtrlHead: lightsS
                 case 0:
                     this.lightsCtrlHead.set(0, 0, 0, 0);
                     this.flareHeadPoints.visible = false;
                     break;
+                // 白天行车灯
                 case 1:
                     this.lightsCtrlHead.set(1, 0, 0, 0);
                     this.flareHeadPoints.visible = false;
                     break;
+                // 白天行车灯 + 大灯 
                 case 2:
                     this.lightsCtrlHead.set(1, 1, 0, 0);
                     this.flareHeadPoints.visible = true;
                     break;
+                // 白天行车灯 + 大灯 + 远光灯
                 case 3:
                     this.lightsCtrlHead.set(1, 1, 1, 0);
                     this.flareHeadPoints.visible = true;
                     break;
+                // 白天行车灯 + 大灯 + 远光灯 + 雾灯
                 case 4:
                     this.lightsCtrlHead.set(1, 1, 1, 1);
                     this.flareHeadPoints.visible = true;
