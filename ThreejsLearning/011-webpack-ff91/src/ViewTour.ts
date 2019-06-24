@@ -129,8 +129,8 @@ export default class ViewTour{
       x: -125,
       y: 5
     });
-    TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y });
-    TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist });
+    TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y }); // (0, 1, 0)
+    TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist }); // 8
     this.cam.setDistRange(freeProps.camDist + 1, freeProps.camDist - 1);
   }
 
@@ -230,13 +230,14 @@ export default class ViewTour{
     if (this.cam.update() === false) {
       return false;
     }
-    this.carProps.update(t);
-    this.car.update(this.carProps);
-    this.dirLight.position.copy(this.cam.camera.position);
-    this.dirLight.position.multiplyScalar(0.5);
-    this.dirLight.position.y += 1;
+    // this.carProps.update(t);
+    // this.car.update(this.carProps);
+    // this.dirLight.position.copy(this.cam.camera.position);
+    // this.dirLight.position.multiplyScalar(0.5);
+    // this.dirLight.position.y += 1;
+
     this.rendererWGL.render(this.sceneWGL, this.cam.camera);
-    this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
+    // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
     // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
     return true;
   }

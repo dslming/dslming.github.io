@@ -25,15 +25,25 @@ define("AssetLoader", ["require", "exports"], function (require, exports) {
         return Cargo;
     }());
     var AssetLoader = /** @class */ (function () {
+        /**
+         *
+         * @param _path 资源的根路径
+         * @param _manifesto 资源的名称和路径
+         * @param _callback 加载完成的回掉
+         */
         function AssetLoader(_path, _manifesto, _callback) {
             this.path = _path;
             this.manifesto = _manifesto;
             this.callback = _callback;
             this.language = document.location.href.indexOf('/us') > -1 ? 'us' : 'cn';
             this.cargo = new Cargo();
+            /** 已经加载数量 */
             this.assetCount = 0;
+            /** 总数量 */
             this.assetTotal = _manifesto.length;
+            /** 加载文本 */
             this.loaderText = new THREE.TextureLoader();
+            /**  */
             this.loaderMesh = new THREE.ObjectLoader();
             this.loaderCube = new THREE.CubeTextureLoader();
             this.container = document.getElementById('preloader');
@@ -50,26 +60,26 @@ define("AssetLoader", ["require", "exports"], function (require, exports) {
                 this.detailBox && (this.detailBox.innerHTML = '加载中');
             }
             var ext;
-            var _loop_1 = function (i) {
-                ext = '.' + this_1.manifesto[i].ext;
-                switch (this_1.manifesto[i].type) {
+            var loop = function (i) {
+                ext = '.' + _this.manifesto[i].ext;
+                switch (_this.manifesto[i].type) {
                     case 'texture':
-                        this_1.loaderText.load(this_1.path + 'textures/' + this_1.manifesto[i].name + ext, function (_obj) {
+                        _this.loaderText.load(_this.path + 'textures/' + _this.manifesto[i].name + ext, function (_obj) {
                             _this.assetAquired(_obj, _this.manifesto[i].name);
                         }, undefined, function (_err) {
                             _this.assetFailed(_err, _this.manifesto[i].name);
                         });
                         break;
                     case 'mesh':
-                        this_1.loaderMesh.load(this_1.path + 'meshes/' + this_1.manifesto[i].name + '.json', function (_obj) {
+                        _this.loaderMesh.load(_this.path + 'meshes/' + _this.manifesto[i].name + '.json', function (_obj) {
                             _this.assetAquired(_obj, _this.manifesto[i].name);
                         }, undefined, function (_err) {
                             _this.assetFailed(_err, _this.manifesto[i].name);
                         });
                         break;
                     case 'cubetexture':
-                        this_1.loaderCube.setPath(this_1.path + 'textures/' + this_1.manifesto[i].name + '/');
-                        this_1.loaderCube.load([
+                        _this.loaderCube.setPath(_this.path + 'textures/' + _this.manifesto[i].name + '/');
+                        _this.loaderCube.load([
                             'xp' + ext,
                             'xn' + ext,
                             'yp' + ext,
@@ -84,9 +94,8 @@ define("AssetLoader", ["require", "exports"], function (require, exports) {
                         break;
                 }
             };
-            var this_1 = this;
             for (var i = 0; i < this.assetTotal; i++) {
-                _loop_1(i);
+                loop(i);
             }
         };
         AssetLoader.prototype.remove = function () {
@@ -249,7 +258,9 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
         return FF91Props;
     }());
     exports.FF91Props = FF91Props;
+    // pc下 不同模式的相机参数
     var Desktop = [
+        // 尺寸
         {
             name: 'dimensions',
             size: {
@@ -261,6 +272,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 y: -1,
                 z: 1
             },
+            // 方向
             orientation: {
                 x: -45,
                 y: 35,
@@ -281,6 +293,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 y: 10
             }
         },
+        // 电池
         {
             name: 'battery',
             size: {
@@ -312,6 +325,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 y: 50
             }
         },
+        // 动力
         {
             name: 'powertrain',
             size: {
@@ -343,6 +357,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 y: 30
             }
         },
+        // 驾驶
         {
             name: 'steering',
             size: {
@@ -374,6 +389,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 y: 10
             }
         },
+        // 前灯
         {
             name: 'front-lighting',
             size: {
@@ -406,6 +422,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
             },
             inverted: true
         },
+        // 尾灯
         {
             name: 'rear-lighting',
             size: {
@@ -438,6 +455,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
             },
             inverted: true
         },
+        // 空气动力学
         {
             name: 'aerodynamics',
             size: {
@@ -469,6 +487,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
                 y: 10
             }
         },
+        // 自由浏览
         {
             name: 'free-viewing',
             size: {
@@ -539,6 +558,7 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
     Mobile[7].camDist = 8;
     var CardProps = /** @class */ (function () {
         function CardProps() {
+            this.GOLDEN_RATIO = 1000;
             this.time = new Tool_1.Time(undefined);
             this.velocity = new THREE.Vector2();
             this.speed = 1;
@@ -658,7 +678,6 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
             }
             return true;
         };
-        CardProps.GOLDEN_RATIO = 285;
         CardProps.Mobile = Mobile;
         CardProps.Desktop = Desktop;
         return CardProps;
@@ -761,7 +780,7 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
     Object.defineProperty(exports, "__esModule", { value: true });
     var THREE = window.THREE;
     var CameraControl = /** @class */ (function () {
-        function CameraControl(_options) {
+        function CameraControl(options) {
             this.forceUpdate = true;
             this.options = {
                 distance: 90,
@@ -781,7 +800,7 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
                 eyeSeparation: 1.5,
                 smartUpdates: false
             };
-            this.readOptions(_options);
+            this.readOptions(options);
             this.vpW = window.innerWidth;
             this.vpH = window.innerHeight;
             this.quatX = new THREE.Quaternion();
@@ -795,36 +814,38 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
                 this.defaultEuler = new THREE.Euler(0, 0, 0);
             }
         }
-        CameraControl.prototype.readOptions = function (_options) {
+        CameraControl.prototype.readOptions = function (options) {
             var opt = this.options;
-            for (var key in _options) {
+            for (var key in options) {
                 if (key === 'rotRange') {
-                    for (var key in _options.rotRange) {
-                        opt.rotRange[key] = _options.rotRange[key];
+                    for (var key_1 in options.rotRange) {
+                        opt.rotRange[key_1] = options.rotRange[key_1];
                     }
                 }
                 else if (key === 'distRange') {
-                    for (var key in _options.distRange) {
-                        opt.distRange[key] = _options.distRange[key];
+                    for (var key_2 in options.distRange) {
+                        opt.distRange[key_2] = options.distRange[key_2];
                     }
                 }
                 else if (key === 'focusPos') {
-                    for (var key in _options.focusPos) {
-                        opt.focusPos[key] = _options.focusPos[key];
+                    for (var key_3 in options.focusPos) {
+                        opt.focusPos[key_3] = options.focusPos[key_3];
                     }
                 }
                 else if (key === 'rotation') {
-                    for (var key in _options.rotation) {
-                        opt.rotation[key] = _options.rotation[key];
+                    for (var key_4 in options.rotation) {
+                        opt.rotation[key_4] = options.rotation[key_4];
                     }
                 }
                 else {
-                    opt[key] = _options[key];
+                    opt[key] = options[key];
                 }
             }
             this.distActual = opt.distance;
             this.distTarget = opt.distance;
+            // 实际焦点
             this.focusActual = new THREE.Vector3(opt.focusPos.x, opt.focusPos.y, opt.focusPos.z);
+            // 目标焦点
             this.focusTarget = this.focusActual.clone();
             this.rotActual = new THREE.Vector3(opt.rotation.x, opt.rotation.y, opt.rotation.z);
             this.rotTarget = this.rotActual.clone();
@@ -889,37 +910,44 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
             this.distTarget = THREE.Math.clamp(this.distTarget, this.options.distRange.min, this.options.distRange.max);
         };
         CameraControl.prototype.orbitBy = function (angleX, angleY) {
+            console.error('orbitBy...');
             this.rotTarget.x += angleX;
             this.rotTarget.y += angleY;
             this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
             this.rotTarget.y = THREE.Math.clamp(this.rotTarget.y, this.options.rotRange.yMin, this.options.rotRange.yMax);
         };
         CameraControl.prototype.orbitTo = function (angleX, angleY) {
+            console.error('orbitTo...');
             this.rotTarget.x = angleX;
             this.rotTarget.y = angleY;
             this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
             this.rotTarget.y = THREE.Math.clamp(this.rotTarget.y, this.options.rotRange.yMin, this.options.rotRange.yMax);
         };
         CameraControl.prototype.pan = function (distX, distY) {
+            console.error('pan...');
             this.focusTarget.x -= distX;
             this.focusTarget.y += distY;
         };
         CameraControl.prototype.onWindowResize = function (vpW, vpH) {
+            console.error('onWindowResize...');
             this.vpW = vpW;
             this.vpH = vpH;
             this.forceUpdate = true;
         };
         CameraControl.prototype.onDeviceReorientation = function (orientation) {
+            console.error('onDeviceReorientation...');
             this.gyro.orient = orientation * CameraControl.RADIANS;
             this.forceUpdate = true;
         };
         CameraControl.prototype.onGyroMove = function (alpha, beta, gamma) {
+            console.error('onGyroMove...');
             var acc = this.gyro;
             acc.alpha = alpha;
             acc.beta = beta;
             acc.gamma = gamma;
         };
         CameraControl.prototype.follow = function (target) {
+            console.error('follow...');
             this.distTarget = THREE.Math.clamp(this.distTarget, this.options.distRange.min, this.options.distRange.max);
             this.distActual += (this.distTarget - this.distActual) * 0.01;
             this.focusTarget.set(target.x, target.y + 1, target.z + this.distActual);
@@ -928,6 +956,7 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
             this.camHolder.lookAt(target);
         };
         CameraControl.prototype.changesOccurred = function () {
+            console.error('changesOccurred...');
             if (this.options.smartUpdates && this.rotActual.manhattanDistanceTo(this.rotTarget) < 0.01 && Math.abs(this.distActual - this.distTarget) < 0.01 && this.focusActual.manhattanDistanceTo(this.focusTarget) < 0.01) {
                 return false;
             }
@@ -950,6 +979,7 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
         function Camera(options) {
             var _this = _super.call(this, options) || this;
             _this.camera = new THREE.PerspectiveCamera(_this.options.fov, _this.vpW / _this.vpH, 0.1, 100);
+            _this.camera.name = 'camera';
             return _this;
         }
         Camera.prototype.onWindowResize = function (vpW, vpH) {
@@ -962,21 +992,22 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
             if (!this.forceUpdate && !this.changesOccurred()) {
                 return false;
             }
+            // focusTarget (0, 1, 0)
             this.focusActual.lerp(this.focusTarget, 0.05);
             this.camera.position.copy(this.focusActual);
             if (this.gyro.alpha && this.gyro.beta && this.gyro.gamma) {
-                this.camera.setRotationFromEuler(this.defaultEuler);
-                this.camera.rotateZ(this.gyro.alpha * CameraControl_1.default.RADIANS);
-                this.camera.rotateX(this.gyro.beta * CameraControl_1.default.RADIANS);
-                this.camera.rotateY(this.gyro.gamma * CameraControl_1.default.RADIANS);
-                this.camera.rotation.z += this.gyro.orient;
+                // this.camera.setRotationFromEuler(this.defaultEuler);
+                // this.camera.rotateZ(this.gyro.alpha * CameraControl.RADIANS);
+                // this.camera.rotateX(this.gyro.beta * CameraControl.RADIANS);
+                // this.camera.rotateY(this.gyro.gamma * CameraControl.RADIANS);
+                // this.camera.rotation.z += this.gyro.orient;
             }
             else {
-                this.rotActual.lerp(this.rotTarget, 0.05);
-                this.quatX.setFromAxisAngle(CameraControl_1.default.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
-                this.quatY.setFromAxisAngle(CameraControl_1.default.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
-                this.quatY.multiply(this.quatX);
-                this.camera.quaternion.copy(this.quatY);
+                this.rotActual.lerp(this.rotTarget, 0.5);
+                // this.quatX.setFromAxisAngle(CameraControl.AXIS_X, -THREE.Math.degToRad(this.rotActual.x));
+                // this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
+                // this.quatY.multiply(this.quatX);
+                // this.camera.quaternion.copy(this.quatX);
             }
             if (this.distActual !== this.distTarget) {
                 this.distActual = Tool_3.zTween(this.distActual, this.distTarget, 0.05);
@@ -1148,7 +1179,7 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
 define("shader/head_light_vert.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.default = "\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n // \u5149\u7684\u5F00\u5173 0, 0, 0\nuniform vec3 lightsT;\t// Lights Turn | x: anyTurn, y: left turn, z: right turn\n// \u5149\u7684\u5F3A\u5EA6,                                \u767D\u5929\u884C\u8F66\u706F\uFF0C \u5927\u706F\uFF0C     \u8FDC\u5149\u706F,   \u96FE\u5316\u706F\nuniform vec4 lightsS;\t// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs\n// \u5728body.json\u4E2D\u5B9A\u4E49\nattribute float type;\nvarying float wht;\nvarying float amb;\n\n// z-up position because Blender is weird like that\nvoid main() {\n\t// 0: Daytime running lights\n\twht = checkType(type, 0.0) * lightsS.x;\n\t\n\t// 1: nightlights \n\t// wht += checkType(type, 1.0) * lightsS.y;\n\t\n\t// // 2: high beams\n\t// wht += checkType(type, 2.0) * lightsS.z;\n\t\n\t// // 3: right turn signal\n\twht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;\n\t// amb = checkType(type, 3.0) * lightsT.z;\n\t\n\t// 4: left turn signal\n\twht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;\n\t// amb += checkType(type, 4.0) * lightsT.y;\n\n\t// 5: fog lamps\n\twht += checkType(type, 5.0) * lightsS.w;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\n}\n";
+    exports.default = "\nfloat normFloat(float n, float minVal, float maxVal){\n\treturn max(0.0, min(1.0, (n-minVal) / (maxVal-minVal)));\n}\n\n// Returns 1 if type matches val, 0 if not\nfloat checkType(float type, float val){\n\treturn step(val - 0.1, type) * step(type, val + 0.1);\n}\n // \u5149\u7684\u5F00\u5173 0, 0, 0\nuniform vec3 lightsT;\t// Lights Turn | x: anyTurn, y: left turn, z: right turn\n// \u5149\u7684\u5F3A\u5EA6,                                \u767D\u5929\u884C\u8F66\u706F\uFF0C \u5927\u706F\uFF0C     \u8FDC\u5149\u706F,   \u96FE\u5316\u706F\nuniform vec4 lightsS;\t// Lights Stat | x: daytime, y: loBeams, z: hiBeams, w: fogs\n// \u5728body.json\u4E2D\u5B9A\u4E49,\u706F\u7684\u9876\u70B9\u4F4D\u7F6E\u4FE1\u606F, 0: Daytime, 1: nightlights, 2: high, 3: right, 4: left\nattribute float type;\nvarying float wht;\nvarying float amb;\n\n// z-up position because Blender is weird like that\nvoid main() {\n\t// 0: Daytime running lights\n\twht = checkType(type, 0.0) * lightsS.x;\n\t\n\t// 1: nightlights \n\twht += checkType(type, 1.0) * lightsS.y;\n\t\n\t// // 2: high beams\n\twht += checkType(type, 2.0) * lightsS.z;\n\t\n\t// // 3: right turn signal\n\twht += checkType(type, 3.0) * (1.0 + lightsT.x) * lightsS.x;\n\t// amb = checkType(type, 3.0) * lightsT.z;\n\t\n\t// 4: left turn signal\n\twht += checkType(type, 4.0) * (1.0 - lightsT.x) * lightsS.x;\n\t// amb += checkType(type, 4.0) * lightsT.y;\n\n\t// 5: fog lamps\n\twht += checkType(type, 5.0) * lightsS.w;\n\tgl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0 );\n}\n";
 });
 define("shader/head_light_frag.glsl", ["require", "exports"], function (require, exports) {
     "use strict";
@@ -1810,6 +1841,7 @@ define("CarBody", ["require", "exports", "tslib", "CarWheels", "carLights", "Mot
         function CarBody(_scene, _cargo) {
             this.parent = _scene;
             this.carWhole = new THREE.Group();
+            this.carWhole.name = 'car';
             this.carWhole.position.x = -1.56;
             this.parent.add(this.carWhole);
             this.carChassis = this.buildCarChassis(_cargo.getMesh('body'), _cargo.getCubeTexture('envReflection'));
@@ -2057,8 +2089,8 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
                 x: -125,
                 y: 5
             });
-            TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y });
-            TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist });
+            TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y }); // (0, 1, 0)
+            TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist }); // 8
             this.cam.setDistRange(freeProps.camDist + 1, freeProps.camDist - 1);
         };
         ViewTour.prototype.goToSection = function (index) {
@@ -2153,13 +2185,13 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
             if (this.cam.update() === false) {
                 return false;
             }
-            this.carProps.update(t);
-            this.car.update(this.carProps);
-            this.dirLight.position.copy(this.cam.camera.position);
-            this.dirLight.position.multiplyScalar(0.5);
-            this.dirLight.position.y += 1;
+            // this.carProps.update(t);
+            // this.car.update(this.carProps);
+            // this.dirLight.position.copy(this.cam.camera.position);
+            // this.dirLight.position.multiplyScalar(0.5);
+            // this.dirLight.position.y += 1;
             this.rendererWGL.render(this.sceneWGL, this.cam.camera);
-            this.cam.camera.position.multiplyScalar(Props_4.CardProps.GOLDEN_RATIO);
+            // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
             // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
             return true;
         };
@@ -2207,9 +2239,7 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
             this.cam = new Camera_1.default(camOptions);
             this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
             this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
-            var control = new THREE.OrbitControls(this.cam.camera, this.container);
-            control.autoRotate = false;
-            control.enabled = true;
+            this.sceneWGL.add(this.cam.camera);
             // 资源加载
             var manifesto = [
                 // Cube textures
@@ -2263,6 +2293,7 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
             if (!this.disableHammer) {
                 this.cam.orbitBy((event.center.x - this.mousePrev.x) / this.vp.x * 90, (event.center.y - this.mousePrev.y) / this.vp.y * 90);
                 this.mousePrev.set(event.center.x, event.center.y);
+                // console.error('hammerPan...')
             }
             // else {
             //   this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
@@ -2278,7 +2309,7 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
         };
         Control.prototype.hammerPinch = function (event) {
             this.cam.setDistance(this.zoom / event.scale);
-            // console.error(event, 'hammerPinch')
+            console.error(event, 'hammerPinch');
         };
         Control.prototype.hammerPanStart = function (event) {
             this.mousePrev.set(event.center.x, event.center.y);
@@ -2295,6 +2326,7 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
             // this.hammer.off('pan', this.hammerFirstPan.bind(this));
         };
         Control.prototype.gestureWheel = function (event) {
+            console.error('gestureWheel');
             switch (event.deltaMode) {
                 case WheelEvent.DOM_DELTA_PIXEL:
                     this.cam.dolly(event.deltaY * 0.002);

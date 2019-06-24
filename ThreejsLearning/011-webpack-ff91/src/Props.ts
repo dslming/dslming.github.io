@@ -16,7 +16,9 @@ export class FF91Props {
   }
 }
 
+// pc下 不同模式的相机参数
 const Desktop = [
+  // 尺寸
   {
     name: 'dimensions',
     size: {
@@ -28,6 +30,7 @@ const Desktop = [
       y: -1,
       z: 1
     },
+    // 方向
     orientation: {
       x: -45,
       y: 35,
@@ -48,6 +51,7 @@ const Desktop = [
       y: 10
     }
   },
+  // 电池
   {
     name: 'battery',
     size: {
@@ -79,6 +83,7 @@ const Desktop = [
       y: 50
     }
   },
+  // 动力
   {
     name: 'powertrain',
     size: {
@@ -110,6 +115,7 @@ const Desktop = [
       y: 30
     }
   },
+  // 驾驶
   {
     name: 'steering',
     size: {
@@ -141,6 +147,7 @@ const Desktop = [
       y: 10
     }
   },
+  // 前灯
   {
     name: 'front-lighting',
     size: {
@@ -173,6 +180,7 @@ const Desktop = [
     },
     inverted: true
   },
+  // 尾灯
   {
     name: 'rear-lighting',
     size: {
@@ -205,6 +213,7 @@ const Desktop = [
     },
     inverted: true
   },
+  // 空气动力学
   {
     name: 'aerodynamics',
     size: {
@@ -236,6 +245,7 @@ const Desktop = [
       y: 10
     }
   },
+  // 自由浏览
   {
     name: 'free-viewing',
     size: {
@@ -307,7 +317,7 @@ Mobile[6].camDist = 9;
 Mobile[7].camDist = 8;
 
 export class CardProps {
-    static GOLDEN_RATIO = 285
+    GOLDEN_RATIO = 1000
     static Mobile = Mobile
     static Desktop = Desktop
     time: Time;

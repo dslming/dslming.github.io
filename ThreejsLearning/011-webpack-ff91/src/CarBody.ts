@@ -20,9 +20,11 @@ export default class CarBody {
     carWheels: any;
     carMotors: any;
     carBatts: any;
+
   constructor(_scene: any, _cargo: any) {
     this.parent = _scene;
     this.carWhole = new THREE.Group();
+    this.carWhole.name = 'car';
     this.carWhole.position.x = -1.56;
     this.parent.add(this.carWhole);
     this.carChassis = this.buildCarChassis(_cargo.getMesh('body'), _cargo.getCubeTexture('envReflection'));

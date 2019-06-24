@@ -1,3 +1,19 @@
+interface CameraOption {
+  distRange: {
+    max: number,
+    min: number
+  }| any,
+  distance: number,
+  rotRange: {
+    xMax: number,
+    xMin: number,
+    yMax: number,
+    yMin: number
+  } | any,
+  focusPos: any,
+  rotation: any
+}
+
 let THREE = (window as any).THREE
 
 export default abstract class CameraControl {
@@ -29,9 +45,10 @@ export default abstract class CameraControl {
   focusActual: any;
   focusTarget: any;
   rotActual: any;
+  // 旋转目标
   rotTarget: any;
 
-  constructor(_options: any) {
+  constructor(options: CameraOption | any) {
     this.forceUpdate = true;
     this.options = {
       distance: 90,
@@ -51,7 +68,7 @@ export default abstract class CameraControl {
       eyeSeparation: 1.5,
       smartUpdates: false
     };
-    this.readOptions(_options);
+    this.readOptions(options);
     this.vpW = window.innerWidth;
     this.vpH = window.innerHeight;
     this.quatX = new THREE.Quaternion();
@@ -65,32 +82,35 @@ export default abstract class CameraControl {
     }
   }
 
-  readOptions(_options: any) {
-    var opt:any = this.options;
-    for (var key in _options) {
+  readOptions(options: CameraOption | any)  {
+    let opt: CameraOption | any = this.options;
+    for (let key in options) {
       if (key === 'rotRange') {
-        for (var key in _options.rotRange) {
-          opt.rotRange[key] = _options.rotRange[key];
+        for (let key in options.rotRange) {
+          opt.rotRange[key] = options.rotRange[key];
         }
       } else if (key === 'distRange') {
-        for (var key in _options.distRange) {
-          opt.distRange[key] = _options.distRange[key];
+        for (let key in options.distRange) {
+          opt.distRange[key] = options.distRange[key];
         }
       } else if (key === 'focusPos') {
-        for (var key in _options.focusPos) {
-          opt.focusPos[key] = _options.focusPos[key];
+        for (let key in options.focusPos) {
+          opt.focusPos[key] = options.focusPos[key];
         }
       } else if (key === 'rotation') {
-        for (var key in _options.rotation) {
-          opt.rotation[key] = _options.rotation[key];
+        for (let key in options.rotation) {
+          opt.rotation[key] = options.rotation[key];
         }
       } else {
-        opt[key] = _options[key];
+        opt[key] = options[key];
       }
     }
     this.distActual = opt.distance;
     this.distTarget = opt.distance;
+
+    // 实际焦点
     this.focusActual = new THREE.Vector3(opt.focusPos.x, opt.focusPos.y, opt.focusPos.z);
+    // 目标焦点
     this.focusTarget = this.focusActual.clone();
     this.rotActual = new THREE.Vector3(opt.rotation.x, opt.rotation.y, opt.rotation.z);
     this.rotTarget = this.rotActual.clone();
@@ -164,6 +184,7 @@ export default abstract class CameraControl {
   }
 
   orbitBy(angleX: any, angleY: any) {
+    console.error('orbitBy...')
     this.rotTarget.x += angleX;
     this.rotTarget.y += angleY;
     this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
@@ -171,6 +192,7 @@ export default abstract class CameraControl {
   }
 
   orbitTo(angleX: any, angleY: any) {
+    console.error('orbitTo...')
     this.rotTarget.x = angleX;
     this.rotTarget.y = angleY;
     this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
@@ -178,29 +200,34 @@ export default abstract class CameraControl {
   }
 
   pan(distX: any, distY: any) {
+    console.error('pan...')
     this.focusTarget.x -= distX;
     this.focusTarget.y += distY;
   }
 
   onWindowResize(vpW: any, vpH: any) {
+    console.error('onWindowResize...')
     this.vpW = vpW;
     this.vpH = vpH;
     this.forceUpdate = true;
   }
 
   onDeviceReorientation(orientation: any) {
+    console.error('onDeviceReorientation...')
     this.gyro.orient = orientation * CameraControl.RADIANS;
     this.forceUpdate = true;
   }
 
   onGyroMove(alpha: any, beta: any, gamma: any) {
-    var acc = this.gyro;
+    console.error('onGyroMove...')
+    let acc = this.gyro;
     acc.alpha = alpha;
     acc.beta = beta;
     acc.gamma = gamma;
   }
 
   follow(target: any) {
+    console.error('follow...')
     this.distTarget = THREE.Math.clamp(this.distTarget, this.options.distRange.min, this.options.distRange.max);
     this.distActual += (this.distTarget - this.distActual) * 0.01;
     this.focusTarget.set(target.x, target.y + 1, target.z + this.distActual);
@@ -210,6 +237,7 @@ export default abstract class CameraControl {
   }
 
   changesOccurred() {
+    console.error('changesOccurred...')
     if (this.options.smartUpdates && this.rotActual.manhattanDistanceTo(this.rotTarget) < 0.01 && Math.abs(this.distActual - this.distTarget) < 0.01 && this.focusActual.manhattanDistanceTo(this.focusTarget) < 0.01) {
       return false;
     }

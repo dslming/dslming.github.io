@@ -1,6 +1,7 @@
 import CameraControl from './CameraControl'
 import { zTween } from './Tool'
 
+
 let THREE = (window as any).THREE
 
 export default class Camera extends CameraControl {
@@ -9,6 +10,7 @@ export default class Camera extends CameraControl {
     vpH: any;
     forceUpdate: any;
     focusActual: any;
+    // 陀螺仪
     gyro: any;
     rotActual: any;
     quatX: any;
@@ -16,9 +18,10 @@ export default class Camera extends CameraControl {
     distActual: any;
     distTarget: any;
 
-    constructor(options:any) {
+    constructor(options: any) {
       super(options)
       this.camera = new THREE.PerspectiveCamera(this.options.fov, this.vpW / this.vpH, 0.1, 100);
+      this.camera.name = 'camera'
     }
     
     onWindowResize(vpW:any, vpH:any) {
@@ -31,20 +34,21 @@ export default class Camera extends CameraControl {
       if (!this.forceUpdate && !this.changesOccurred()) {
         return false;
       }
+      // focusTarget (0, 1, 0)
       this.focusActual.lerp(this.focusTarget, 0.05);
       this.camera.position.copy(this.focusActual);
       if (this.gyro.alpha && this.gyro.beta && this.gyro.gamma) {
-        this.camera.setRotationFromEuler(this.defaultEuler);
-        this.camera.rotateZ(this.gyro.alpha * CameraControl.RADIANS);
-        this.camera.rotateX(this.gyro.beta * CameraControl.RADIANS);
-        this.camera.rotateY(this.gyro.gamma * CameraControl.RADIANS);
-        this.camera.rotation.z += this.gyro.orient;
+        // this.camera.setRotationFromEuler(this.defaultEuler);
+        // this.camera.rotateZ(this.gyro.alpha * CameraControl.RADIANS);
+        // this.camera.rotateX(this.gyro.beta * CameraControl.RADIANS);
+        // this.camera.rotateY(this.gyro.gamma * CameraControl.RADIANS);
+        // this.camera.rotation.z += this.gyro.orient;
       } else {
-        this.rotActual.lerp(this.rotTarget, 0.05);
-        this.quatX.setFromAxisAngle(CameraControl.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
-        this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
-        this.quatY.multiply(this.quatX);
-        this.camera.quaternion.copy(this.quatY);
+        this.rotActual.lerp(this.rotTarget, 0.5);
+        // this.quatX.setFromAxisAngle(CameraControl.AXIS_X, -THREE.Math.degToRad(this.rotActual.x));
+        // this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
+        // this.quatY.multiply(this.quatX);
+        // this.camera.quaternion.copy(this.quatX);
       }
       if (this.distActual !== this.distTarget) {
         this.distActual = zTween(this.distActual, this.distTarget, 0.05);

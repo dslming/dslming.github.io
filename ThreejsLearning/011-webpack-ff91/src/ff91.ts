@@ -56,10 +56,7 @@ export class Control {
         this.cam = new Camera(camOptions)
         this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
         this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
-        let control = new THREE.OrbitControls(this.cam.camera, this.container)
-        control.autoRotate = false
-        control.enabled = true
-
+        this.sceneWGL.add(this.cam.camera)
         // 资源加载
         let manifesto = [
             // Cube textures
@@ -115,6 +112,7 @@ export class Control {
         if (!this.disableHammer) {
           this.cam.orbitBy((event.center.x - this.mousePrev.x) / this.vp.x * 90, (event.center.y - this.mousePrev.y) / this.vp.y * 90);
           this.mousePrev.set(event.center.x, event.center.y);
+          // console.error('hammerPan...')
         } 
         // else {
         //   this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
@@ -131,7 +129,7 @@ export class Control {
       }
       hammerPinch(event: { scale: number; }) {
         this.cam.setDistance(this.zoom / event.scale);
-        // console.error(event, 'hammerPinch')
+        console.error(event, 'hammerPinch')
       }
       hammerPanStart(event: { center: { x: any; y: any; }; }) {
         this.mousePrev.set(event.center.x, event.center.y);
@@ -150,6 +148,7 @@ export class Control {
       }
 
       gestureWheel(event: any) {
+        console.error('gestureWheel')
         switch (event.deltaMode) {
         case WheelEvent.DOM_DELTA_PIXEL:
           this.cam.dolly(event.deltaY * 0.002);
