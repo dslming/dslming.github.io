@@ -138,6 +138,7 @@
             camera.position.z = 6000;
 
             scene = new THREE.Scene();
+            window.scene = scene
 
             geometry = new THREE.Geometry();
 
@@ -182,6 +183,7 @@
             }
 
             mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(0, -40, 0)
             scene.add(mesh);
 
             mesh = new THREE.Mesh(geometry, material);
@@ -223,7 +225,7 @@
             camera.position.y += (- mouseY - camera.position.y) * 0.1;
             camera.position.z = - position + 8000;
 
-            console.log(camera.position);
+            // console.log(camera.position);
 
             renderer.render(scene, camera);
 
