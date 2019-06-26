@@ -2,7 +2,7 @@
 import Camera from './Camera'
 import ViewTour from './ViewTour'
 import AssetLoader from './AssetLoader'
-
+import CameraDebug from './CameraDebug'
 const THREE = (window as any).THREE
 const Hammer = (window as any).Hammer
 
@@ -24,6 +24,7 @@ export class Control {
     mouseMoveRef: any;
     onMouseMove: any;
     firstZoomRef: any
+    cameraDebug: any
 
     constructor() {
         this.disableRender = false
@@ -35,7 +36,11 @@ export class Control {
         this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight)
         this.sceneWGL.background = new THREE.Color(0x000000);
         this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
+        this.rendererWGL.setPixelRatio(window.devicePixelRatio);
         this.rendererWGL.setSize(this.vp.x, this.vp.y);
+        this.rendererWGL.autoClear = false
+        this.rendererWGL.autoUpdate = false
+        this.rendererWGL.autoClearStencil　= false
         this.container = document.getElementById("GLCanvas")
         this.container.appendChild(this.rendererWGL.domElement);
 
@@ -85,12 +90,16 @@ export class Control {
             window.addEventListener('wheel', this.gestureWheel.bind(this), false);
             this.initHammer()
             this.hammer.on('pinch', this.firstZoomRef);
+
+             // 相机调试
+            this.cameraDebug = new CameraDebug(this.cam.camera, this.sceneWGL, this.rendererWGL, this.vp.x, this.vp.y)
         })
         this.assetLoader.start()
         this.firstZoomRef = this.hammerFirstZoom.bind(this);
     }
     update(t:any) {
         this.disableRender && (this.viewTour.update(t))
+        this.cameraDebug && this.cameraDebug.run()
     }
  
     initHammer() {

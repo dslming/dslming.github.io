@@ -46,8 +46,8 @@ export default class ViewTour{
         z: 0
       },
       rotation: {
-        x: -90,
-        y: 0
+        x: 0,
+        y: 90
       },
       distRange: {
         max: 7,
@@ -125,9 +125,10 @@ export default class ViewTour{
       g: 1,
       b: 1
     });
+
+
     TweenLite.to(this.cam.rotTarget, 3, {
-      x: -125,
-      y: 5
+      y: 125
     });
     TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y }); // (0, 1, 0)
     TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist }); // 8
@@ -236,7 +237,7 @@ export default class ViewTour{
     // this.dirLight.position.multiplyScalar(0.5);
     // this.dirLight.position.y += 1;
 
-    this.rendererWGL.render(this.sceneWGL, this.cam.camera);
+    // this.rendererWGL.render(this.sceneWGL, this.cam.camera);
     // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
     // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
     return true;

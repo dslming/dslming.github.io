@@ -99,12 +99,12 @@ class Game {
     this.updateUV(this.farView);
     this.scene.add(this.farView);
 
-    // 用户相机
+    // user
     this.cameraUser = new THREE.PerspectiveCamera(FOVY, ASPECT_RATIO, NEAR_LENGTH - MARGIN_Z, FAR_LENGTH + MARGIN_Z);
     this.cameraUser.name = 'cameraUser'
     this.scene.add(this.cameraUser);
 
-    // 调试相机
+    // debug
     this.cameraDebugHelp = new THREE.CameraHelper(this.cameraUser)
     this.cameraDebugHelp.name = 'cameraDebugHelp'
     this.cameraDebug = new THREE.PerspectiveCamera(FOVY, CAMERA_VIEW_WIDTH / CAMERA_VIEW_HEIGHT, 1, 500);
@@ -114,7 +114,6 @@ class Game {
     this.scene.add(this.cameraDebug);
     this.scene.add(this.cameraDebugHelp);
 
-    // 运行
     this.run()
   }
 

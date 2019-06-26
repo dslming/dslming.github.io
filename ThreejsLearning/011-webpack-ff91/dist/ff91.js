@@ -1003,11 +1003,11 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
                 // this.camera.rotation.z += this.gyro.orient;
             }
             else {
-                this.rotActual.lerp(this.rotTarget, 0.5);
-                // this.quatX.setFromAxisAngle(CameraControl.AXIS_X, -THREE.Math.degToRad(this.rotActual.x));
-                // this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
+                // this.rotActual.lerp(this.rotTarget, 0.05);
+                // this.quatX.setFromAxisAngle(CameraControl.AXIS_X, THREE.Math.degToRad(this.rotActual.x));
+                // this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, THREE.Math.degToRad(this.rotActual.y));
                 // this.quatY.multiply(this.quatX);
-                // this.camera.quaternion.copy(this.quatX);
+                // this.camera.quaternion.copy(this.quatY);
             }
             if (this.distActual !== this.distTarget) {
                 this.distActual = Tool_3.zTween(this.distActual, this.distTarget, 0.05);
@@ -1019,6 +1019,53 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
         return Camera;
     }(CameraControl_1.default));
     exports.default = Camera;
+});
+define("CameraDebug", ["require", "exports"], function (require, exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var CAMERA_VIEW_WIDTH = 480 / 480 * 500;
+    var CAMERA_VIEW_HEIGHT = 320 / 480 * 500;
+    var THREE = window.THREE;
+    var CameraDebug = /** @class */ (function () {
+        function CameraDebug(userCamera, scene, renderer, vw, vh) {
+            this.time = 0;
+            this.renderer = renderer;
+            this.scene = scene;
+            this.userCamera = userCamera;
+            // 给userCamera 加 help
+            this.userCameraHelp = new THREE.CameraHelper(userCamera);
+            this.userCameraHelp.name = 'userCameraHelp';
+            scene.add(this.userCameraHelp);
+            // 配置调试相机
+            this.debugCamera = new THREE.PerspectiveCamera(30, CAMERA_VIEW_WIDTH / CAMERA_VIEW_HEIGHT, 1, 500);
+            this.debugCamera.name = 'debugCamera';
+            scene.add(this.debugCamera);
+        }
+        CameraDebug.prototype.update = function (dt) {
+            this.time += dt;
+            var AROUND_VECTOR = new THREE.Vector3(0, 40, 40);
+            this.debugCamera.position.copy(AROUND_VECTOR);
+            this.debugCamera.lookAt(0, 0, 0);
+        };
+        CameraDebug.prototype.draw = function () {
+            this.renderer.clear();
+            this.userCameraHelp.update();
+            // user渲染器。setScissor （left ，positiveYUpBottom ，width ，height ）;
+            this.renderer.setScissor(0, CAMERA_VIEW_HEIGHT, CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+            this.renderer.setViewport(0, CAMERA_VIEW_HEIGHT, CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+            this.renderer.render(this.scene, this.userCamera);
+            // debug
+            this.renderer.setScissor(0, 0, CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+            this.renderer.setViewport(0, 0, CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+            this.renderer.render(this.scene, this.debugCamera);
+        };
+        CameraDebug.prototype.run = function () {
+            this.update(1 / 60);
+            this.draw();
+        };
+        return CameraDebug;
+    }());
+    exports.default = CameraDebug;
 });
 define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, exports, Tool_4, Props_2) {
     "use strict";
@@ -2004,8 +2051,8 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
                     z: 0
                 },
                 rotation: {
-                    x: -90,
-                    y: 0
+                    x: 0,
+                    y: 90
                 },
                 distRange: {
                     max: 7,
@@ -2086,8 +2133,7 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
                 b: 1
             });
             TweenLite.to(this.cam.rotTarget, 3, {
-                x: -125,
-                y: 5
+                y: 125
             });
             TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y }); // (0, 1, 0)
             TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist }); // 8
@@ -2190,7 +2236,7 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
             // this.dirLight.position.copy(this.cam.camera.position);
             // this.dirLight.position.multiplyScalar(0.5);
             // this.dirLight.position.y += 1;
-            this.rendererWGL.render(this.sceneWGL, this.cam.camera);
+            // this.rendererWGL.render(this.sceneWGL, this.cam.camera);
             // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
             // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
             return true;
@@ -2199,12 +2245,13 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
     }());
     exports.default = ViewTour;
 });
-define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoader"], function (require, exports, tslib_8, Camera_1, ViewTour_1, AssetLoader_1) {
+define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoader", "CameraDebug"], function (require, exports, tslib_8, Camera_1, ViewTour_1, AssetLoader_1, CameraDebug_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     Camera_1 = tslib_8.__importDefault(Camera_1);
     ViewTour_1 = tslib_8.__importDefault(ViewTour_1);
     AssetLoader_1 = tslib_8.__importDefault(AssetLoader_1);
+    CameraDebug_1 = tslib_8.__importDefault(CameraDebug_1);
     var THREE = window.THREE;
     var Hammer = window.Hammer;
     var Control = /** @class */ (function () {
@@ -2219,7 +2266,11 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
             this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight);
             this.sceneWGL.background = new THREE.Color(0x000000);
             this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
+            this.rendererWGL.setPixelRatio(window.devicePixelRatio);
             this.rendererWGL.setSize(this.vp.x, this.vp.y);
+            this.rendererWGL.autoClear = false;
+            this.rendererWGL.autoUpdate = false;
+            this.rendererWGL.autoClearStencil = false;
             this.container = document.getElementById("GLCanvas");
             this.container.appendChild(this.rendererWGL.domElement);
             // 相机
@@ -2268,12 +2319,15 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
                 window.addEventListener('wheel', _this.gestureWheel.bind(_this), false);
                 _this.initHammer();
                 _this.hammer.on('pinch', _this.firstZoomRef);
+                // 相机调试
+                _this.cameraDebug = new CameraDebug_1.default(_this.cam.camera, _this.sceneWGL, _this.rendererWGL, _this.vp.x, _this.vp.y);
             });
             this.assetLoader.start();
             this.firstZoomRef = this.hammerFirstZoom.bind(this);
         }
         Control.prototype.update = function (t) {
             this.disableRender && (this.viewTour.update(t));
+            this.cameraDebug && this.cameraDebug.run();
         };
         Control.prototype.initHammer = function () {
             this.hammer = new Hammer(document.getElementById('CSSCanvas'));

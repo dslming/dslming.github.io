@@ -551,7 +551,7 @@
                     this.cam.rotTarget.x = THREE.Math.randFloatSpread(30);
                     this.cam.rotTarget.y = THREE.Math.randFloatSpread(30);
                     this.viewPreload = new viewPreload_1.default(this.sceneWGL, this.rendererWGL, this.cam, this.vp);
-                    this.viewActive = this.viewPreload;
+                    // this.viewActive = this.viewPreload;
                     this.mousePrev = new THREE.Vector2();
                     this.cardControls = new CardControls_1.default(this);
                     this.mouseMoveRef = this.onMouseMove.bind(this);
@@ -776,9 +776,10 @@
                     this.viewActive.onWindowResize(this.vp);
                 };
                 Controls.prototype.update = function (t) {
-                    if (!this.disableRender && this.viewActive.update(t) && this.devMode) {
-                        this.stats.update();
-                    }
+                    this.viewActive && this.viewActive.update(t)
+                    // if (!this.disableRender && this.viewActive.update(t) && this.devMode) {
+                    //     this.stats.update();
+                    // }
                 };
                 return Controls;
             }());
@@ -2420,14 +2421,14 @@
                     if (this.cam.update() === false) {
                         return false;
                     }
-                    this.carProps.update(t);
-                    this.car.update(this.carProps);
-                    this.dirLight.position.copy(this.cam.camera.position);
-                    this.dirLight.position.multiplyScalar(0.5);
-                    this.dirLight.position.y += 1;
+                    // this.carProps.update(t);
+                    // this.car.update(this.carProps);
+                    // this.dirLight.position.copy(this.cam.camera.position);
+                    // this.dirLight.position.multiplyScalar(0.5);
+                    // this.dirLight.position.y += 1;
                     this.rendererWGL.render(this.sceneWGL, this.cam.camera);
-                    this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
-                    this.rendererCSS.render(this.sceneCSS, this.cam.camera);
+                    // this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
+                    // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
                     return true;
                 };
                 return ViewTour;
