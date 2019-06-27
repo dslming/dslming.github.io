@@ -91,14 +91,14 @@ export class Control {
             this.hammer.on('pinch', this.firstZoomRef);
 
              // 相机调试
-            this.cameraDebug = new CameraDebug(this.cam.camera, this.sceneWGL, this.rendererWGL, this.vp.x, this.vp.y)
+            // this.cameraDebug = new CameraDebug(this.cam.camera, this.sceneWGL, this.rendererWGL, this.vp.x, this.vp.y)
         })
         this.assetLoader.start()
         this.firstZoomRef = this.hammerFirstZoom.bind(this);
     }
     update(t:any) {
         this.disableRender && (this.viewTour.update(t))
-        this.cameraDebug && this.cameraDebug.run()
+        // this.cameraDebug && this.cameraDebug.run()
     }
  
     initHammer() {
@@ -109,28 +109,37 @@ export class Control {
         });
         this.hammer.get('pinch').set({ enable: true });
         this.hammer.on('pan', this.hammerPan.bind(this));
-        this.hammer.on('pan', this.hammerFirstPan.bind(this));
+        // this.hammer.on('pan', this.hammerFirstPan.bind(this));
         this.hammer.on('panstart', this.hammerPanStart.bind(this));
         this.hammer.on('panend', this.hammerPanEnd.bind(this));
         this.hammer.on('pinch', this.hammerPinch.bind(this));
         this.hammer.on('pinchstart', this.hammerPinchStart.bind(this));
     }
 
+    // 鼠标每次移动的坐标
     hammerPan(event: { center: { x: number; y: number; }; }) {
-        if (!this.disableHammer) {
-          this.cam.orbitBy((event.center.x - this.mousePrev.x) / this.vp.x * 90, (event.center.y - this.mousePrev.y) / this.vp.y * 90);
-          this.mousePrev.set(event.center.x, event.center.y);
-          // console.error('hammerPan...')
-        } 
-        // else {
-        //   this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
-        // }
+      if (!this.disableHammer) {
+        let angleX = (event.center.x - this.mousePrev.x) / this.vp.x * 100
+        let angleY = (event.center.y - this.mousePrev.y) / this.vp.y * 100
+        this.cam.orbitBy(angleX, angleY);
+        
+        // 记录这次的坐标位置
+        this.mousePrev.set(event.center.x, event.center.y);
+      } 
+      else {
+        // this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
+      }
+    }
+
+      hammerPanStart(event: { center: { x: any; y: any; }; }) {
+        this.mousePrev.set(event.center.x, event.center.y);
       }
 
       hammerPanEnd(event: any) {
         this.disableHammer = false;
         // this.cardControls.knobReleased();
       }
+
       hammerPinchStart(event: any) {
         this.zoom = this.cam.getDistance();
         console.error(event)
@@ -139,10 +148,7 @@ export class Control {
         this.cam.setDistance(this.zoom / event.scale);
         console.error(event, 'hammerPinch')
       }
-      hammerPanStart(event: { center: { x: any; y: any; }; }) {
-        this.mousePrev.set(event.center.x, event.center.y);
-        // console.error(event, 'hammerPanStart')
-      }
+    
       hammerFirstZoom(event: any) {
         // console.error(event, 'hammerFirstZoom')
         // this.gA.uiEvent('vehicle-zoom', '3DTour');

@@ -237,7 +237,7 @@ export default class ViewTour{
     // this.dirLight.position.multiplyScalar(0.5);
     // this.dirLight.position.y += 1;
 
-    // this.rendererWGL.render(this.sceneWGL, this.cam.camera);
+    this.rendererWGL.render(this.sceneWGL, this.cam.camera);
     // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
     // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
     return true;

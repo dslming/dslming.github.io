@@ -44,9 +44,12 @@ export default class Camera extends CameraControl {
         // this.camera.rotateY(this.gyro.gamma * CameraControl.RADIANS);
         // this.camera.rotation.z += this.gyro.orient;
       } else {
+        // 每次减少 0.05
         this.rotActual.lerp(this.rotTarget, 0.05);
-        this.quatX.setFromAxisAngle(CameraControl.AXIS_X, THREE.Math.degToRad(this.rotActual.x));
-        this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, THREE.Math.degToRad(this.rotActual.y));
+
+        // 鼠标移动方向和旋转方向相反,所以这里取负号
+        this.quatX.setFromAxisAngle(CameraControl.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
+        this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
         this.quatY.multiply(this.quatX);
         this.camera.quaternion.copy(this.quatY);
       }

@@ -910,7 +910,7 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
             this.distTarget = THREE.Math.clamp(this.distTarget, this.options.distRange.min, this.options.distRange.max);
         };
         CameraControl.prototype.orbitBy = function (angleX, angleY) {
-            console.error('orbitBy...');
+            console.error('orbitBy...', angleX, angleY);
             this.rotTarget.x += angleX;
             this.rotTarget.y += angleY;
             this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
@@ -1003,9 +1003,11 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
                 // this.camera.rotation.z += this.gyro.orient;
             }
             else {
+                // 每次减少 0.05
                 this.rotActual.lerp(this.rotTarget, 0.05);
-                this.quatX.setFromAxisAngle(CameraControl_1.default.AXIS_X, THREE.Math.degToRad(this.rotActual.x));
-                this.quatY.setFromAxisAngle(CameraControl_1.default.AXIS_Y, THREE.Math.degToRad(this.rotActual.y));
+                // 鼠标移动方向和旋转方向相反,所以这里取负号
+                this.quatX.setFromAxisAngle(CameraControl_1.default.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
+                this.quatY.setFromAxisAngle(CameraControl_1.default.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
                 this.quatY.multiply(this.quatX);
                 this.camera.quaternion.copy(this.quatY);
             }
@@ -2236,7 +2238,7 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
             // this.dirLight.position.copy(this.cam.camera.position);
             // this.dirLight.position.multiplyScalar(0.5);
             // this.dirLight.position.y += 1;
-            // this.rendererWGL.render(this.sceneWGL, this.cam.camera);
+            this.rendererWGL.render(this.sceneWGL, this.cam.camera);
             // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
             // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
             return true;
@@ -2245,13 +2247,12 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
     }());
     exports.default = ViewTour;
 });
-define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoader", "CameraDebug"], function (require, exports, tslib_8, Camera_1, ViewTour_1, AssetLoader_1, CameraDebug_1) {
+define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoader"], function (require, exports, tslib_8, Camera_1, ViewTour_1, AssetLoader_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     Camera_1 = tslib_8.__importDefault(Camera_1);
     ViewTour_1 = tslib_8.__importDefault(ViewTour_1);
     AssetLoader_1 = tslib_8.__importDefault(AssetLoader_1);
-    CameraDebug_1 = tslib_8.__importDefault(CameraDebug_1);
     var THREE = window.THREE;
     var Hammer = window.Hammer;
     var Control = /** @class */ (function () {
@@ -2319,14 +2320,14 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
                 _this.initHammer();
                 _this.hammer.on('pinch', _this.firstZoomRef);
                 // 相机调试
-                _this.cameraDebug = new CameraDebug_1.default(_this.cam.camera, _this.sceneWGL, _this.rendererWGL, _this.vp.x, _this.vp.y);
+                // this.cameraDebug = new CameraDebug(this.cam.camera, this.sceneWGL, this.rendererWGL, this.vp.x, this.vp.y)
             });
             this.assetLoader.start();
             this.firstZoomRef = this.hammerFirstZoom.bind(this);
         }
         Control.prototype.update = function (t) {
             this.disableRender && (this.viewTour.update(t));
-            this.cameraDebug && this.cameraDebug.run();
+            // this.cameraDebug && this.cameraDebug.run()
         };
         Control.prototype.initHammer = function () {
             this.hammer = new Hammer(document.getElementById('CSSCanvas'));
@@ -2336,21 +2337,27 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
             });
             this.hammer.get('pinch').set({ enable: true });
             this.hammer.on('pan', this.hammerPan.bind(this));
-            this.hammer.on('pan', this.hammerFirstPan.bind(this));
+            // this.hammer.on('pan', this.hammerFirstPan.bind(this));
             this.hammer.on('panstart', this.hammerPanStart.bind(this));
             this.hammer.on('panend', this.hammerPanEnd.bind(this));
             this.hammer.on('pinch', this.hammerPinch.bind(this));
             this.hammer.on('pinchstart', this.hammerPinchStart.bind(this));
         };
+        // 鼠标每次移动的坐标
         Control.prototype.hammerPan = function (event) {
             if (!this.disableHammer) {
-                this.cam.orbitBy((event.center.x - this.mousePrev.x) / this.vp.x * 90, (event.center.y - this.mousePrev.y) / this.vp.y * 90);
+                var angleX = (event.center.x - this.mousePrev.x) / this.vp.x * 100;
+                var angleY = (event.center.y - this.mousePrev.y) / this.vp.y * 100;
+                this.cam.orbitBy(angleX, angleY);
+                // 记录这次的坐标位置
                 this.mousePrev.set(event.center.x, event.center.y);
-                // console.error('hammerPan...')
             }
-            // else {
-            //   this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
-            // }
+            else {
+                // this.cardControls.knobMoved(event.center.x - this.mousePrev.x, event.center.y - this.mousePrev.y);
+            }
+        };
+        Control.prototype.hammerPanStart = function (event) {
+            this.mousePrev.set(event.center.x, event.center.y);
         };
         Control.prototype.hammerPanEnd = function (event) {
             this.disableHammer = false;
@@ -2363,10 +2370,6 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
         Control.prototype.hammerPinch = function (event) {
             this.cam.setDistance(this.zoom / event.scale);
             console.error(event, 'hammerPinch');
-        };
-        Control.prototype.hammerPanStart = function (event) {
-            this.mousePrev.set(event.center.x, event.center.y);
-            // console.error(event, 'hammerPanStart')
         };
         Control.prototype.hammerFirstZoom = function (event) {
             // console.error(event, 'hammerFirstZoom')
