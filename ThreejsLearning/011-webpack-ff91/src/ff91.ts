@@ -34,7 +34,6 @@ export class Control {
 
         // 渲染
         this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight)
-        this.sceneWGL.background = new THREE.Color(0x000000);
         this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
         this.rendererWGL.setPixelRatio(window.devicePixelRatio);
         this.rendererWGL.setSize(this.vp.x, this.vp.y);

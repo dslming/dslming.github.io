@@ -29,7 +29,7 @@ export default class CameraDebug {
 
     update(dt:any) {
         this.time += dt;
-        let AROUND_VECTOR = new THREE.Vector3(0, 40, 40)
+        let AROUND_VECTOR = new THREE.Vector3(0, 30, 30)
         this.debugCamera.position.copy(AROUND_VECTOR)
         this.debugCamera.lookAt(0, 0, 0)
     }

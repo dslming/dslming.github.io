@@ -1003,11 +1003,11 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
                 // this.camera.rotation.z += this.gyro.orient;
             }
             else {
-                // this.rotActual.lerp(this.rotTarget, 0.05);
-                // this.quatX.setFromAxisAngle(CameraControl.AXIS_X, THREE.Math.degToRad(this.rotActual.x));
-                // this.quatY.setFromAxisAngle(CameraControl.AXIS_Y, THREE.Math.degToRad(this.rotActual.y));
-                // this.quatY.multiply(this.quatX);
-                // this.camera.quaternion.copy(this.quatY);
+                this.rotActual.lerp(this.rotTarget, 0.05);
+                this.quatX.setFromAxisAngle(CameraControl_1.default.AXIS_X, THREE.Math.degToRad(this.rotActual.x));
+                this.quatY.setFromAxisAngle(CameraControl_1.default.AXIS_Y, THREE.Math.degToRad(this.rotActual.y));
+                this.quatY.multiply(this.quatX);
+                this.camera.quaternion.copy(this.quatY);
             }
             if (this.distActual !== this.distTarget) {
                 this.distActual = Tool_3.zTween(this.distActual, this.distTarget, 0.05);
@@ -1043,7 +1043,7 @@ define("CameraDebug", ["require", "exports"], function (require, exports) {
         }
         CameraDebug.prototype.update = function (dt) {
             this.time += dt;
-            var AROUND_VECTOR = new THREE.Vector3(0, 40, 40);
+            var AROUND_VECTOR = new THREE.Vector3(0, 30, 30);
             this.debugCamera.position.copy(AROUND_VECTOR);
             this.debugCamera.lookAt(0, 0, 0);
         };
@@ -2264,7 +2264,6 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
             this.sceneWGL.name = 'sceneWGL';
             // 渲染
             this.vp = new THREE.Vector2(window.innerWidth, window.innerHeight);
-            this.sceneWGL.background = new THREE.Color(0x000000);
             this.rendererWGL = new THREE.WebGLRenderer({ antialias: true });
             this.rendererWGL.setPixelRatio(window.devicePixelRatio);
             this.rendererWGL.setSize(this.vp.x, this.vp.y);
