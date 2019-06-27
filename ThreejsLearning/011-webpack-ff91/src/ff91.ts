@@ -119,8 +119,8 @@ export class Control {
     // 鼠标每次移动的坐标
     hammerPan(event: { center: { x: number; y: number; }; }) {
       if (!this.disableHammer) {
-        let angleX = (event.center.x - this.mousePrev.x) / this.vp.x * 100
-        let angleY = (event.center.y - this.mousePrev.y) / this.vp.y * 100
+        let angleX = (event.center.x - this.mousePrev.x) / this.vp.x * 80
+        let angleY = (event.center.y - this.mousePrev.y) / this.vp.y * 80
         this.cam.orbitBy(angleX, angleY);
         
         // 记录这次的坐标位置

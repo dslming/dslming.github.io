@@ -345,11 +345,15 @@ export class CardProps {
 
   constructor () {
     this.time = new Time(undefined);
+    // 速度
     this.velocity = new THREE.Vector2();
     this.speed = 1;
+    // 加速度
     this.accel = 0;
     this.pos = new THREE.Vector2();
+    // 纵向推力
     this.longitMomentum = 0;
+    // 横向推力
     this.lateralMomentum = 0;
     this.wAngleInner = 0;
     this.wAngleOuter = 0;
@@ -358,7 +362,8 @@ export class CardProps {
     this.keys = new Array();
     this.braking = false;
     this.headLights = 2;
-    this.omega = 0;
+
+    this.omega = 0
     this.theta = 0;
   }
 

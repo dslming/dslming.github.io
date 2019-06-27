@@ -560,11 +560,15 @@ define("Props", ["require", "exports", "Tool"], function (require, exports, Tool
         function CardProps() {
             this.GOLDEN_RATIO = 1000;
             this.time = new Tool_1.Time(undefined);
+            // 速度
             this.velocity = new THREE.Vector2();
             this.speed = 1;
+            // 加速度
             this.accel = 0;
             this.pos = new THREE.Vector2();
+            // 纵向推力
             this.longitMomentum = 0;
+            // 横向推力
             this.lateralMomentum = 0;
             this.wAngleInner = 0;
             this.wAngleOuter = 0;
@@ -910,7 +914,6 @@ define("CameraControl", ["require", "exports"], function (require, exports) {
             this.distTarget = THREE.Math.clamp(this.distTarget, this.options.distRange.min, this.options.distRange.max);
         };
         CameraControl.prototype.orbitBy = function (angleX, angleY) {
-            console.error('orbitBy...', angleX, angleY);
             this.rotTarget.x += angleX;
             this.rotTarget.y += angleY;
             this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
@@ -993,7 +996,7 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
                 return false;
             }
             // focusTarget (0, 1, 0)
-            this.focusActual.lerp(this.focusTarget, 0.05);
+            this.focusActual.lerp(this.focusTarget, 0.2);
             this.camera.position.copy(this.focusActual);
             if (this.gyro.alpha && this.gyro.beta && this.gyro.gamma) {
                 // this.camera.setRotationFromEuler(this.defaultEuler);
@@ -1003,8 +1006,8 @@ define("Camera", ["require", "exports", "tslib", "CameraControl", "Tool"], funct
                 // this.camera.rotation.z += this.gyro.orient;
             }
             else {
-                // 每次减少 0.05
-                this.rotActual.lerp(this.rotTarget, 0.05);
+                // 每次减少 0.5
+                this.rotActual.lerp(this.rotTarget, 0.2);
                 // 鼠标移动方向和旋转方向相反,所以这里取负号
                 this.quatX.setFromAxisAngle(CameraControl_1.default.AXIS_X, -THREE.Math.degToRad(this.rotActual.y));
                 this.quatY.setFromAxisAngle(CameraControl_1.default.AXIS_Y, -THREE.Math.degToRad(this.rotActual.x));
@@ -1089,15 +1092,22 @@ define("CarWheels", ["require", "exports", "Tool", "Props"], function (require, 
             this.wPosY = Props_2.FF91Props.WheelDiam / 2;
             var wheelGeom = _cargo.getMesh('wheel');
             this.addWheels(wheelGeom.getObjectByName('Wheel'));
+            // 刹车
             this.addBrakes(wheelGeom.getObjectByName('Brake'));
         }
         CarWheels.prototype.addWheels = function (_wheelGroup) {
             this.wheelFL = _wheelGroup;
+            // 轮胎
             var meshRubber = this.wheelFL.getObjectByName('Tire');
+            // 轮缘银
             var meshSilver = this.wheelFL.getObjectByName('RimsSilver');
+            // 黑色轮辋
             var meshBlack = this.wheelFL.getObjectByName('RimsBlack');
+            // 橡胶
             var geomRubber = meshRubber.geometry;
+            // 银
             var geomSilver = meshSilver.geometry;
+            // 黑
             var geomBlack = meshBlack.geometry;
             geomRubber.applyMatrix(this.ogMatrix);
             geomSilver.applyMatrix(this.ogMatrix);
@@ -1893,7 +1903,9 @@ define("CarBody", ["require", "exports", "tslib", "CarWheels", "carLights", "Mot
             this.carWhole.name = 'car';
             this.carWhole.position.x = -1.56;
             this.parent.add(this.carWhole);
+            // 底座
             this.carChassis = this.buildCarChassis(_cargo.getMesh('body'), _cargo.getCubeTexture('envReflection'));
+            this.carChassis.name = 'carChassis';
             this.carWhole.add(this.carChassis);
             this.addShadow(_cargo.getTexture('shadow'));
             this.carLights = new carLights_1.default(this.carChassis, _cargo);
@@ -1901,9 +1913,9 @@ define("CarBody", ["require", "exports", "tslib", "CarWheels", "carLights", "Mot
             this.carMotors = new Motors_1.default(this.carChassis, _cargo.getMesh('xrays'));
             this.carBatts = new Batts_1.default(this.carWhole, _cargo.getMesh('xrays'));
         }
-        CarBody.prototype.buildCarChassis = function (_bodyGeom, _cubeText) {
-            _bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
-            _bodyGeom.position.set(1.56, 0, 0);
+        CarBody.prototype.buildCarChassis = function (bodyGeom, _cubeText) {
+            bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
+            bodyGeom.position.set(1.56, 0, 0);
             this.envCube = _cubeText;
             this.envCube.format = THREE.RGBFormat;
             this.matBodySilver = new THREE.MeshStandardMaterial({
@@ -1935,12 +1947,12 @@ define("CarBody", ["require", "exports", "tslib", "CarWheels", "carLights", "Mot
                 transparent: true,
                 blending: THREE.AdditiveBlending
             });
-            _bodyGeom.getObjectByName('BodyBlack').material = this.matBodyBlack;
-            _bodyGeom.getObjectByName('BodySilver').material = this.matBodySilver;
-            _bodyGeom.getObjectByName('GlassTransparent').material = this.matGlassTransp;
-            _bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
-            _bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
-            return _bodyGeom;
+            bodyGeom.getObjectByName('BodyBlack').material = this.matBodyBlack;
+            bodyGeom.getObjectByName('BodySilver').material = this.matBodySilver;
+            bodyGeom.getObjectByName('GlassTransparent').material = this.matGlassTransp;
+            bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
+            bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
+            return bodyGeom;
         };
         CarBody.prototype.addShadow = function (_shad) {
             var shadowPlane = new THREE.PlaneBufferGeometry(6.5, 6.5, 1, 1);
@@ -1954,17 +1966,17 @@ define("CarBody", ["require", "exports", "tslib", "CarWheels", "carLights", "Mot
             var shadowMesh = new THREE.Mesh(shadowPlane, shadowMat);
             this.carWhole.add(shadowMesh);
         };
-        CarBody.prototype.onWindowResize = function (_vpH) {
-            this.carLights.onWindowResize(_vpH);
+        CarBody.prototype.onWindowResize = function (vpH) {
+            this.carLights.onWindowResize(vpH);
         };
-        CarBody.prototype.update = function (_props) {
-            this.carWhole.rotation.y = _props.theta;
-            if (_props.longitMomentum !== 0) {
-                this.carChassis.rotation.z = _props.longitMomentum * 0.0015;
-            }
-            this.carChassis.rotation.x = _props.lateralMomentum * 0.002;
-            this.carWheels.update(_props);
-            this.carLights.update(_props);
+        CarBody.prototype.update = function (props) {
+            // this.carWhole.rotation.y = props.theta;
+            // if (props.longitMomentum !== 0) {
+            //   this.carChassis.rotation.z = props.longitMomentum * 0.0015;
+            // }
+            // this.carChassis.rotation.x = props.lateralMomentum * 0.002;
+            this.carWheels.update(props);
+            this.carLights.update(props);
         };
         return CarBody;
     }());
@@ -2053,8 +2065,8 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
                     z: 0
                 },
                 rotation: {
-                    x: 0,
-                    y: 90
+                    x: -90,
+                    y: 0
                 },
                 distRange: {
                     max: 7,
@@ -2135,7 +2147,8 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
                 b: 1
             });
             TweenLite.to(this.cam.rotTarget, 3, {
-                y: 125
+                x: -125,
+                y: 5
             });
             TweenLite.to(this.cam.focusTarget, 3, { y: freeProps.camPos.y }); // (0, 1, 0)
             TweenLite.to(this.cam, 3, { distTarget: freeProps.camDist }); // 8
@@ -2233,10 +2246,10 @@ define("ViewTour", ["require", "exports", "tslib", "CarBody", "Skybox", "Props"]
             if (this.cam.update() === false) {
                 return false;
             }
-            // this.carProps.update(t);
-            // this.car.update(this.carProps);
-            // this.dirLight.position.copy(this.cam.camera.position);
-            // this.dirLight.position.multiplyScalar(0.5);
+            this.carProps.update(t);
+            this.car.update(this.carProps);
+            // 直线光与镜头方向一致
+            this.dirLight.position.copy(this.cam.camera.position);
             // this.dirLight.position.y += 1;
             this.rendererWGL.render(this.sceneWGL, this.cam.camera);
             // this.cam.camera.position.multiplyScalar(this.carProps.GOLDEN_RATIO);
@@ -2346,8 +2359,8 @@ define("ff91", ["require", "exports", "tslib", "Camera", "ViewTour", "AssetLoade
         // 鼠标每次移动的坐标
         Control.prototype.hammerPan = function (event) {
             if (!this.disableHammer) {
-                var angleX = (event.center.x - this.mousePrev.x) / this.vp.x * 100;
-                var angleY = (event.center.y - this.mousePrev.y) / this.vp.y * 100;
+                var angleX = (event.center.x - this.mousePrev.x) / this.vp.x * 80;
+                var angleY = (event.center.y - this.mousePrev.y) / this.vp.y * 80;
                 this.cam.orbitBy(angleX, angleY);
                 // 记录这次的坐标位置
                 this.mousePrev.set(event.center.x, event.center.y);

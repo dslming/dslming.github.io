@@ -27,7 +27,10 @@ export default class CarBody {
     this.carWhole.name = 'car';
     this.carWhole.position.x = -1.56;
     this.parent.add(this.carWhole);
+
+    // 底座
     this.carChassis = this.buildCarChassis(_cargo.getMesh('body'), _cargo.getCubeTexture('envReflection'));
+    this.carChassis.name = 'carChassis'
     this.carWhole.add(this.carChassis);
     this.addShadow(_cargo.getTexture('shadow'));
     this.carLights = new carLights(this.carChassis, _cargo);
@@ -36,9 +39,9 @@ export default class CarBody {
     this.carBatts = new Batts(this.carWhole, _cargo.getMesh('xrays'));
   }
 
-  buildCarChassis(_bodyGeom: any, _cubeText: any) {
-    _bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
-    _bodyGeom.position.set(1.56, 0, 0);
+  buildCarChassis(bodyGeom: any, _cubeText: any) {
+    bodyGeom.scale.set(0.0005, 0.0005, 0.0005);
+    bodyGeom.position.set(1.56, 0, 0);
     this.envCube = _cubeText;
     this.envCube.format = THREE.RGBFormat;
     this.matBodySilver = new THREE.MeshStandardMaterial({
@@ -70,12 +73,12 @@ export default class CarBody {
       transparent: true,
       blending: THREE.AdditiveBlending
     });
-    _bodyGeom.getObjectByName('BodyBlack').material = this.matBodyBlack;
-    _bodyGeom.getObjectByName('BodySilver').material = this.matBodySilver;
-    _bodyGeom.getObjectByName('GlassTransparent').material = this.matGlassTransp;
-    _bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
-    _bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
-    return _bodyGeom;
+    bodyGeom.getObjectByName('BodyBlack').material = this.matBodyBlack;
+    bodyGeom.getObjectByName('BodySilver').material = this.matBodySilver;
+    bodyGeom.getObjectByName('GlassTransparent').material = this.matGlassTransp;
+    bodyGeom.getObjectByName('GlassTinted').material = this.matGlassTinted;
+    bodyGeom.getObjectByName('Undercarriage').material = this.matUndercarriage;
+    return bodyGeom;
   }
   
   addShadow(_shad: any) {
@@ -91,17 +94,17 @@ export default class CarBody {
     this.carWhole.add(shadowMesh);
   }
 
-  onWindowResize(_vpH: any) {
-    this.carLights.onWindowResize(_vpH);
+  onWindowResize(vpH: any) {
+    this.carLights.onWindowResize(vpH);
   }
 
-  update(_props: { theta: any; longitMomentum: number; lateralMomentum: number; }) {
-    this.carWhole.rotation.y = _props.theta;
-    if (_props.longitMomentum !== 0) {
-      this.carChassis.rotation.z = _props.longitMomentum * 0.0015;
-    }
-    this.carChassis.rotation.x = _props.lateralMomentum * 0.002;
-    this.carWheels.update(_props);
-    this.carLights.update(_props);
+  update(props: { theta: any; longitMomentum: number; lateralMomentum: number; }) {
+    // this.carWhole.rotation.y = props.theta;
+    // if (props.longitMomentum !== 0) {
+    //   this.carChassis.rotation.z = props.longitMomentum * 0.0015;
+    // }
+    // this.carChassis.rotation.x = props.lateralMomentum * 0.002;
+    this.carWheels.update(props);
+    this.carLights.update(props);
   }
 }

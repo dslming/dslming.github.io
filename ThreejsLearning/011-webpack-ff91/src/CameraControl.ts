@@ -184,7 +184,6 @@ export default abstract class CameraControl {
   }
 
   orbitBy(angleX: any, angleY: any) {
-    console.error('orbitBy...',angleX, angleY)
     this.rotTarget.x += angleX;
     this.rotTarget.y += angleY;
     this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
