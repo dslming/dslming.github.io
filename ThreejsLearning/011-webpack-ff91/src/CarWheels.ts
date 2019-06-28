@@ -45,23 +45,32 @@ export default class CarWheels {
     this.wPosY = FF91Props.WheelDiam / 2;
     var wheelGeom:any = _cargo.getMesh('wheel');
     this.addWheels(wheelGeom.getObjectByName('Wheel'));
+    // 刹车
     this.addBrakes(wheelGeom.getObjectByName('Brake'));
   }
 
   addWheels(_wheelGroup: any) {
     this.wheelFL = _wheelGroup;
+    // 轮胎
     var meshRubber = this.wheelFL.getObjectByName('Tire');
+    // 轮缘银
     var meshSilver = this.wheelFL.getObjectByName('RimsSilver');
+    // 黑色轮辋
     var meshBlack = this.wheelFL.getObjectByName('RimsBlack');
+    // 橡胶
     var geomRubber = meshRubber.geometry;
+    // 银
     var geomSilver = meshSilver.geometry;
+    // 黑
     var geomBlack = meshBlack.geometry;
+
     geomRubber.applyMatrix(this.ogMatrix);
     geomSilver.applyMatrix(this.ogMatrix);
     geomBlack.applyMatrix(this.ogMatrix);
     geomRubber.computeVertexNormals();
     geomSilver.computeVertexNormals();
     geomBlack.computeVertexNormals();
+
     var matRubber = new THREE.MeshLambertMaterial({
       color: 2105376,
       map: this.thread,
@@ -73,7 +82,7 @@ export default class CarWheels {
       side: THREE.DoubleSide
     });
     var matBlack = new THREE.MeshPhongMaterial({
-      color: 1118481,
+      color: 1118481, 
       shininess: 50,
       side: THREE.DoubleSide
     });

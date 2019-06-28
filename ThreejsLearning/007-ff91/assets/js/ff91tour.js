@@ -2772,6 +2772,7 @@
                 };
                 // Camera orbits by an angle amount
                 CamControl.prototype.orbitBy = function (angleX, angleY) {
+                    // console.error(angleX, angleY)
                     this.rotTarget.x += angleX;
                     this.rotTarget.y += angleY;
                     this.rotTarget.x = THREE.Math.clamp(this.rotTarget.x, this.options.rotRange.xMin, this.options.rotRange.xMax);
