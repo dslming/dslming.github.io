@@ -1721,6 +1721,7 @@
                 };
                 /////////////////////////////////////// PRIVATE METHODS ////////////////////////////////////////
                 Card.prototype.build = function (_id, prop) {
+                    console.error(_id, prop)
                     this.showing = true;
                     // Get contents from DOM
                     if (this.contents[_id] === undefined) {
@@ -2421,14 +2422,14 @@
                     if (this.cam.update() === false) {
                         return false;
                     }
-                    // this.carProps.update(t);
-                    // this.car.update(this.carProps);
-                    // this.dirLight.position.copy(this.cam.camera.position);
-                    // this.dirLight.position.multiplyScalar(0.5);
-                    // this.dirLight.position.y += 1;
+                    this.carProps.update(t);
+                    this.car.update(this.carProps);
+                    this.dirLight.position.copy(this.cam.camera.position);
+                    this.dirLight.position.multiplyScalar(0.5);
+                    this.dirLight.position.y += 1;
                     this.rendererWGL.render(this.sceneWGL, this.cam.camera);
-                    // this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
-                    // this.rendererCSS.render(this.sceneCSS, this.cam.camera);
+                    this.cam.camera.position.multiplyScalar(CardProps.GOLDEN_RATIO);
+                    this.rendererCSS.render(this.sceneCSS, this.cam.camera);
                     return true;
                 };
                 return ViewTour;
