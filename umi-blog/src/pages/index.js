@@ -1,5 +1,6 @@
 import Experience from './components/Experience'
 import Education from './components/Education'
+import Footer from './components/Footer'
 import styles from './index.less';
 
 export default function() {
@@ -7,6 +8,7 @@ export default function() {
     <div className={styles.normal}>
       <Experience />
       <Education />
+      <Footer />
     </div>
   );
 }
