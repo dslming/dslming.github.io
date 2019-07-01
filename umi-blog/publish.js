@@ -24,4 +24,9 @@ saveFile('index.html')
 saveFile('umi.css')
 saveFile('umi.js')
 
+shell.exec('git add .')
+shell.exec('git commit -m "上线"')
+shell.exec('git push"')
+
+
 
