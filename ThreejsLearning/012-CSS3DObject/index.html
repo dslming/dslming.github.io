@@ -13,6 +13,7 @@
 </head>
 
 <body>
+    <p>CSS3DObject的使用例子,一个空间中的卡片</p>
     <style>
         .test {
           width: 200px;
@@ -152,7 +153,6 @@
       let card = document.querySelector('.test')
       close.onclick = ()=>{
         card.classList.add('hite')
-        console.error('click close...')
       }
       let game = new Game(eleWebgl, eleCss)
     }, 0)
