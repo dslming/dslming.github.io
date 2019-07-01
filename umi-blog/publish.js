@@ -16,9 +16,11 @@ function saveFile(name, end) {
             }else{
                 console.log(`save ${name} succ`);  
                 if(end) {
+                   setTimeout(()=>{
                     shell.exec('git add .')
                     shell.exec('git commit -m "上线"')
                     shell.exec('git push"')
+                   }, 1000)
                 }  
             }
         });
