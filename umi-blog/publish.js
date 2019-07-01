@@ -20,7 +20,7 @@ function saveFile(name, end) {
                     shell.exec('git add .')
                     shell.exec('git commit -m "上线"')
                     shell.exec('git push"')
-                   }, 1000)
+                   }, 3000)
                 }  
             }
         });
