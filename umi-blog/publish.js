@@ -6,7 +6,7 @@ const shell = require( 'shelljs' )
 shell.exec('npm run build')
 console.log(`run build succ...`)
 
-function saveFile(name) {
+function saveFile(name, end) {
     fs.readFile(`./dist/${name}`, (err, data) => {
         if (err) throw err;
         console.log(`read ${name} succ...`)
@@ -14,7 +14,12 @@ function saveFile(name) {
             if(error){
                 throw error;
             }else{
-                console.log(`save ${name} succ`);    
+                console.log(`save ${name} succ`);  
+                if(end) {
+                    shell.exec('git add .')
+                    shell.exec('git commit -m "上线"')
+                    shell.exec('git push"')
+                }  
             }
         });
     });
@@ -22,11 +27,9 @@ function saveFile(name) {
 
 saveFile('index.html')
 saveFile('umi.css')
-saveFile('umi.js')
+saveFile('umi.js', true)
 
-shell.exec('git add .')
-shell.exec('git commit -m "上线"')
-shell.exec('git push"')
+
 
 
 
