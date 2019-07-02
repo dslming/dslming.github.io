@@ -1,8 +1,8 @@
-// import styles from './index.css';
+import styles from './index.less';
 
 function BasicLayout(props) {
   return (
-    <div >
+    <div className={styles.box}>
       {props.children}
     </div>
   );

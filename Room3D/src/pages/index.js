@@ -1,14 +1,10 @@
-import Experience from './components/Experience'
-import Education from './components/Education'
-import Footer from './components/Footer'
+import Sider from './components/Sider'
 import styles from './index.less';
 
 export default function() {
   return (
     <div className={styles.normal}>
-      <Experience />
-      <Education />
-      <Footer />
+      <Sider />
     </div>
   );
 }
