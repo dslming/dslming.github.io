@@ -19,7 +19,7 @@ module BP3D.Model {
     public needsUpdate = false;
 
     /** The Json loader. */
-    private loader: THREE.JSONLoader;
+    private loader: THREE.LegacyJSONLoader;
 
     /** */
     private itemLoadingCallbacks = $.Callbacks();
