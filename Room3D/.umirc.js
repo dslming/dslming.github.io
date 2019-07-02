@@ -8,7 +8,7 @@ export default {
       antd: true,
       dva: true,
       dynamicImport: false,
-      title: 'umi-blog',
+      title: 'Room3D',
       dll: false,
       
       routes: {

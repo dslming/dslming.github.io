@@ -1,7 +1,12 @@
 import React from 'react';
 import { Menu, Icon, Switch } from 'antd';
-import sytles from './Sider.scss'
+import sytles from './index.scss'
+import router from 'umi/router';
 const { SubMenu } = Menu;
+
+function goToListPage() {
+  router.push('/list');
+}
 
 export default class Sider extends React.Component {
     state = {
@@ -17,6 +22,7 @@ export default class Sider extends React.Component {
   
     handleClick = e => {
       console.log('click ', e);
+      goToListPage()
       this.setState({
         current: e.key,
       });

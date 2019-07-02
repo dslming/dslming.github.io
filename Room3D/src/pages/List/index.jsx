@@ -1,6 +1,6 @@
 import style from '../index.less';
 
-function Footer(props) {
+function List(props) {
   return (
     <div className={style.footer}>
       最后更新时间于2018年12月27日
@@ -9,4 +9,4 @@ function Footer(props) {
 }
 
 
-export default Footer
+export default List
