@@ -2,13 +2,18 @@ import React from 'react';
 import { Menu, Icon, Switch } from 'antd';
 import sytles from './index.scss'
 import router from 'umi/router';
+import { connect } from 'dva';
 const { SubMenu } = Menu;
+
 
 function goToListPage() {
   router.push('/list');
 }
 
-export default class Sider extends React.Component {
+@connect(state => ({
+  ...state.Sider
+}))
+class Sider extends React.Component {
     state = {
       theme: 'dark',
       current: '1',
@@ -21,11 +26,17 @@ export default class Sider extends React.Component {
     };
   
     handleClick = e => {
-      console.log('click ', e);
-      goToListPage()
-      this.setState({
-        current: e.key,
-      });
+      // console.log('click ', e);
+      // goToListPage()
+      // this.setState({
+      //   current: e.key,
+      // });
+      const { dispatch } = this.props;
+      dispatch({
+        type: 'Sider/add',
+        payload: {counter:10}
+      })
+      console.error(this.props.counter)
     };
   
     render() {
@@ -97,4 +108,5 @@ export default class Sider extends React.Component {
     }
   }
   
+  export default Sider;
 //   ReactDOM.render(<Sider />, mountNode);
