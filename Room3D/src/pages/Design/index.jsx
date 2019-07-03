@@ -2,7 +2,7 @@
 function List(props) {
   return (
     <div >
-      test
+      Design
     </div>
   );
 }

@@ -3,6 +3,7 @@ import React from 'react';
 import Media from 'react-media';
 import styles from './index.less';
 import { Layout, Menu, Icon } from 'antd';
+import enLang from '../locales/en-US/main'
 const { Header, Sider, Content } = Layout;
 
 class App extends React.Component {
@@ -11,6 +12,7 @@ class App extends React.Component {
   }
   state = {
     collapsed: false,
+    lang: enLang
   };
 
   toggle = () => {
@@ -22,12 +24,16 @@ class App extends React.Component {
   handleClick(e) {
     switch(e.key) {
       case '1':
-      router.push('/list');
+      router.push('/Edit');
       break
 
       case '2':
-      router.push('/test');
+      router.push('/Design');
       break
+
+      case '3':
+        router.push('/AddItems');
+        break
     }
   }
 
@@ -41,15 +47,15 @@ class App extends React.Component {
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} onClick={this.handleClick}>
             <Menu.Item key="1">
               <Icon type="user" />
-              <span>nav 1</span>
+              <span>{this.state.lang.siderEdit}</span>
             </Menu.Item>
             <Menu.Item key="2">
               <Icon type="video-camera" />
-              <span>nav 2</span>
+              <span>{this.state.lang.siderDisign}</span>
             </Menu.Item>
             <Menu.Item key="3">
               <Icon type="upload" />
-              <span>nav 3</span>
+              <span>{this.state.lang.siderAddItems}</span>
             </Menu.Item>
           </Menu>
         </Sider>
