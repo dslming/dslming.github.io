@@ -7,9 +7,6 @@ import enLang from '../locales/en-US/main'
 const { Header, Sider, Content } = Layout;
 
 class App extends React.Component {
-  constructor(props) {
-    super(props)
-  }
   state = {
     collapsed: false,
     lang: enLang
@@ -33,6 +30,10 @@ class App extends React.Component {
 
       case '3':
         router.push('/AddItems');
+        break
+
+      default:
+        router.push('/Edit');
         break
     }
   }
