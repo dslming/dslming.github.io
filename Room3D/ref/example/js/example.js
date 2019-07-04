@@ -512,7 +512,7 @@ $(document).ready(function() {
   var opts = {
     floorplannerElement: 'floorplanner-canvas',
     threeElement: '#viewer',
-    threeCanvasElement: 'three-canvas',
+    // threeCanvasElement: 'three-canvas',
     textureDir: "models/textures/",
     widget: false
   }

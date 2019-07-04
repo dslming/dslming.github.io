@@ -1,34 +1,40 @@
-export interface Options {
-  /** */
-  widget?: boolean;
-  /**3D Viewer */
-  threeElement?: string;
-  /** */
-  threeCanvasElement? : string;
-  /** 2D Floorplanner */
-  floorplannerElement?: string;
-  /** The texture directory. */
-  textureDir?: string;
-}
+// import * as THREE from "three";
+// // import Model from './model/model'
 
-const Three = (window as any).THREE
-export class Blueprint3d {
-  // private model: Model.Model;
-  private three: any; // Three.Main;
-  // private floorplanner: Floorplanner.Floorplanner;
+// export interface Options {
+//   /** */
+//   widget?: boolean;
+//   /**3D Viewer */
+//   threeElement?: string;
+//   /** 2D Floorplanner */
+//   floorplannerElement?: string;
+//   /** The texture directory. */
+//   textureDir: string;
+// }
 
-  /** Creates an instance.
-   * @param options The initialization options.
-   */
-  constructor(options: Options) {
-    // this.model = new Model.Model(options.textureDir);
-    // this.three = new Three.Main(this.model, options.threeElement, options.threeCanvasElement, {});
+// export class Blueprint3d {
 
-    if (!options.widget) {
-      // this.floorplanner = new Floorplanner.Floorplanner(options.floorplannerElement, this.model.floorplan);
-    }
-    else {
-      // this.three.getController().enabled = false;
-    }
-  }
-}
+//   // private model: Model;
+//   private name: any = '12121212'
+//   private tt: any = new THREE.Vector2()
+
+//   private three: any; // Three.Main;
+//   // private floorplanner: Floorplanner.Floorplanner;
+
+//   constructor(options: Options) {
+//     // this.model = new Model(options.textureDir  );
+//     // this.three = new Three.Main(this.model, options.threeElement, options.threeCanvasElement, {});
+
+//     if (!options.widget) {
+//       // this.floorplanner = new Floorplanner.Floorplanner(options.floorplannerElement, this.model.floorplan);
+//     }
+//     else {
+//       // this.three.getController().enabled = false;
+//     }
+//   }
+// }  
+
+// (window as any).Blueprint3d = Blueprint3d;
+// (window as any).THREE = THREE
+
+console.error(123)
