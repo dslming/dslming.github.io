@@ -4,18 +4,13 @@ import Media from 'react-media';
 import styles from './index.less';
 import { Layout, Menu, Icon } from 'antd';
 import enLang from '../locales/en-US/main'
+// import zhLang from '../locales/zh-CN/main'
 const { Header, Sider, Content } = Layout;
 
 class App extends React.Component {
   state = {
     collapsed: false,
     lang: enLang
-  };
-
-  toggle = () => {
-    this.setState({
-      collapsed: !this.state.collapsed,
-    });
   };
   
   handleClick(e) {
@@ -38,12 +33,23 @@ class App extends React.Component {
     }
   }
 
+  onCollapse = collapsed => {
+    console.log(collapsed);
+    this.setState({ collapsed });
+  };
+
   render() {
     return (
       <Layout style={{
         height: '100%'
       }}>
-        <Sider style={{  backgroundColor: 'rgba(0, 21, 41, 0.8)', padding: 0, height: '100%' }} trigger={null} collapsible collapsed={this.state.collapsed}>
+        <Sider 
+         breakpoint="sm"
+         collapsible 
+         collapsed={this.state.collapsed} 
+         onCollapse={this.onCollapse}
+         style={{  backgroundColor: 'rgba(0, 21, 41, 0.8)', padding: 0, height: '100%' }} 
+          >
           <div className="logo" />
           <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} onClick={this.handleClick}>
             <Menu.Item key="1">
@@ -62,16 +68,15 @@ class App extends React.Component {
         </Sider>
         <Layout>
           <Header style={{ background: '#fff', padding: 0 }}>
-            <Icon
+            {/* <Icon
               className="trigger"
               type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
-            />
+            /> */}
           </Header>
           <Content
             style={{
               margin: '24px 16px',
-              padding: 24,
               background: '#fff',
               minHeight: 280,
             }}

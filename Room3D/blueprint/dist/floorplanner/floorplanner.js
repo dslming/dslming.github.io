@@ -1,0 +1,244 @@
+"use strict";
+/// <reference path="../../lib/jQuery.d.ts" />
+/// <reference path="../model/floorplan.ts" />
+/// <reference path="floorplanner_view.ts" />
+var BP3D;
+(function (BP3D) {
+    var Floorplanner;
+    (function (Floorplanner_1) {
+        /** how much will we move a corner to make a wall axis aligned (cm) */
+        var snapTolerance = 25;
+        /**
+         * The Floorplanner implements an interactive tool for creation of floorplans.
+         */
+        var Floorplanner = /** @class */ (function () {
+            /** */
+            function Floorplanner(canvas, floorplan) {
+                this.floorplan = floorplan;
+                /** */
+                this.mode = 0;
+                /** */
+                this.activeWall = null;
+                /** */
+                this.activeCorner = null;
+                /** */
+                this.originX = 0;
+                /** */
+                this.originY = 0;
+                /** drawing state */
+                this.targetX = 0;
+                /** drawing state */
+                this.targetY = 0;
+                /** drawing state */
+                this.lastNode = null;
+                /** */
+                this.modeResetCallbacks = $.Callbacks();
+                /** */
+                this.mouseDown = false;
+                /** */
+                this.mouseMoved = false;
+                /** in ThreeJS coords */
+                this.mouseX = 0;
+                /** in ThreeJS coords */
+                this.mouseY = 0;
+                /** in ThreeJS coords */
+                this.rawMouseX = 0;
+                /** in ThreeJS coords */
+                this.rawMouseY = 0;
+                /** mouse position at last click */
+                this.lastX = 0;
+                /** mouse position at last click */
+                this.lastY = 0;
+                this.canvasElement = $("#" + canvas);
+                this.view = new Floorplanner_1.FloorplannerView(this.floorplan, this, canvas);
+                var cmPerFoot = 30.48;
+                var pixelsPerFoot = 15.0;
+                this.cmPerPixel = cmPerFoot * (1.0 / pixelsPerFoot);
+                this.pixelsPerCm = 1.0 / this.cmPerPixel;
+                this.wallWidth = 10.0 * this.pixelsPerCm;
+                // Initialization:
+                this.setMode(Floorplanner_1.floorplannerModes.MOVE);
+                var scope = this;
+                this.canvasElement.mousedown(function () {
+                    scope.mousedown();
+                });
+                this.canvasElement.mousemove(function (event) {
+                    scope.mousemove(event);
+                });
+                this.canvasElement.mouseup(function () {
+                    scope.mouseup();
+                });
+                this.canvasElement.mouseleave(function () {
+                    scope.mouseleave();
+                });
+                $(document).keyup(function (e) {
+                    if (e.keyCode == 27) {
+                        scope.escapeKey();
+                    }
+                });
+                floorplan.roomLoadedCallbacks.add(function () {
+                    scope.reset();
+                });
+            }
+            /** */
+            Floorplanner.prototype.escapeKey = function () {
+                this.setMode(Floorplanner_1.floorplannerModes.MOVE);
+            };
+            /** */
+            Floorplanner.prototype.updateTarget = function () {
+                if (this.mode == Floorplanner_1.floorplannerModes.DRAW && this.lastNode) {
+                    if (Math.abs(this.mouseX - this.lastNode.x) < snapTolerance) {
+                        this.targetX = this.lastNode.x;
+                    }
+                    else {
+                        this.targetX = this.mouseX;
+                    }
+                    if (Math.abs(this.mouseY - this.lastNode.y) < snapTolerance) {
+                        this.targetY = this.lastNode.y;
+                    }
+                    else {
+                        this.targetY = this.mouseY;
+                    }
+                }
+                else {
+                    this.targetX = this.mouseX;
+                    this.targetY = this.mouseY;
+                }
+                this.view.draw();
+            };
+            /** */
+            Floorplanner.prototype.mousedown = function () {
+                this.mouseDown = true;
+                this.mouseMoved = false;
+                this.lastX = this.rawMouseX;
+                this.lastY = this.rawMouseY;
+                // delete
+                if (this.mode == Floorplanner_1.floorplannerModes.DELETE) {
+                    if (this.activeCorner) {
+                        this.activeCorner.removeAll();
+                    }
+                    else if (this.activeWall) {
+                        this.activeWall.remove();
+                    }
+                    else {
+                        this.setMode(Floorplanner_1.floorplannerModes.MOVE);
+                    }
+                }
+            };
+            /** */
+            Floorplanner.prototype.mousemove = function (event) {
+                this.mouseMoved = true;
+                // update mouse
+                this.rawMouseX = event.clientX;
+                this.rawMouseY = event.clientY;
+                this.mouseX = (event.clientX - this.canvasElement.offset().left) * this.cmPerPixel + this.originX * this.cmPerPixel;
+                this.mouseY = (event.clientY - this.canvasElement.offset().top) * this.cmPerPixel + this.originY * this.cmPerPixel;
+                // update target (snapped position of actual mouse)
+                if (this.mode == Floorplanner_1.floorplannerModes.DRAW || (this.mode == Floorplanner_1.floorplannerModes.MOVE && this.mouseDown)) {
+                    this.updateTarget();
+                }
+                // update object target
+                if (this.mode != Floorplanner_1.floorplannerModes.DRAW && !this.mouseDown) {
+                    var hoverCorner = this.floorplan.overlappedCorner(this.mouseX, this.mouseY);
+                    var hoverWall = this.floorplan.overlappedWall(this.mouseX, this.mouseY);
+                    var draw = false;
+                    if (hoverCorner != this.activeCorner) {
+                        this.activeCorner = hoverCorner;
+                        draw = true;
+                    }
+                    // corner takes precendence
+                    if (this.activeCorner == null) {
+                        if (hoverWall != this.activeWall) {
+                            this.activeWall = hoverWall;
+                            draw = true;
+                        }
+                    }
+                    else {
+                        this.activeWall = null;
+                    }
+                    if (draw) {
+                        this.view.draw();
+                    }
+                }
+                // panning
+                if (this.mouseDown && !this.activeCorner && !this.activeWall) {
+                    this.originX += (this.lastX - this.rawMouseX);
+                    this.originY += (this.lastY - this.rawMouseY);
+                    this.lastX = this.rawMouseX;
+                    this.lastY = this.rawMouseY;
+                    this.view.draw();
+                }
+                // dragging
+                if (this.mode == Floorplanner_1.floorplannerModes.MOVE && this.mouseDown) {
+                    if (this.activeCorner) {
+                        this.activeCorner.move(this.mouseX, this.mouseY);
+                        this.activeCorner.snapToAxis(snapTolerance);
+                    }
+                    else if (this.activeWall) {
+                        this.activeWall.relativeMove((this.rawMouseX - this.lastX) * this.cmPerPixel, (this.rawMouseY - this.lastY) * this.cmPerPixel);
+                        this.activeWall.snapToAxis(snapTolerance);
+                        this.lastX = this.rawMouseX;
+                        this.lastY = this.rawMouseY;
+                    }
+                    this.view.draw();
+                }
+            };
+            /** */
+            Floorplanner.prototype.mouseup = function () {
+                this.mouseDown = false;
+                // drawing
+                if (this.mode == Floorplanner_1.floorplannerModes.DRAW && !this.mouseMoved) {
+                    var corner = this.floorplan.newCorner(this.targetX, this.targetY);
+                    if (this.lastNode != null) {
+                        this.floorplan.newWall(this.lastNode, corner);
+                    }
+                    if (corner.mergeWithIntersected() && this.lastNode != null) {
+                        this.setMode(Floorplanner_1.floorplannerModes.MOVE);
+                    }
+                    this.lastNode = corner;
+                }
+            };
+            /** */
+            Floorplanner.prototype.mouseleave = function () {
+                this.mouseDown = false;
+                //scope.setMode(scope.modes.MOVE);
+            };
+            /** */
+            Floorplanner.prototype.reset = function () {
+                this.resizeView();
+                this.setMode(Floorplanner_1.floorplannerModes.MOVE);
+                this.resetOrigin();
+                this.view.draw();
+            };
+            /** */
+            Floorplanner.prototype.resizeView = function () {
+                this.view.handleWindowResize();
+            };
+            /** */
+            Floorplanner.prototype.setMode = function (mode) {
+                this.lastNode = null;
+                this.mode = mode;
+                this.modeResetCallbacks.fire(mode);
+                this.updateTarget();
+            };
+            /** Sets the origin so that floorplan is centered */
+            Floorplanner.prototype.resetOrigin = function () {
+                var centerX = this.canvasElement.innerWidth() / 2.0;
+                var centerY = this.canvasElement.innerHeight() / 2.0;
+                var centerFloorplan = this.floorplan.getCenter();
+                this.originX = centerFloorplan.x * this.pixelsPerCm - centerX;
+                this.originY = centerFloorplan.z * this.pixelsPerCm - centerY;
+            };
+            /** Convert from THREEjs coords to canvas coords. */
+            Floorplanner.prototype.convertX = function (x) {
+                return (x - this.originX * this.cmPerPixel) * this.pixelsPerCm;
+            };
+            /** Convert from THREEjs coords to canvas coords. */
+            Floorplanner.prototype.convertY = function (y) {
+                return (y - this.originY * this.cmPerPixel) * this.pixelsPerCm;
+            };
+            return Floorplanner;
+        }());
+        Floorplanner_1.Floorplanner = Floorplanner;
+    })(Floorplanner = BP3D.Floorplanner || (BP3D.Floorplanner = {}));
+})(BP3D || (BP3D = {}));
