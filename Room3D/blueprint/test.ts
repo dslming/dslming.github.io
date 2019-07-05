@@ -12,7 +12,7 @@ export interface Options {
   textureDir: string;
 }
 
-export class Blueprint3d {
+class Blueprint3d {
 
   // private model: Model;
   private name: any = '12121212'
@@ -34,3 +34,4 @@ export class Blueprint3d {
   }
 }
 
+(window as any).Blueprint3d = Blueprint3d
