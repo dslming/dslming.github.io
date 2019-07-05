@@ -18,11 +18,12 @@ module.exports = {
             '.ts', '.js'
         ]
     },
+    // 这里仅仅用了代码热编译,没有使用html
     devServer:{
         port: 8080,
         contentBase: path.join(__dirname, "dist"),
         overlay: false,
-        open: true, //启动webpack-dev-server时自动打开浏览器
+        open: false, //启动webpack-dev-server时自动打开浏览器
         hot: true //启用热更
     },
 };
