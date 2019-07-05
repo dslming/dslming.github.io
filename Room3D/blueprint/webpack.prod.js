@@ -21,6 +21,7 @@ module.exports = {
         ]
     },
     plugins: [
+        // 这里只是引用,并没有把依赖文件打包进来
         new webpack.DllReferencePlugin({
             name:'dll',
             context: __dirname,
