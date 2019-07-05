@@ -4,7 +4,7 @@ const webpack = require('webpack');
 console.log('webpack dll start...')
 const dllPath = path.join(__dirname, 'dll');
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     entry: {
         dll: ['three']
     },

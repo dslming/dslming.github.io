@@ -2,7 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 console.log('webpack prod start...')
 module.exports = {
-    mode: 'development',
+    mode: 'production',
     entry: './test.ts',
     output: {
         filename: 'test.js',
