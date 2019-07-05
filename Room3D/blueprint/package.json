@@ -5,9 +5,7 @@
   "main": "index.js",
   "devDependencies": {
     "child_process": "^1.0.2",
-    "jquery": "^3.4.1",
     "node-watch": "^0.6.2",
-    "shelljs": "^0.8.3",
     "three": "^0.106.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.2",

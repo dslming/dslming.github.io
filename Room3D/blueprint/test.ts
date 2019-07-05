@@ -1,5 +1,4 @@
-// import * as THREE from 'three'
-import * as jquery from 'jquery'
+import * as THREE from 'three'
 // window.THREE = three
 
 // class A {
@@ -11,5 +10,5 @@ import * as jquery from 'jquery'
 
 // let a = new A()
 // a.a('12345')
-console.error(123456, jquery('body'))
+console.error(123456, THREE)
 

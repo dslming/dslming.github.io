@@ -6,18 +6,17 @@ const dllPath = path.join(__dirname, 'dll');
 module.exports = {
     mode: 'development',
     entry: {
-        dll: ['jquery']
+        dll: ['three']
     },
     output: {
         path: dllPath,
         filename: '[name].js',
-        library: '[name]'
+        library: '[name]',
     },
     plugins: [
         new webpack.DllPlugin({
             name: "[name]",
             path: path.join(dllPath, '[name]-manifest.json'),
-            context: __dirname
           }),
     ]
 };
