@@ -1,10 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
-
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+console.log('webpack prod start...')
 module.exports = {
     mode: 'development',
-
-    entry: './1.js',
+    entry: './test.ts',
     output: {
         filename: 'test.js',
         path: path.resolve(__dirname, 'dist')
@@ -18,16 +18,13 @@ module.exports = {
     },
     resolve: {
         extensions: [
-            '.ts'
+            '.ts','js'
         ]
     },
     plugins: [
-        // new webpack.DllReferencePlugin({
-        //     context: __dirname,
-        //     manifest: require('../static/dll/vendor-manifest.json')
-        // }),
+        new webpack.DllReferencePlugin({
+            context: __dirname,
+            manifest: require('./dll/dll-manifest.json')
+        })
     ]
-    // externals: {
-    //     three: 'jQuery'
-    // }
 };

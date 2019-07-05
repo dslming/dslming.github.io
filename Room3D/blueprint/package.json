@@ -3,26 +3,26 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {
-    "_three-js@79.0.0@three-js": "^79.0.0",
-    "_three@0.106.2@three": "^0.106.2",
-    "three": "^0.106.2",
-    "three-js": "^79.0.0"
-  },
   "devDependencies": {
     "child_process": "^1.0.2",
+    "jquery": "^3.4.1",
     "node-watch": "^0.6.2",
     "shelljs": "^0.8.3",
     "three": "^0.106.2",
     "ts-loader": "^6.0.4",
     "typescript": "^3.5.2",
     "webpack": "^4.35.2",
-    "webpack-cli": "^3.3.5"
+    "webpack-cli": "^3.3.5",
+    "webpack-dev-server": "^3.7.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack"
+    "build:dll": "webpack --config ./webpack.dll.js -p",
+    "build": "webpack --config ./webpack.prod.js",
+    "dev": "webpack-dev-server --config ./webpack.dev.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.106.2"
+  }
 }
