@@ -13,9 +13,8 @@ export interface Options {
 }
 
 class Blueprint3d {
-
   // private model: Model;
-  private name: any = '12121212'
+  private name: any = '3434'
   private tt: any = new THREE.Vector2()
 
   private three: any; // Three.Main;
