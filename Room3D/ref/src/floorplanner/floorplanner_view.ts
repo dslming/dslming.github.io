@@ -42,6 +42,7 @@ module BP3D.Floorplanner {
   const cornerColorHover = "#008cba"
 
   /**
+   * FloorPlanner View 用于呈现/交互的视图。
    * The View to be used by a Floorplanner to render in/interact with.
    */
   export class FloorplannerView {

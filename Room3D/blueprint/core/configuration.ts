@@ -1,4 +1,7 @@
+/**
 /// <reference path="dimensioning.ts" />
+ * 
+ */
 
 module BP3D.Core {
   // GENERAL:

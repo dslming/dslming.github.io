@@ -1,43 +1,48 @@
-/// <reference path="../../lib/jQuery.d.ts" />
+/**
+ * /// <reference path="../../lib/jQuery.d.ts" />
 /// <reference path="../../lib/three.d.ts" />
 /// <reference path="../core/utils.ts" />
 /// <reference path="wall.ts" />
 /// <reference path="corner.ts" />
 /// <reference path="room.ts" />
 /// <reference path="half_edge.ts" />
+ */
 
-module BP3D.Model {
+import * as THREE from "three";
+import Utils from '../core/utils'
+import Wall from './Wall'
+import Corner from './Corner'
+import Room from './Room'
+import HalfEdge from './half_edge'
+
   /** */
   const defaultFloorPlanTolerance = 10.0;
 
   /** 
+   * 平面图
    * A Floorplan represents a number of Walls, Corners and Rooms.
    */
   export class Floorplan {
-
     /** */
     private walls: Wall[] = [];
-
     /** */
     private corners: Corner[] = [];
-
     /** */
     private rooms: Room[] = [];
+    /** */
+    // private new_wall_callbacks = $.Callbacks();
 
     /** */
-    private new_wall_callbacks = $.Callbacks();
+    // private new_corner_callbacks = $.Callbacks();
 
     /** */
-    private new_corner_callbacks = $.Callbacks();
+    // private redraw_callbacks = $.Callbacks();
 
     /** */
-    private redraw_callbacks = $.Callbacks();
+    // private updated_rooms = $.Callbacks();
 
     /** */
-    private updated_rooms = $.Callbacks();
-
-    /** */
-    public roomLoadedCallbacks = $.Callbacks();
+    // public roomLoadedCallbacks = $.Callbacks();
 
     /** 
     * Floor textures are owned by the floorplan, because room objects are 
@@ -81,7 +86,7 @@ module BP3D.Model {
     }
 
     private floorPlanes(): THREE.Mesh[] {
-      return Core.Utils.map(this.rooms, (room: Room) => {
+      return Utils.map(this.rooms, (room: Room) => {
         return room.floorPlane;
       });
     }
@@ -124,7 +129,7 @@ module BP3D.Model {
      * @param wall The wall to be removed.
      */
     private removeWall(wall: Wall) {
-      Core.Utils.removeValue(this.walls, wall);
+      Utils.removeValue(this.walls, wall);
       this.update();
     }
 
@@ -149,7 +154,7 @@ module BP3D.Model {
      * @param corner The corner to be removed.
      */
     private removeCorner(corner: Corner) {
-      Core.Utils.removeValue(this.corners, corner);
+      Utils.removeValue(this.corners, corner);
     }
 
     /** Gets the walls. */
@@ -493,4 +498,3 @@ module BP3D.Model {
       return uniqueCCWLoops;
     }
   }
-}

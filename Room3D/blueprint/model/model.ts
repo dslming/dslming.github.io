@@ -5,7 +5,9 @@
     /// <reference path="scene.ts" />
  */
 
-const THREE = (window as any).THREE
+import * as THREE from "three";
+// import floorplan from './floorplan'
+
 /** 
  * A Model connects a Floorplan and a Scene. 
  */

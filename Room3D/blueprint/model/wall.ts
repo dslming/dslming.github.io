@@ -1,12 +1,13 @@
-/// <reference path="../../lib/three.d.ts" />
+/**
+ * /// <reference path="../../lib/three.d.ts" />
 /// <reference path="../../lib/jQuery.d.ts" />
 /// <reference path="../core/configuration.ts" />
 /// <reference path="../core/utils.ts" />
 /// <reference path="../items/item.ts" />
 /// <reference path="corner.ts" />
 /// <reference path="half_edge.ts" />
+ */
 
-module BP3D.Model {
   /** The default wall texture. */
   const defaultWallTexture = {
     url: "rooms/textures/wallmap.png",
@@ -19,7 +20,7 @@ module BP3D.Model {
    * 
    * Walls consists of two half edges.
    */
-  export class Wall {
+  export default class Wall {
 
     /** The unique id of each wall. */
     private id: string;
@@ -190,4 +191,3 @@ module BP3D.Model {
       }
     }
   }
-}
