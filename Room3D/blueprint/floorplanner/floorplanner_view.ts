@@ -1,4 +1,5 @@
-/// <reference path="../../lib/jQuery.d.ts" />
+/**
+ * /// <reference path="../../lib/jQuery.d.ts" />
 /// <reference path="../core/configuration.ts" />
 /// <reference path="../core/dimensioning.ts" />
 /// <reference path="../core/utils.ts" />
@@ -7,6 +8,7 @@
 /// <reference path="../model/model.ts" />
 /// <reference path="../model/wall.ts" />
 /// <reference path="floorplanner.ts" />
+ */
 
 module BP3D.Floorplanner {
   /** */

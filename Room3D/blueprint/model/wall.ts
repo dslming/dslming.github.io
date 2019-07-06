@@ -8,6 +8,13 @@
 /// <reference path="half_edge.ts" />
  */
 
+import * as THREE from "three";
+import {HalfEdge} from './half_edge';
+import Utils from '../core/utils';
+import {Corner} from './corner';
+import {Floorplan} from './floorplan'
+import {configWallThickness, Configuration, configWallHeight} from '../core/configuration'
+
   /** The default wall texture. */
   const defaultWallTexture = {
     url: "rooms/textures/wallmap.png",
@@ -20,25 +27,21 @@
    * 
    * Walls consists of two half edges.
    */
-  export default class Wall {
-
+  export class Wall {
     /** The unique id of each wall. */
     private id: string;
-
     /** Front is the plane from start to end. */
     public frontEdge: HalfEdge = null;
-
     /** Back is the plane from end to start. */
     public backEdge: HalfEdge = null;
-
     /** */
     public orphan = false;
 
     /** Items attached to this wall */
-    public items: Items.Item[] = [];
+    // public items: Items.Item[] = [];
 
     /** */
-    public onItems: Items.Item[] = [];
+    // public onItems: Items.Item[] = [];
 
     /** The front-side texture. */
     public frontTexture = defaultWallTexture;
@@ -46,20 +49,20 @@
     /** The back-side texture. */
     public backTexture = defaultWallTexture;
 
-    /** Wall thickness. */
-    public thickness = Core.Configuration.getNumericValue(Core.configWallThickness);
+    /** Wall thickness. 厚度 */
+    public thickness = Configuration.getNumericValue(configWallThickness);
 
     /** Wall height. */
-    public height = Core.Configuration.getNumericValue(Core.configWallHeight);
+    public height = Configuration.getNumericValue(configWallHeight);
 
     /** Actions to be applied after movement. */
-    private moved_callbacks = $.Callbacks();
+    // private moved_callbacks = $.Callbacks();
 
     /** Actions to be applied on removal. */
-    private deleted_callbacks = $.Callbacks();
+    // private deleted_callbacks = $.Callbacks();
 
     /** Actions to be applied explicitly. */
-    private action_callbacks = $.Callbacks();
+    // private action_callbacks = $.Callbacks();
 
     /** 
      * Constructs a new wall.
@@ -90,23 +93,23 @@
     }
 
     public fireOnMove(func) {
-      this.moved_callbacks.add(func);
+      // this.moved_callbacks.add(func);
     }
 
     public fireOnDelete(func) {
-      this.deleted_callbacks.add(func);
+      // this.deleted_callbacks.add(func);
     }
 
     public dontFireOnDelete(func) {
-      this.deleted_callbacks.remove(func);
+      // this.deleted_callbacks.remove(func);
     }
 
     public fireOnAction(func) {
-      this.action_callbacks.add(func)
+      // this.action_callbacks.add(func)
     }
 
     public fireAction(action) {
-      this.action_callbacks.fire(action)
+      // this.action_callbacks.fire(action)
     }
 
     private relativeMove(dx: number, dy: number) {
@@ -115,15 +118,15 @@
     }
 
     public fireMoved() {
-      this.moved_callbacks.fire();
+      // this.moved_callbacks.fire();
     }
 
     public fireRedraw() {
       if (this.frontEdge) {
-        this.frontEdge.redrawCallbacks.fire();
+        // this.frontEdge.redrawCallbacks.fire();
       }
       if (this.backEdge) {
-        this.backEdge.redrawCallbacks.fire();
+        // this.backEdge.redrawCallbacks.fire();
       }
     }
 
@@ -154,7 +157,7 @@
     public remove() {
       this.start.detachWall(this);
       this.end.detachWall(this);
-      this.deleted_callbacks.fire(this);
+      // this.deleted_callbacks.fire(this);
     }
 
     public setStart(corner: Corner) {
@@ -172,7 +175,7 @@
     }
 
     public distanceFrom(x: number, y: number): number {
-      return Core.Utils.pointDistanceFromLine(x, y,
+      return Utils.pointDistanceFromLine(x, y,
         this.getStartX(), this.getStartY(),
         this.getEndX(), this.getEndY());
     }

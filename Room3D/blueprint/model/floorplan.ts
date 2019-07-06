@@ -10,10 +10,10 @@
 
 import * as THREE from "three";
 import Utils from '../core/utils'
-import Wall from './Wall'
-import Corner from './Corner'
-import Room from './Room'
-import HalfEdge from './half_edge'
+import {Wall} from './Wall'
+import {Corner} from './Corner'
+import {Room} from './Room'
+import {HalfEdge} from './half_edge'
 
   /** */
   const defaultFloorPlanTolerance = 10.0;
@@ -92,19 +92,19 @@ import HalfEdge from './half_edge'
     }
 
     public fireOnNewWall(callback) {
-      this.new_wall_callbacks.add(callback);
+      // this.new_wall_callbacks.add(callback);
     }
 
     public fireOnNewCorner(callback) {
-      this.new_corner_callbacks.add(callback);
+      // this.new_corner_callbacks.add(callback);
     }
 
     public fireOnRedraw(callback) {
-      this.redraw_callbacks.add(callback);
+      // this.redraw_callbacks.add(callback);
     }
 
     public fireOnUpdatedRooms(callback) {
-      this.updated_rooms.add(callback);
+      // this.updated_rooms.add(callback);
     }
 
     /**
@@ -120,7 +120,7 @@ import HalfEdge from './half_edge'
       wall.fireOnDelete(() => {
         scope.removeWall(wall);
       });
-      this.new_wall_callbacks.fire(wall);
+      // this.new_wall_callbacks.fire(wall);
       this.update();
       return wall;
     }
@@ -146,7 +146,7 @@ import HalfEdge from './half_edge'
       corner.fireOnDelete(() => {
         this.removeCorner;
       });
-      this.new_corner_callbacks.fire(corner);
+      // this.new_corner_callbacks.fire(corner);
       return corner;
     }
 
@@ -250,7 +250,7 @@ import HalfEdge from './half_edge'
       }
 
       this.update();
-      this.roomLoadedCallbacks.fire();
+      // this.roomLoadedCallbacks.fire();
     }
 
     public getFloorTexture(uuid: string) {
@@ -270,11 +270,11 @@ import HalfEdge from './half_edge'
 
     /** clear out obsolete floor textures */
     private updateFloorTextures() {
-      var uuids = Core.Utils.map(this.rooms, function (room) {
+      var uuids = Utils.map(this.rooms, function (room) {
         return room.getUuid();
       });
       for (var uuid in this.floorTextures) {
-        if (!Core.Utils.hasValue(uuids, uuid)) {
+        if ( Utils.hasValue(uuids, uuid)) {
           delete this.floorTextures[uuid]
         }
       }
@@ -311,7 +311,7 @@ import HalfEdge from './half_edge'
       this.assignOrphanEdges();
 
       this.updateFloorTextures();
-      this.updated_rooms.fire();
+      // this.updated_rooms.fire();
     }
 
     /** 
@@ -380,7 +380,7 @@ import HalfEdge from './half_edge'
     public findRooms(corners: Corner[]): Corner[][] {
 
       function _calculateTheta(previousCorner: Corner, currentCorner: Corner, nextCorner: Corner) {
-        var theta = Core.Utils.angle2pi(
+        var theta = Utils.angle2pi(
           previousCorner.x - currentCorner.x,
           previousCorner.y - currentCorner.y,
           nextCorner.x - currentCorner.x,
@@ -400,8 +400,8 @@ import HalfEdge from './half_edge'
           var add = true;
           var room = roomArray[i];
           for (var j = 0; j < room.length; j++) {
-            var roomShift = Core.Utils.cycle(room, j);
-            var str = Core.Utils.map(roomShift, hashFunc).join(sep);
+            var roomShift = Utils.cycle(room, j);
+            var str = Utils.map(roomShift, hashFunc).join(sep);
             if (lookup.hasOwnProperty(str)) {
               add = false;
             }
@@ -493,7 +493,7 @@ import HalfEdge from './half_edge'
       // remove duplicates
       var uniqueLoops = _removeDuplicateRooms(loops);
       //remove CW loops
-      var uniqueCCWLoops = Core.Utils.removeIf(uniqueLoops, Core.Utils.isClockwise);
+      var uniqueCCWLoops = Utils.removeIf(uniqueLoops, Utils.isClockwise);
 
       return uniqueCCWLoops;
     }
