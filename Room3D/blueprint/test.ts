@@ -8,7 +8,7 @@ export interface Options {
   /**3D Viewer */
   threeElement?: string;
   /** 2D Floorplanner */
-  floorplannerElement?: string;
+  floorplannerElement: string;
   /** The texture directory. */
   textureDir: string;
 }

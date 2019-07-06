@@ -25,5 +25,5 @@ module.exports = {
         overlay: false,
         open: true, //启动webpack-dev-server时自动打开浏览器
         hot: true //启用热更
-    },
+    }
 };
