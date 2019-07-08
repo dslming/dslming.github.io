@@ -8,7 +8,7 @@ function Experience(props) {
       <p className={style.time_now}>2019/7/8 11:52</p>
         <div className={style.detail}>
             <div className={style.desc}>
-                <p><a href="https://dslming.github.io/mapbox/demo.html">地图2</a></p>
+                <p><a href="https://dslming.github.io/mapbox/demo2.html">地图 new</a></p>
                 <ul>
                     <li></li>
                 </ul>
