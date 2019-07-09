@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<script>
+
+// 依赖注入的抽象接口
+class Injector {
+    constructor() {
+        this.dependencies = {} //存储被依赖的模块
+    }
+
+    // 依赖注入的抽象接口
+    register(key, value) {
+        this.dependencies[key] = value
+    }
+
+    // 注入到依赖的模块中，注入应该接受一个函数，并返回一个我们需要的函数
+    resolve(deps, func, scope) { 
+        // 取得参数名
+        var paramNames = this.getParamNames(func) 
+        var params = []
+        // 通过参数名在dependencies中取出相应的依赖
+        for (var i = 0; i < paramNames.length; i++) { 
+            let d = paramNames[i]
+            let depen = this.dependencies[d] || deps[i]
+            if (depen) {
+            params.push(depen)
+            } else {
+            throw new Error('缺失的依赖：' + d)
+            }
+        }
+        // 注入依赖,执行,并返回一个我们需要的函数
+        // 将func作用域中的this关键字绑定到bind对象上，bind对象可以为空
+        return func.apply(scope || {}, params)
+    }
+
+    // 获取方法的参数名字
+    getParamNames(func) { 
+        var paramNames = func.toString().match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1]
+        paramNames = paramNames.replace(/ /g, '')
+        paramNames = paramNames.split(',')
+        return paramNames // Array
+    }
+}
+
+function Notebook() {}
+  Notebook.prototype.notebookName = function () {
+  return 'this is a notebook'
+}
+
+function Pencil() {}
+  Pencil.prototype.printName = function () {
+  return 'this is a pencil'
+}
+
+function School() {}
+  School.prototype.schoolName = function () {
+  return '清华'
+}
+
+function Student() {}
+  Student.prototype.write = function (notebook, pencil, school) {
+  if (!notebook || !pencil || !school) {
+    throw new Error('Dependencies not provided!')
+  }
+  console.log('writing...')
+  console.log(notebook)
+  console.log(pencil)
+  console.log(school)
+  return '我拥有School、Pencil和Notebook'
+}
+
+let injector = new Injector()
+injector.register('notebook', new Notebook()) // 注册notebook
+injector.register('pencil', new Pencil()) // 注册pencil
+var school = new School()
+var student = new Student()
+
+// 以参数的形式传入school
+var studentWrite = injector.resolve([, , school], student.write, student)
+console.error(studentWrite) // "我拥有School、Pencil和Notebook"
+
+</script>
+</body>
+</html>
