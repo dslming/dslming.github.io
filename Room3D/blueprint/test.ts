@@ -1,6 +1,7 @@
 import * as THREE from "three";
-import {Floorplanner} from './floorplanner/floorplanner'
+// import {Floorplanner} from './floorplanner/floorplanner'
 // import Model from './model/model'
+import Floorplan from './Floorplanner2/Floorplan'
 export interface Options {
   /** */
   widget?: boolean;
@@ -15,10 +16,10 @@ export interface Options {
 class Blueprint3d {
   // private model: Model;
   // private three: any; // Three.Main;
-  private floorplanner: Floorplanner;
+  private floorplan: Floorplan;
 
   constructor(options: Options) {
-    this.floorplanner = new Floorplanner(options.floorplannerElement);
+    this.floorplan = new Floorplan(options.floorplannerElement);
     // this.model = new Model(options.textureDir);
     // this.three = new Three.Main(this.model, options.threeElement, options.threeCanvasElement, {});
 

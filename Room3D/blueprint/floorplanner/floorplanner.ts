@@ -62,7 +62,7 @@ export class FloorplannerView {
     var canvasSel = this.canvasElement
     var parent: HTMLElement = canvasSel.parentElement || document.body
     canvasSel.style.height = `${parent.clientHeight} px`
-    canvasSel.style.width =  `${parent.clientWidth} px`
+    canvasSel.style.width = `${parent.clientWidth} px`
     this.canvasElement.height = parent.clientHeight
     this.canvasElement.width = parent.clientWidth
     this.draw();
@@ -212,7 +212,7 @@ export class FloorplannerView {
   // }
 
   /** */
-  private drawTarget(x: number, y: number, lastNode:any) {
+  private drawTarget(x: number, y: number, lastNode: any) {
     this.drawCircle(
       this.viewmodel.convertX(x),
       this.viewmodel.convertY(y),
@@ -266,7 +266,7 @@ export class FloorplannerView {
   // }
 
   /** */
-  private drawCircle(centerX: any, centerY:any, radius:any, fillColor:any) {
+  private drawCircle(centerX: any, centerY: any, radius: any, fillColor: any) {
     this.context.beginPath();
     this.context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
     this.context.fillStyle = fillColor;
@@ -299,7 +299,7 @@ export class FloorplannerView {
   }
 }
 
-/** 
+/**
  * FloorPlanner实现了一个用于创建楼层平面图的交互式工具。
  * The Floorplanner implements an interactive tool for creation of floorplans.
  */
@@ -325,7 +325,7 @@ export class Floorplanner {
   /** */
   // private modeResetCallbacks = $.Callbacks();
   /** */
-  private canvasElement:any;
+  private canvasElement: any;
   /** */
   public view: FloorplannerView;
   /** */
@@ -342,7 +342,6 @@ export class Floorplanner {
   private rawMouseY = 0;
   /** mouse position at last click */
   private lastX = 0;
-  /** mouse position at last click */
   private lastY = 0;
   /** */
   private cmPerPixel: number;
@@ -363,7 +362,7 @@ export class Floorplanner {
     this.canvasElement.onmousedown = () => {
       scope.mousedown();
     };
-    this.canvasElement.onmousemove = (event:any) => {
+    this.canvasElement.onmousemove = (event: any) => {
       scope.mousemove(event);
     };
     this.canvasElement.onmouseup = () => {
@@ -374,7 +373,7 @@ export class Floorplanner {
     };
 
     this.view.drawGrid()
-    document.onkeyup = (e:any) => {
+    document.onkeyup = (e: any) => {
       if (e.keyCode == 27) {
         scope.escapeKey();
       }
@@ -422,7 +421,7 @@ export class Floorplanner {
       if (this.activeCorner) {
         this.activeCorner.removeAll();
       } else if (this.activeWall) {
-        this.activeWall.remove();   
+        this.activeWall.remove();
       } else {
         this.setMode(floorplannerModes.MOVE);
       }
@@ -430,7 +429,7 @@ export class Floorplanner {
   }
 
   /** */
-  private mousemove(event:any) {
+  private mousemove(event: any) {
     this.mouseMoved = true;
     // update mouse
     this.rawMouseX = event.clientX;
@@ -506,12 +505,12 @@ export class Floorplanner {
         // this.floorplan.newWall(this.lastNode, corner);
       }
       // if (corner.mergeWithIntersected() && this.lastNode != null) {
-        // this.setMode(floorplannerModes.MOVE);
+      // this.setMode(floorplannerModes.MOVE);
       // }
       // this.lastNode = corner;
-      
+
       this.lastNode = {
-        x: this.targetX, 
+        x: this.targetX,
         y: this.targetY
       }
     }

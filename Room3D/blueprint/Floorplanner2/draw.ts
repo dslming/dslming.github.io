@@ -1,6 +1,11 @@
 /**
  * 底层绘制的封装
  */
+import { FloorPlannerMode, ModelInterface } from './Model'
+export interface DrawInterface {
+  drawAll(): void
+  drawGrid(): void
+}
 
 // grid parameters
 const gridSpacing = 20; // pixels
@@ -12,9 +17,7 @@ const roomColor = "#f9f9f9";
 
 // wall config
 const wallWidth = 5;
-const wallWidthHover = 7;
 const wallColor = "#dddddd"
-const wallColorHover = "#008cba"
 const edgeColor = "#888888"
 const edgeColorHover = "#008cba"
 const edgeWidth = 1
@@ -23,34 +26,24 @@ const deleteColor = "#ff0000";
 
 // corner config
 const cornerRadius = 0
-const cornerRadiusHover = 7
 const cornerColor = "#cccccc"
-const cornerColorHover = "#008cba"
-
-const floorplannerModes = {
-  MOVE: 0,
-  DRAW: 1,
-  DELETE: 2
-};
 
 /** how much will we move a corner to make a wall axis aligned (cm) */
 const snapTolerance = 25;
 
-export class FloorplannerView {
+export class Draw implements DrawInterface {
+  private model: ModelInterface
   /** The canvas element. */
-  private canvasElement: HTMLCanvasElement;
-  // private viewmodel: Floorplanner
+  private canvasElement: any;
   /** The 2D context. */
   private context: any;
 
-  /** */
-  constructor(canvasEle: HTMLCanvasElement) {
+  constructor(canvasEle: any, model: ModelInterface) {
     this.canvasElement = canvasEle
     this.context = this.canvasElement.getContext('2d');
-    // this.viewmodel = viewmodel
-    var scope = this;
+    this.model = model
     window.onresize = () => {
-      scope.handleWindowResize();
+      this.handleWindowResize();
     }
     this.handleWindowResize();
   }
@@ -63,11 +56,11 @@ export class FloorplannerView {
     canvasSel.style.width = `${parent.clientWidth} px`
     this.canvasElement.height = parent.clientHeight
     this.canvasElement.width = parent.clientWidth
-    this.draw();
+    // this.draw();
   }
 
   /** */
-  public draw() {
+  public drawAll() {
     this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     this.drawGrid();
     // this.floorplan.getRooms().forEach((room) => {
@@ -79,8 +72,9 @@ export class FloorplannerView {
     // this.floorplan.getCorners().forEach((corner) => {
     //   this.drawCorner(corner);
     // });
-    if (this.viewmodel.mode == floorplannerModes.DRAW) {
-      this.drawTarget(this.viewmodel.targetX, this.viewmodel.targetY, this.viewmodel.lastNode);
+    let { mode, mouse: { targetX, targetY, lastNode } } = this.model.getData()
+    if (mode === FloorPlannerMode.DRAW) {
+      this.drawTarget(targetX, targetY, lastNode);
     }
     // this.floorplan.getWalls().forEach((wall) => {
     //   this.drawWallLabels(wall);
@@ -209,20 +203,38 @@ export class FloorplannerView {
   //   );
   // }
 
+  /** Convert from THREEjs coords to canvas coords. */
+  public convertX(x: number): number {
+    let { mouse: { originX }, camera: { cmPerPixel, pixelsPerCm } } = this.model.getData()
+    return (x - originX * cmPerPixel) * pixelsPerCm;
+  }
+
+  /** Convert from THREEjs coords to canvas coords. */
+  public convertY(y: number): number {
+    let { mouse: { originY }, camera: { cmPerPixel, pixelsPerCm } } = this.model.getData()
+    return (y - originY * cmPerPixel) * pixelsPerCm;
+  }
+
   /** */
   private drawTarget(x: number, y: number, lastNode: any) {
+    const cornerRadiusHover = 7
+    const cornerColorHover = "#008cba"
+    const wallWidthHover = 7
+    const wallColorHover = "#008cba"
+
     this.drawCircle(
-      this.viewmodel.convertX(x),
-      this.viewmodel.convertY(y),
+      this.convertX(x),
+      this.convertY(y),
       cornerRadiusHover,
       cornerColorHover
-    );
-    if (this.viewmodel.lastNode) {
+    )
+    if (lastNode) {
+      console.error(lastNode)
       this.drawLine(
-        this.viewmodel.convertX(lastNode.x),
-        this.viewmodel.convertY(lastNode.y),
-        this.viewmodel.convertX(x),
-        this.viewmodel.convertY(y),
+        this.convertX(lastNode.x),
+        this.convertY(lastNode.y),
+        this.convertX(x),
+        this.convertY(y),
         wallWidthHover,
         wallColorHover
       );
@@ -284,8 +296,9 @@ export class FloorplannerView {
    * 绘制格子
   */
   public drawGrid() {
-    var offsetX = this.calculateGridOffset(-this.viewmodel.originX);
-    var offsetY = this.calculateGridOffset(-this.viewmodel.originY);
+    let { mouse: { originX, originY } } = this.model.getData()
+    var offsetX = this.calculateGridOffset(-originX);
+    var offsetY = this.calculateGridOffset(-originY);
     var width = this.canvasElement.width;
     var height = this.canvasElement.height;
     for (var x = 0; x <= (width / gridSpacing); x++) {
