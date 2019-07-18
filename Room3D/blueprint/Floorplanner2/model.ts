@@ -20,6 +20,10 @@ interface ModelInterface {
   setData(obj: any): void
 }
 
+interface WallLine {
+  index: number,
+  data: Array<any>
+}
 /**
  * floorplanner 的所有数据集合
  */
@@ -35,12 +39,14 @@ let data: any = {
     /** in ThreeJS coords */
     mouseX: 0,
     mouseY: 0,
+    /** 鼠标移动时最后一个数据 */
     rawMouseX: 0,
     rawMouseY: 0,
-    /** mouse position at last click */
+    /** 鼠标按下时的坐标 */
     lastX: 0,
     lastY: 0,
     status: MouseStatus.UP,
+    // 鼠标的上一个状态
     lastNode: null
   },
   camera: {
@@ -48,7 +54,8 @@ let data: any = {
     pixelsPerCm: 0,
   },
   wall: {
-    wallWidth: 0
+    wallWidth: 0,
+    lines: []
   }
 }
 

@@ -28,18 +28,19 @@ export class Interactive {
       },
       wall: {
         wallWidth
-      }
+      },
+      mode: FloorPlannerMode.DRAW
     })
     // Initialization:
     // this.setMode(FloorPlannerMode.DRAW);
-    this.canvasElement.onmousedown = () => {
-      this.mousedown();
+    this.canvasElement.onmousedown = (e: any) => {
+      this.mousedown(e);
     };
     this.canvasElement.onmousemove = (event: any) => {
       this.mousemove(event);
     };
-    this.canvasElement.onmouseup = () => {
-      this.mouseup();
+    this.canvasElement.onmouseup = (e: any) => {
+      this.mouseup(e);
     };
     this.canvasElement.onmouseleave = () => {
       this.mouseleave();
@@ -91,17 +92,26 @@ export class Interactive {
   }
 
   /** */
-  private mousedown() {
-    let { mouse: { rawMouseX, rawMouseY } } = this.model.getData()
+  private mousedown(e: any) {
+    // let { camera: { cmPerPixel }, mouse: { rawMouseX, rawMouseY, originX, originY } } = this.model.getData()
+    // let mouseX = (e.clientX - this.canvasElement.offsetLeft) * cmPerPixel + originX * cmPerPixel;
+    // let mouseY = (e.clientY - this.canvasElement.offsetTop) * cmPerPixel + originY * cmPerPixel;
 
-    this.model.setData({
-      mouse: {
-        status: MouseStatus.DOWN,
-        lastX: rawMouseX,
-        lastY: rawMouseY,
-      }
-    })
-    console.error('mousedown', this.model.getData())
+    // this.model.setData({
+    //   mouse: {
+    //     status: MouseStatus.DOWN,
+    //     lastX: rawMouseX,
+    //     lastY: rawMouseY,
+    //     lastNode: {
+    //       x: mouseX,
+    //       y: mouseY,
+    //     }
+    //   },
+
+    // })
+
+    // let { mouse: { lastNode } } = this.model.getData()
+    // console.error('mousedown', lastNode.x, lastNode.y)
 
 
     // delete
@@ -118,7 +128,7 @@ export class Interactive {
 
   /** */
   private mousemove(event: any) {
-    let { camera: { cmPerPixel }, mouse: { originX, originY } } = this.model.getData()
+    let { mode, camera: { cmPerPixel }, mouse: { originX, originY } } = this.model.getData()
 
     let mouseX = (event.clientX - this.canvasElement.offsetLeft) * cmPerPixel + originX * cmPerPixel;
     let mouseY = (event.clientY - this.canvasElement.offsetTop) * cmPerPixel + originY * cmPerPixel;
@@ -131,12 +141,18 @@ export class Interactive {
         mouseY,
       },
     })
+    if (mode === FloorPlannerMode.DRAW) {
+      this.draw.drawAll()
+    }
+    // console.error('mousemove', mouseX, mouseY)
+    // console.error('mousemove', event.clientX, event.clientY)
+    // this.draw.drawAll()
 
     // let { mouse: { status } } = this.model.getData()
     // console.error('mousemove', this.model.getData())
     // update target (snapped position of actual mouse)
     // if (this.mode == floorplannerModes.DRAW || (this.mode == floorplannerModes.MOVE && this.mouseDown)) {
-    this.updateTarget();
+    // this.updateTarget();
     // }
 
     // update object target
@@ -190,18 +206,41 @@ export class Interactive {
   }
 
   /** */
-  private mouseup() {
-    let { mouse: { status, targetX, targetY } } = this.model.getData()
+  private mouseup(e: any) {
+    let { wall: { line }, camera: { cmPerPixel }, mouse: { lastNode, rawMouseX, rawMouseY, originX, originY } } = this.model.getData()
+    let mouseX = (e.clientX - this.canvasElement.offsetLeft) * cmPerPixel + originX * cmPerPixel;
+    let mouseY = (e.clientY - this.canvasElement.offsetTop) * cmPerPixel + originY * cmPerPixel;
+
+    let wallLinePoint: any = {}
+    if (lastNode === null) {
+      wallLinePoint.type = 'start'
+      this.model.setData({
+        mouse: {
+          lastNode: {
+            x: mouseX,
+            y: mouseY,
+          }
+        },
+      })
+    } else {
+      wallLinePoint.type = 'end'
+      this.setMode(FloorPlannerMode.MOVE)
+      this.model.setData({
+        mouse: {
+          lastNode: null
+        },
+      })
+    }
+    wallLinePoint.x = mouseX
+    wallLinePoint.y = mouseY
+    line.push(wallLinePoint)
+
     this.model.setData({
-      mouse: {
-        status: MouseStatus.UP,
-        lastNode: {
-          targetX,
-          targetY
-        }
+      wall: {
+        line
       }
     })
-    console.error('mouseup', status)
+
     // drawing
     // if (this.mode == floorplannerModes.DRAW && !this.mouseMoved) {
     // if (this.mode == floorplannerModes.DRAW) {
@@ -228,7 +267,7 @@ export class Interactive {
         status: MouseStatus.LEAVE
       }
     })
-    this.setMode(FloorPlannerMode.MOVE)
+    // this.setMode(FloorPlannerMode.MOVE)
     // this.mouseDown = false;
     //scope.setMode(scope.modes.MOVE);
   }

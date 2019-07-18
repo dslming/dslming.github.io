@@ -1,7 +1,7 @@
 /**
  * 底层绘制的封装
  */
-import { FloorPlannerMode, ModelInterface } from './Model'
+import { FloorPlannerMode, ModelInterface, MouseStatus } from './Model'
 export interface DrawInterface {
   drawAll(): void
   drawGrid(): void
@@ -72,9 +72,9 @@ export class Draw implements DrawInterface {
     // this.floorplan.getCorners().forEach((corner) => {
     //   this.drawCorner(corner);
     // });
-    let { mode, mouse: { targetX, targetY, lastNode } } = this.model.getData()
+    let { mode, mouse: { mouseX, mouseY, lastNode } } = this.model.getData()
     if (mode === FloorPlannerMode.DRAW) {
-      this.drawTarget(targetX, targetY, lastNode);
+      this.drawTarget(mouseX, mouseY, lastNode);
     }
     // this.floorplan.getWalls().forEach((wall) => {
     //   this.drawWallLabels(wall);
@@ -222,14 +222,14 @@ export class Draw implements DrawInterface {
     const wallWidthHover = 7
     const wallColorHover = "#008cba"
 
-    this.drawCircle(
-      this.convertX(x),
-      this.convertY(y),
-      cornerRadiusHover,
-      cornerColorHover
-    )
-    if (lastNode) {
-      console.error(lastNode)
+    let { mouse: { status } } = this.model.getData()
+    if (status === MouseStatus.MOVE && lastNode) {
+      this.drawCircle(
+        this.convertX(x),
+        this.convertY(y),
+        cornerRadiusHover,
+        cornerColorHover
+      )
       this.drawLine(
         this.convertX(lastNode.x),
         this.convertY(lastNode.y),
@@ -238,7 +238,13 @@ export class Draw implements DrawInterface {
         wallWidthHover,
         wallColorHover
       );
-    }
+    } else if (status === MouseStatus.MOVE && !lastNode)
+      this.drawCircle(
+        this.convertX(x),
+        this.convertY(y),
+        cornerRadiusHover,
+        cornerColorHover
+      )
   }
 
   /** */
