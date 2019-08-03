@@ -10,7 +10,6 @@
 		CA6FA04422F4293D00660746 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04222F4293D00660746 /* test.cpp */; };
 		CA6FA04622F4EF9D00660746 /* kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04522F4EF9D00660746 /* kernel.cpp */; };
 		CA6FA04A22F5198500660746 /* sobel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04822F5198500660746 /* sobel.cpp */; };
-		CA99510822F2BCE8003D4788 /* main_new.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA99510722F2BCE8003D4788 /* main_new.cpp */; };
 		CAA0BFFA22DD7FBD0068B9C2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAA0BFF922DD7FBD0068B9C2 /* main.cpp */; };
 		CAA0C14722DD85A80068B9C2 /* libopencv_superres.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CAA0C00322DD85830068B9C2 /* libopencv_superres.a */; };
 		CAA0C14822DD85A80068B9C2 /* libwebpmux.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CAA0C00422DD85830068B9C2 /* libwebpmux.a */; };
@@ -341,7 +340,6 @@
 		CA6FA04722F4F06500660746 /* kernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kernel.h; sourceTree = "<group>"; };
 		CA6FA04822F5198500660746 /* sobel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sobel.cpp; sourceTree = "<group>"; };
 		CA6FA04922F5198500660746 /* sobel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sobel.hpp; sourceTree = "<group>"; };
-		CA99510722F2BCE8003D4788 /* main_new.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main_new.cpp; sourceTree = "<group>"; };
 		CAA0BFF622DD7FBD0068B9C2 /* cvtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cvtest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAA0BFF922DD7FBD0068B9C2 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CAA0C00122DD82D30068B9C2 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = ../../../../../usr/local/Cellar/opencv/4.1.0_2/lib; sourceTree = "<group>"; };
@@ -1013,7 +1011,6 @@
 			children = (
 				CAB267D322F53E3B00FB4BCB /* 1.jpg */,
 				CAA0BFF922DD7FBD0068B9C2 /* main.cpp */,
-				CA99510722F2BCE8003D4788 /* main_new.cpp */,
 				CA6FA04222F4293D00660746 /* test.cpp */,
 				CA6FA04522F4EF9D00660746 /* kernel.cpp */,
 				CA6FA04722F4F06500660746 /* kernel.h */,
@@ -1415,7 +1412,6 @@
 				CA6FA04622F4EF9D00660746 /* kernel.cpp in Sources */,
 				CA6FA04A22F5198500660746 /* sobel.cpp in Sources */,
 				CAA0BFFA22DD7FBD0068B9C2 /* main.cpp in Sources */,
-				CA99510822F2BCE8003D4788 /* main_new.cpp in Sources */,
 				CA6FA04422F4293D00660746 /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
