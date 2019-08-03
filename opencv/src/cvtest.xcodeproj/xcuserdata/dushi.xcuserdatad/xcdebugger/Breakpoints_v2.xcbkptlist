@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../usr/local/Cellar/opencv/4.1.0_2/include/opencv4/opencv2/core/mat.hpp"
+            timestampString = "585194568.9582191"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "161"
+            endingLineNumber = "161"
+            landmarkName = "enum KindFlag { KIND_SHIFT = 16, FIXED_TYPE = 0x8000 &lt;&lt; KIND_SHIFT, FIXED_SIZE = 0x4000 &lt;&lt; KIND_SHIFT, KIND_MASK = 31 &lt;&lt; KIND_SHIFT, NONE = 0 &lt;&lt; KIND_SHIFT, MAT = 1 &lt;&lt; KIND_SHIFT, MATX = 2 &lt;&lt; KIND_SHIFT, STD_VECTOR = 3 &lt;&lt; KIND_SHIFT, STD_VECTOR_VECTOR = 4 &lt;&lt; KIND_SHIFT, STD_VECTOR_MAT = 5 &lt;&lt; KIND_SHIFT, EXPR = 6 &lt;&lt; KIND_SHIFT, OPENGL_BUFFER = 7 &lt;&lt; KIND_SHIFT, CUDA_HOST_MEM = 8 &lt;&lt; KIND_SHIFT, CUDA_GPU_MAT = 9 &lt;&lt; KIND_SHIFT, UMAT =10 &lt;&lt; KIND_SHIFT, STD_VECTOR_UMAT =11 &lt;&lt; KIND_SHIFT, STD_BOOL_VECTOR =12 &lt;&lt; KIND_SHIFT, STD_VECTOR_CUDA_GPU_MAT = 13 &lt;&lt; KIND_SHIFT, STD_ARRAY =14 &lt;&lt; KIND_SHIFT, STD_ARRAY_MAT =15 &lt;&lt; KIND_SHIFT }"
+            landmarkType = "13">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvtest/sobel.cpp"
+            timestampString = "586497601.022094"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "10"
+            endingLineNumber = "10"
+            landmarkName = "sobel_run_by_API(void)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "cvtest/sobel.cpp"
+            timestampString = "586497601.026593"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "sobel_run_by_API(void)"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
