@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CA6FA04422F4293D00660746 /* test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04222F4293D00660746 /* test.cpp */; };
 		CA6FA04622F4EF9D00660746 /* kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04522F4EF9D00660746 /* kernel.cpp */; };
 		CA6FA04A22F5198500660746 /* sobel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04822F5198500660746 /* sobel.cpp */; };
 		CAA0BFFA22DD7FBD0068B9C2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAA0BFF922DD7FBD0068B9C2 /* main.cpp */; };
@@ -319,6 +318,8 @@
 		CAA0C28822DD85AA0068B9C2 /* libsndfile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CAA0C14422DD85A80068B9C2 /* libsndfile.a */; };
 		CAA0C28922DD85AA0068B9C2 /* libswresample.3.3.100.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CAA0C14522DD85A80068B9C2 /* libswresample.3.3.100.dylib */; };
 		CAA0C28A22DD85AA0068B9C2 /* libwebpdemux.2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CAA0C14622DD85A80068B9C2 /* libwebpdemux.2.dylib */; };
+		CAB267D622F57F6C00FB4BCB /* NMS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAB267D522F57F6B00FB4BCB /* NMS.cpp */; };
+		CAB267DA22F5953600FB4BCB /* canny.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAB267D822F5953600FB4BCB /* canny.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -335,9 +336,7 @@
 
 /* Begin PBXFileReference section */
 		CA6F3E1222E15D4B00AC066F /* opencv 10.32.51 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "opencv 10.32.51"; sourceTree = "<group>"; };
-		CA6FA04222F4293D00660746 /* test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = test.cpp; sourceTree = "<group>"; };
 		CA6FA04522F4EF9D00660746 /* kernel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = kernel.cpp; sourceTree = "<group>"; };
-		CA6FA04722F4F06500660746 /* kernel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = kernel.h; sourceTree = "<group>"; };
 		CA6FA04822F5198500660746 /* sobel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sobel.cpp; sourceTree = "<group>"; };
 		CA6FA04922F5198500660746 /* sobel.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sobel.hpp; sourceTree = "<group>"; };
 		CAA0BFF622DD7FBD0068B9C2 /* cvtest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cvtest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -667,7 +666,11 @@
 		CAA0C14422DD85A80068B9C2 /* libsndfile.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsndfile.a; path = ../../../../../usr/local/Cellar/libsndfile/1.0.28/lib/libsndfile.a; sourceTree = "<group>"; };
 		CAA0C14522DD85A80068B9C2 /* libswresample.3.3.100.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libswresample.3.3.100.dylib; path = ../../../../../usr/local/Cellar/ffmpeg/4.1.4/lib/libswresample.3.3.100.dylib; sourceTree = "<group>"; };
 		CAA0C14622DD85A80068B9C2 /* libwebpdemux.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libwebpdemux.2.dylib; path = ../../../../../usr/local/Cellar/webp/1.0.3/lib/libwebpdemux.2.dylib; sourceTree = "<group>"; };
-		CAB267D322F53E3B00FB4BCB /* 1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 1.jpg; sourceTree = "<group>"; };
+		CAB267D422F57F6B00FB4BCB /* kernel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = kernel.hpp; sourceTree = "<group>"; };
+		CAB267D522F57F6B00FB4BCB /* NMS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NMS.cpp; sourceTree = "<group>"; };
+		CAB267D722F5810800FB4BCB /* imgs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = imgs; sourceTree = "<group>"; };
+		CAB267D822F5953600FB4BCB /* canny.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = canny.cpp; sourceTree = "<group>"; };
+		CAB267D922F5953600FB4BCB /* canny.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = canny.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1009,13 +1012,15 @@
 		CAA0BFF822DD7FBD0068B9C2 /* cvtest */ = {
 			isa = PBXGroup;
 			children = (
-				CAB267D322F53E3B00FB4BCB /* 1.jpg */,
+				CAB267D722F5810800FB4BCB /* imgs */,
 				CAA0BFF922DD7FBD0068B9C2 /* main.cpp */,
-				CA6FA04222F4293D00660746 /* test.cpp */,
+				CAB267D522F57F6B00FB4BCB /* NMS.cpp */,
 				CA6FA04522F4EF9D00660746 /* kernel.cpp */,
-				CA6FA04722F4F06500660746 /* kernel.h */,
+				CAB267D422F57F6B00FB4BCB /* kernel.hpp */,
 				CA6FA04822F5198500660746 /* sobel.cpp */,
 				CA6FA04922F5198500660746 /* sobel.hpp */,
+				CAB267D822F5953600FB4BCB /* canny.cpp */,
+				CAB267D922F5953600FB4BCB /* canny.hpp */,
 			);
 			path = cvtest;
 			sourceTree = "<group>";
@@ -1410,9 +1415,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA6FA04622F4EF9D00660746 /* kernel.cpp in Sources */,
+				CAB267D622F57F6C00FB4BCB /* NMS.cpp in Sources */,
+				CAB267DA22F5953600FB4BCB /* canny.cpp in Sources */,
 				CA6FA04A22F5198500660746 /* sobel.cpp in Sources */,
 				CAA0BFFA22DD7FBD0068B9C2 /* main.cpp in Sources */,
-				CA6FA04422F4293D00660746 /* test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,7 +15,7 @@ int sobel_run_by_API(void) {
     int scale = 1;
     int delta = 0;
     int ddepth = CV_16S;
-    String str = "./1.jpg";
+    String str = "/Users/dushi/Documents/1097364388.github.com/opencv/src/cvtest/imgs/wall.png";
     src = imread(str);
     if( !src.data )
     {
@@ -27,24 +27,24 @@ int sobel_run_by_API(void) {
     //转成灰度图
     cvtColor( src, src_gray,COLOR_RGB2GRAY );
 
-    namedWindow( "td", WINDOW_AUTOSIZE );
+    namedWindow( "sobel", WINDOW_AUTOSIZE );
 
     Mat grad_x, grad_y;
     Mat abs_grad_x, abs_grad_y;
     //x方向梯度计算
     Sobel( src_gray, grad_x, ddepth, 1, 0, 3, scale, delta, BORDER_DEFAULT );
     convertScaleAbs( grad_x, abs_grad_x );
-    imshow("X Sobel", abs_grad_x);
+//    imshow("X Sobel", abs_grad_x);
 
     //y方向梯度计算
     Sobel( src_gray, grad_y, ddepth, 0, 1, 3, scale, delta, BORDER_DEFAULT );
     convertScaleAbs( grad_y, abs_grad_y );
-    imshow("Y Sobel", abs_grad_y);
+//    imshow("Y Sobel", abs_grad_y);
 
     //加权和
     addWeighted( abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad );
 
-    imshow("td", grad );
+    imshow("sobel", grad );
 
     waitKey();
     return 0;
@@ -81,6 +81,16 @@ bool sobelEdge(Mat&  srcImage, Mat& resultImageX, Mat& resultImageY, uchar thres
             // 图片行 k: 1 ~ rows-1
             // 图片列 n: 1 ~ cols-1
             // cout << "("<<k+i<<","<<n+j<<")"<<","<<"("<<1 + i<<","<<1 + j<<")"<<endl;
+            // -1 0 1
+            // -2 0 2
+            // -1 0 1
+            // i1 i2 i3
+            // i4 i4 i6
+            // i7 i8 i9
+            // => (i1 * -1) + (i2 * 0) + (i3 * 1) +
+            //    (i4 * -2) + (i5 * 0) + (i6 * 2) +
+            //    (i7 * -1) + (i8 * 0) + (i9 * 1)
+            // => (i3 - i1) + (2*i6 - 2*i4) + (i9 - i7)
             edgeX += srcImage.at<uchar>(k + i, n + j) * sobelx.at<double>(1 + i, 1 + j);
             edgeY += srcImage.at<uchar>(k + i, n + j) * sobely.at<double>(1 + i, 1 + j);
           }
@@ -173,12 +183,13 @@ int OTSU(Mat &srcImage) {
 
 
 int sobel_run_by_myself(void) {
-    String str = "/Users/dushi/Desktop/1.png";
+    String str = "/Users/dushi/Documents/1097364388.github.com/opencv/src/cvtest/imgs/wall.png";
     Mat srcImage = imread(str);
     if (!srcImage.data) {
         printf("img read fail...\r\n");
         return -1;
     }
+    GaussianBlur(srcImage, srcImage, Size(3,3), 0, 0, BORDER_DEFAULT);
     Mat srcGray;
     cvtColor(srcImage, srcGray, COLOR_BGR2GRAY);
     // imshow("srcGray", srcGray);
@@ -192,9 +203,10 @@ int sobel_run_by_myself(void) {
     Mat resultImage;
     //水平垂直边缘叠加
     addWeighted(XresultImage, 0.5, YresultImage, 0.5, 0.0, resultImage);
-    imshow("resx", XresultImage);
-    imshow("resy", YresultImage);
-    imshow("res", resultImage);
+//    imshow("resx", XresultImage);
+//    imshow("resy", YresultImage);
+    namedWindow( "sobel", WINDOW_AUTOSIZE );
+    imshow("sobel", resultImage);
     waitKey(0);
     return 0;
 }
