@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CA37671122F81EE2001465C7 /* HOG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA37670F22F81EE2001465C7 /* HOG.cpp */; };
 		CA6FA04622F4EF9D00660746 /* kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04522F4EF9D00660746 /* kernel.cpp */; };
 		CA6FA04A22F5198500660746 /* sobel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA6FA04822F5198500660746 /* sobel.cpp */; };
 		CAA0BFFA22DD7FBD0068B9C2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CAA0BFF922DD7FBD0068B9C2 /* main.cpp */; };
@@ -335,6 +336,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA37670F22F81EE2001465C7 /* HOG.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HOG.cpp; sourceTree = "<group>"; };
+		CA37671022F81EE2001465C7 /* HOG.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HOG.hpp; sourceTree = "<group>"; };
 		CA6F3E1222E15D4B00AC066F /* opencv 10.32.51 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "opencv 10.32.51"; sourceTree = "<group>"; };
 		CA6FA04522F4EF9D00660746 /* kernel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = kernel.cpp; sourceTree = "<group>"; };
 		CA6FA04822F5198500660746 /* sobel.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = sobel.cpp; sourceTree = "<group>"; };
@@ -1021,6 +1024,8 @@
 				CA6FA04922F5198500660746 /* sobel.hpp */,
 				CAB267D822F5953600FB4BCB /* canny.cpp */,
 				CAB267D922F5953600FB4BCB /* canny.hpp */,
+				CA37670F22F81EE2001465C7 /* HOG.cpp */,
+				CA37671022F81EE2001465C7 /* HOG.hpp */,
 			);
 			path = cvtest;
 			sourceTree = "<group>";
@@ -1414,6 +1419,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA37671122F81EE2001465C7 /* HOG.cpp in Sources */,
 				CA6FA04622F4EF9D00660746 /* kernel.cpp in Sources */,
 				CAB267D622F57F6C00FB4BCB /* NMS.cpp in Sources */,
 				CAB267DA22F5953600FB4BCB /* canny.cpp in Sources */,
