@@ -2,10 +2,18 @@
 
 import cv2 as cv
 import numpy as np
+import matplotlib.pyplot as plt  #约定俗成的写法plt
+
 # Set up training data
 labels = np.array([1, -1, -1, -1])
 trainingData = np.matrix([[501, 10], [255, 10], [501, 255], [10, 501]],
                          dtype=np.float32)
+# print(trainingData)
+x = [501, 255, 501, 10]
+y = [10, 10, 255, 501]
+plt.scatter(x, y)
+plt.show()
+
 # Train the SVM
 svm = cv.ml.SVM_create()
 svm.setType(cv.ml.SVM_C_SVC)

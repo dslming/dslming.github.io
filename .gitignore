@@ -4,3 +4,4 @@
 ./node_modules
 */node_modules
 /Room3D/blueprint/node_modules
+/opencv/ref/*
