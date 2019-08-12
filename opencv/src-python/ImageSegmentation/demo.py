@@ -1,7 +1,10 @@
 import cv2 as cv
 import numpy as np
 
-src = cv.imread("./coins.png")
+src = cv.imread(
+    "/Users/dushi/Documents/1097364388.github.com/opencv/src-python/ImageSegmentation/coins.png"
+)
+w, h = src.shape[:2]
 gray = cv.cvtColor(src, cv.COLOR_BGR2GRAY)
 ret, binary = cv.threshold(gray, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
 cv.imshow("binary", binary)
@@ -18,7 +21,7 @@ cv.imshow("sure_bg", sure_bg)
 # 距离变换, 找到前景区域
 dist_transform = cv.distanceTransform(open_img, cv.DIST_L2, 5)
 ret, sure_fg = cv.threshold(dist_transform, 0.7 * dist_transform.max(), 255, 0)
-cv.imshow("distance transform", dist_transform / 50)
+# cv.imshow("distance transform", dist_transform / 50)
 cv.imshow("sure_fg", sure_fg)
 
 # 寻找未知区域
