@@ -1,14 +1,10 @@
-> v0.0.1 2019/9/13 DSLMing
+> v0.0.1 2019/9/14 DSLMing
 > 首次创作
 >
 > 感谢:
 > http://ex2tron.wang/opencv-python-introduction-and-installation/
 
-
-### 准备工作
 #### 1、安装环境
-
-
 首先安装python, 然后安装依赖,本教程编写时使用的软件版本是：OpenCV 4.x，Python 3.x。
 ```
 pip3 install opencv-python
@@ -31,6 +27,29 @@ findTransform()
 binary_image = cv.imread("./test.png")
 ```
 
+#### 3、背景知识
+**常用的图片格式:**
+|格式|全称|压缩方式|
+|-|-|-|
+|bmp|Bitmap|不压缩|
+|jpg|Joint Photographic Experts Group|有损压缩|
+|png|Portable Network Graphics|无损压缩|
+
+**颜色空间:**
+- RGB:
+通过红绿蓝三原色来描述颜色的颜色空间，R=Red、G=Green、B=Blue。模型如下:
+<img src="rgb.png">
+
+- HSV:
+使用色调(Hue)、饱和度(Saturation)、明度(Value)来描述颜色的颜色空间。模型如下:
+<img src="hsv.png">
+HSV是一个常用于颜色识别的模型，相比BGR更易区分颜色。
+> 经验之谈：OpenCV中色调H范围为[0,179]，饱和度S是[0,255]，明度V是[0,255]。虽然H的理论数值是0°~360°，但8位图像像素点的最大值是255，所以OpenCV中除以了2，某些软件可能使用不同的尺度表示，所以同其他软件混用时，记得归一化。
+
+从BGR转换到HSV:
+```python
+hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+```
 
 #### 3、图片的读写
 读:
@@ -42,6 +61,7 @@ binary_image = cv.imread("./test.png")
 # - cv.IMREAD_UNCHANGED：包含透明通道的彩色图(-1)
 cv.imread(filename, flags)
 ```
+`Tip: 在读取图像时，返回的是Numpy的数组。而Numpy是经过优化的进行快速矩阵运算的软件包。 所以不推荐逐个获取像素并修改，这样可能会很慢，能用矩阵运算就不要用循环。 例如对图像的每个像素的像素值加1。可以直接用矩阵运算操作，而不需要再自己写循环遍历.`
 
 显示:
 ```python
@@ -87,7 +107,8 @@ print(px_blue)  # 103
 img[100, 90] = [255, 255, 255]
 print(img[100, 90])  # [255 255 255]
 ```
-#### 5、性能评估
+
+#### 6、性能评估
 评估代码运行时间:
 ```python
 import cv2 as cv
@@ -105,5 +126,19 @@ print((end - start) / cv.getTickFrequency(), 's')
 - 优先使用OpenCV/Numpy中封装好的函数
 - 尽量将数据向量化，变成Numpy的数据格式
 - 尽量避免数组的复制操作
+
+#### 7、通道分割与合并
+彩色图的BGR三个通道是可以分开单独访问的，也可以将单独的三个通道合并成一副图像。分别使用cv2.split()和cv2.merge()：
+```python
+b, g, r = cv2.split(img)
+img = cv2.merge((b, g, r))
+```
+
+split()函数比较耗时，更高效的方式是用numpy中的索引，如提取B通道:
+```python
+b = img[:, :, 0]
+cv2.imshow('blue', b)
+cv2.waitKey(0)
+```
 
 > 全文结束
