@@ -37,7 +37,7 @@ th = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH
 **Otsu阈值:**
 在前面固定阈值中，我们是随便选了一个阈值如127，那如何知道我们选的这个阈值效果好不好呢？答案是：不断尝试，所以这种方法在很多文献中都被称为经验阈值。Otsu阈值法就提供了一种自动高效的二值化方法，不过我们直方图还没学，这里暂时略过。
 
-#### 2、图像平滑
+#### 2、平滑
 图像滤波可以对目标图像的噪声进行抑制,这个过程叫做图像的滤波操作。主要用来减少图像的噪点或失真。
 - 按频率分类
   - 低通：模糊/平滑
@@ -64,3 +64,6 @@ dst = cv2.medianBlur(img, 9)
 # 双边滤波
 dist = cv2.bilateralFilter(img, 9, 75, 75)
 ```
+
+#### 3、噪声
+详细参考: https://zhaoxuhui.top//blog/2017/05/17/%E5%9F%BA%E4%BA%8EPython%E7%9A%84OpenCV%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%866.html#%E5%9B%BE%E5%83%8F%E5%99%AA%E5%A3%B0
