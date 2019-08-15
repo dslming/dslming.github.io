@@ -29,11 +29,11 @@ binary_image = cv.imread("./test.png")
 
 #### 3、背景知识
 **常用的图片格式:**
-|格式|全称|压缩方式|
-|-|-|-|
-|bmp|Bitmap|不压缩|
-|jpg|Joint Photographic Experts Group|有损压缩|
-|png|Portable Network Graphics|无损压缩|
+| 格式 | 全称                             | 压缩方式 |
+| ---- | -------------------------------- | -------- |
+| bmp  | Bitmap                           | 不压缩   |
+| jpg  | Joint Photographic Experts Group | 有损压缩 |
+| png  | Portable Network Graphics        | 无损压缩 |
 
 **颜色空间:**
 - RGB:
@@ -142,3 +142,32 @@ cv2.waitKey(0)
 ```
 
 > 全文结束
+
+#### 8、动态调整
+在之前我们学习了利用窗口对一幅图像进行展示，但有时我们计算了一个阈值，想通过滑动进度条的方式 改变阈值，从而观察不同阈值对处理效果的影响。
+```python
+# 定义滑动条的回调函数，这里什么也不做，直接pass即可。这里的x便是传递回来的滑动条的位置。我们可以print到控制台中。
+def nothing(x):
+  pass
+
+# 一些变量的初始化
+threshold = 128
+result = gray
+
+# 新建一个窗口，并命名为Threshold Test
+cv2.namedWindow("Threshold Test")
+
+# 创建进度条，用于控制阈值大小
+# 第一个参数是进度条的名字，也是识别进度条的唯一ID
+# 第二个参数是需要绑定进度条的窗体的名字
+# 第三个参数是进度条的初始值
+# 第四个参数是进度条的最大值
+# 第五个参数是回调函数，每次滑动都会调用回调函数。通常包含一个默认参数，即滑动条的位置。在这里我们不做任何事情直接定义一个函数然后pass即可
+cv2.createTrackbar('Threshold', 'Threshold Test', threshold, 255, nothing)
+
+# 获取当前进度条的状态，返回值是进度条当前位置
+# 第一个参数是要获取的进度条的ID
+# 第二个参数是窗体的名称
+threshold = cv2.getTrackbarPos('Threshold', 'Threshold Test')
+ret, result = cv2.threshold(gray, threshold, 255, cv2.THRESH_BINARY)
+```
