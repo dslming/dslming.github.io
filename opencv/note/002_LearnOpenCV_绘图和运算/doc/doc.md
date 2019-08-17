@@ -32,6 +32,12 @@ cv2.imshow("draw", draw)
 ```
 <img src="circle.png">
 
+**多边形:**
+根据坐标点用直线填充。
+```python
+points = np.array([[(0, rows), (460, 325), (520, 325), (520, 960)]])
+cv2.fillPoly(img, points, 255)
+```
 
 **文字:**
 ```python
@@ -46,6 +52,7 @@ img = np.array(imgPil)
 cv2.imshow('My Image', img)
 ```
 <img src="font.png">
+
 
 #### 2、常用运算
 <img src="ops.png">
