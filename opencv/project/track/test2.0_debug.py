@@ -22,22 +22,69 @@ min_line_len = 40
 max_line_gap = 20
 
 
-def process_an_image(img):
-    # cv2.namedWindow("win")
+def find_lines(frame):
+    h, w = frame.shape
+    ret, binary = cv2.threshold(frame, 0, 255,
+                                cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    dist = cv2.distanceTransform(binary, cv2.DIST_L1, cv2.DIST_MASK_PRECISE)
+    # cv2.imshow("distance", dist / 15)
+    dist = dist / 15
+    result = np.zeros((h, w), dtype=np.uint8)
+    ypts = []
+    for row in range(h):
+        cx = 0
+        cy = 0
+        max_d = 0
+        for col in range(w):
+            d = dist[row][col]
+            if d > max_d:
+                max_d = d
+                cx = col
+                cy = row
+        result[cy][cx] = 255
+        ypts.append([cx, cy])
 
-    # 1. 灰度化、滤波和Canny
+    xpts = []
+    for col in range(w):
+        cx = 0
+        cy = 0
+        max_d = 0
+        for row in range(h):
+            d = dist[row][col]
+            if d > max_d:
+                max_d = d
+                cx = col
+                cy = row
+        result[cy][cx] = 255
+        xpts.append([cx, cy])
+    return result
+
+
+def process_an_image(img):
+    # old = img.copy()
     gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     blur_gray = cv2.GaussianBlur(gray, (blur_ksize, blur_ksize), 1)
     ret, th = cv2.threshold(gray, 195, 255, cv2.THRESH_BINARY)
     kernel = np.ones((3, 3), np.uint8)
     dia = cv2.dilate(th, kernel, iterations=1)
     kernel = np.ones((5, 5), np.uint8)
-    blur_gray = cv2.erode(dia, kernel, iterations=1)
-    cv2.imshow("blur_gray", blur_gray)
-    # cv2.imshow("win", ero)
-    # cv2.waitKey(0)
-    edges = cv2.Canny(blur_gray, canny_lth, canny_hth)
-    cv2.imshow("edges", edges)
+    edges = cv2.erode(dia, kernel, iterations=1)
+    # 标记四个坐标点用于ROI截取
+    rows, cols = img.shape[:2]
+    points = np.array([[(0, rows), (390, 20), (550, 60), (cols, rows)]])
+    mask = np.zeros_like(edges)
+    cv2.fillPoly(mask, points, 255)
+    masked_img = cv2.bitwise_and(edges, mask)
+    # cv2.imshow("masked_img", masked_img)
+
+    contours, hierarchy = cv2.findContours(masked_img, cv2.RETR_TREE,
+                                           cv2.CHAIN_APPROX_SIMPLE)
+    cv2.drawContours(img, contours, -1, (0, 0, 255), 2)
+    cv2.imshow("win", img)
+    return img
+    """
+    # edges = cv2.Canny(blur_gray, canny_lth, canny_hth)
+    cv2.imshow("ret_find_line", ret_find_line)
     # cv2.waitKey(0)
     # 2. 标记四个坐标点用于ROI截取
     rows, cols = edges.shape
@@ -66,6 +113,7 @@ def process_an_image(img):
     # 5. 最终将结果合在原图上
     result = cv2.addWeighted(img, 0.9, drawing, 0.2, 0)
     return result
+    """
     """
     """
 
@@ -149,21 +197,6 @@ def draw_lanes(img, lines, color=[255, 0, 0], thickness=8):
 
     left_results = least_squares_fit(left_points, 325, img.shape[0])
     right_results = least_squares_fit(right_points, 325, img.shape[0])
-    # print(left_results[0][0], left_results[0][1])
-    # cv2.circle(img, (left_results[0][0], left_results[0][1]), 10,
-    #            (100, 100, 200), -1)
-    # cv2.circle(img, (left_results[1][0], left_results[1][1]), 10,
-    #            (100, 100, 200), -1)
-    # cv2.circle(img, (right_points[0][0], right_points[0][1]), 10,
-    #            (100, 100, 200), -1)
-    # cv2.circle(img, (left_results[1][0], left_results[1][1]), 10,
-    #            (100, 100, 200), -1)
-    # cv2.imshow("drawing", img)
-
-    # drawing = np.zeros((img.shape[0], img.shape[1], 3), dtype=np.uint8)
-    # draw_lines(drawing, left_results)
-    # draw_lines(drawing, left_results)
-    # cv2.imshow("drawing", drawing)
 
     # 注意这里点的顺序
     vtxs = np.array([[
@@ -208,7 +241,6 @@ def least_squares_fit(point_list, ymin, ymax):
 
 
 # img = cv2.imread("./track.png")
-# ret = process_an_image(img)
 # cv2.imwrite("ret.png", ret)
 if __name__ == "__main__":
     output = 'out.mp4'
@@ -222,15 +254,8 @@ if __name__ == "__main__":
         if frame is None:
             break
         else:
-            # 调用OpenCV图像显示函数显示每一帧
-            # cv2.imshow("video", frame)
             process_an_image(frame)
-            # out.write(img)
-            # 用于进行退出条件的判断
             k = cv2.waitKey(0) & 0xFF
-            # 27是ESC键，表示如果按ESC键则退出
             if k == 27:
                 break
-
-# 释放VideoCapture对象
 cap.release()
