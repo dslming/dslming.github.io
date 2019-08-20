@@ -6,7 +6,8 @@ gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
 # 固定阈值
 ret, th = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
-cv2.imwrite("../doc/threshold_fix.png", th)
+print(ret)
+# cv2.imwrite("../doc/threshold_fix.png", th)
 
 # 自适应阈值
 th = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,

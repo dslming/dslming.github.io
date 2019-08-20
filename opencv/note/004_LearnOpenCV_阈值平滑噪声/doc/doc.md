@@ -5,6 +5,11 @@
 > http://ex2tron.wang/opencv-python-image-thresholding/
 >https://zhaoxuhui.top//blog/2017/05/17/%E5%9F%BA%E4%BA%8EPython%E7%9A%84OpenCV%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%866.html
 
+重点:
+- 阈值图像的输入是灰度图像
+- 阈值图像的输出是二值图像
+
+
 #### 1、阈值
 原始图:
 <img src="chess.png">
@@ -14,8 +19,13 @@
 # 第二个值: 阈值
 # 第三个值: 像素值高于/小于阈值时被赋予的值
 # 第四个值: 阈值方法
-# 输出的第二个值是二值图
+# 返回的第一个值: 阈值
+# 返回的第二个值是二值图
 ret, thresh1 = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)
+或者:
+ret = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)[0]
+thresh1 = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)[1]
+> 这里使用python 语法糖-序列解包
 ```
 <img src="threshold_fix.png">
 
