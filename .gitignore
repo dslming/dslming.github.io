@@ -7,5 +7,5 @@
 /opencv/ref/*
 *.ttf
 *.mp4
-/trash/src/trash_classify-master/
-/trash/src/trashnet-data
+/trash/ref/
+/trash/src/dataset-resized/

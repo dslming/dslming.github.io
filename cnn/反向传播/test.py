@@ -33,3 +33,5 @@ dfdx = 1.0 * dfdq  # dq/dx = 1. 这里的乘法是因为链式法则
 dfdy = 1.0 * dfdq  # dq/dy = 1
 dfdz = x + y  # 3
 print(dfdx, dfdy, dfdz)  # -4, -4, 3
+if i == 1:
+    print(1)

@@ -38,6 +38,7 @@ biases = {
 layer_1 = tf.add(tf.matmul(X, weights['w1']), biases['b1'])
 layer_2 = tf.add(tf.matmul(layer_1, weights['w2']), biases['b2'])
 layer_3 = tf.add(tf.matmul(layer_2, weights['w3']), biases['b3'])
+
 layer_drop = tf.nn.dropout(layer_3, keep_prob)
 output_layer = tf.matmul(layer_3, weights['out']) + biases['out']
 cross_entropy = tf.reduce_mean(
