@@ -1,1 +1,0 @@
-node publish.js
