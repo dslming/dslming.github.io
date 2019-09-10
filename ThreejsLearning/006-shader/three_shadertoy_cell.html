@@ -16,8 +16,6 @@
     }
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
-
-
     uniform vec2 u_resolution;
     uniform vec2 u_mouse;
     uniform float u_time;
@@ -28,7 +26,7 @@
     const float zoomSpeed = 8.;
     const int layers = 6;
 
-    const float seed =    86135.7315468;
+    const float seed = 86135.7315468;
 
     float random2d(vec2 uv) {
       return fract(
@@ -36,6 +34,7 @@
                   dot( uv.xy, vec2(12.9898, 78.233) )
                 ) * seed);
     }
+
     mat2 rotate2d(float _angle){
         return mat2(cos(_angle),sin(_angle),
                     -sin(_angle),cos(_angle));
@@ -203,14 +202,10 @@
 
   function init() {
     container = document.getElementById('container');
-
     camera = new THREE.Camera();
     camera.position.z = 1;
-
     scene = new THREE.Scene();
-
     var geometry = new THREE.PlaneBufferGeometry(2, 2);
-
     uniforms = {
       u_time: { type: "f", value: 1.0 },
       u_resolution: { type: "v2", value: new THREE.Vector2() },
