@@ -25,17 +25,17 @@ FragmentShader
 - samplerCube（3D纹理）
 
 #### 变量已由threejs定义
-变量名称 |	说明
--|-|-
-modelMatrix	| 从对象坐标转换为世界坐标
-viewMatrix	|	从世界坐标转换为视点坐标
-modelViewMatrix		|整合modelMatrix和viewMatrix
-projectionMatrix	|	一个矩阵，它根据各种摄像机参数将三维投影到两个维度，并将它们转换为剪辑坐标系
-cameraPosition	|	相机位置
-normalMatrix	|	矩阵将顶点法线向量转换为视点坐标系
-position	|	顶点坐标
-nomail	|	顶点法向量
-紫外线	|	用于粘贴纹理的UV坐标
+| 变量名称 | 说明 |
+| -------- | ---- ||
+| modelMatrix      | 从对象坐标转换为世界坐标                                                     |
+| viewMatrix       | 从世界坐标转换为视点坐标                                                     |
+| modelViewMatrix  | 整合modelMatrix和viewMatrix                                                  |
+| projectionMatrix | 一个矩阵，它根据各种摄像机参数将三维投影到两个维度，并将它们转换为剪辑坐标系 |
+| cameraPosition   | 相机位置                                                                     |
+| normalMatrix     | 矩阵将顶点法线向量转换为视点坐标系                                           |
+| position         | 顶点坐标                                                                     |
+| nomail           | 顶点法向量                                                                   |
+| 紫外线           | 用于粘贴纹理的UV坐标                                                         |
 
 顶点着色器可以使用所有内容。
 对于片段着色器，只能使用viewMatrix和cameraPosition。
@@ -67,9 +67,9 @@ var uniformsExample = {
     "uIntArray3" : { type: "iv", value: [ 1, 2, 3, 4, 5, 6 ] },   // integer array (ivec3)
     "uFloatArray"  : { type: "fv1", value: [ 0.1, 0.2, 0.3, 0.4, 0.5 ] },    // float array (plain)
     "uFloatArray3" : { type: "fv",  value: [ 0.1, 0.2, 0.3, 0.4, 0.5, 0.6 ] }, // float array (vec3)
-    "uVec2Array" : { type: "v2v", value: [ new THREE.Vector2( 0.1, 0.2 ), 
-    "uVec3Array" : { type: "v3v", value: [ new THREE.Vector3( 0.1, 0.2, 0.3 ), 
-    "uVec4Array" : { type: "v4v", value: [ new THREE.Vector4( 0.1, 0.2, 0.3, 0.4 ), 
+    "uVec2Array" : { type: "v2v", value: [ new THREE.Vector2( 0.1, 0.2 ),
+    "uVec3Array" : { type: "v3v", value: [ new THREE.Vector3( 0.1, 0.2, 0.3 ),
+    "uVec4Array" : { type: "v4v", value: [ new THREE.Vector4( 0.1, 0.2, 0.3, 0.4 ),
     "uMat4Array" : { type: "m4v", value: [ new THREE.Matrix4(), new THREE.Matrix4() ] }, // Matrix4 array
     "uTexArray" : { type: "tv", value: [ new THREE.Texture(), new THREE.Texture() ] } // texture array (regular)
 };
@@ -83,25 +83,25 @@ https://github.com/mrdoob/three.js/tree/master/src/renderers/shaders
 * THREE.ShaderLib =用于每种材质的着色器定义
 
 #### GLSL ES内置功能
-功能名称 |	说明
--|-
-sign(x) |	符号判别, 负:-1, :0,正:1
-fract(x) |	仅返回小数部分
-mod(x,y) |	x / y太多了
-clamp(x,y,a) |	夹紧过程min（max（x，y），a）
-mix(x,y,a) | 线性插值
-smoothstep(edge0,edge1,x) |	在x的元素中，边缘0以下的元素为0.0，边缘1以上的元素为1.0。当x在edge0和edge1之间时，它返回立方Hermite插值。
-step(a,x) |	当x <a 0,1时x a a
-sqrt(x),inverssqrt(x) |	invers是1 / sqrt（x）
-normalize(x) |	正规化
-faceforward(N,I,Nref) |	根据条件反转法向量N.
-reflect(I,N) |	返回入射矢量I的反射矢量相对于法线矢量N的平面
-refract(I,N,eta) |	对于折射率为eta的法向量N的平面，
-length(x) |矢量长度=绝对值
-distance(x,y) |	x和y之间的距离
-dot(x,y) |	内积
-cross(x,y) |	外积
-texture2D(uTexture, texCoords) |	返回uTexture的texCoords坐标的颜色（vec4）
+| 功能名称                       | 说明                                                                                                      |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| sign(x)                        | 符号判别, 负:-1, :0,正:1                                                                                  |
+| fract(x)                       | 仅返回小数部分                                                                                            |
+| mod(x,y)                       | x / y太多了                                                                                               |
+| clamp(x,y,a)                   | 夹紧过程min（max（x，y），a）                                                                             |
+| mix(x,y,a)                     | x, y的线性混叠， x(1-a) + y*a;                                                                            |
+| smoothstep(edge0,edge1,x)      | 在x的元素中，边缘0以下的元素为0.0，边缘1以上的元素为1.0。当x在edge0和edge1之间时，它返回立方Hermite插值。 |
+| step(a,x)                      | 当x <a 0,1时x a a                                                                                         |
+| sqrt(x),inverssqrt(x)          | invers是1 / sqrt（x）                                                                                     |
+| normalize(x)                   | 正规化                                                                                                    |
+| faceforward(N,I,Nref)          | 根据条件反转法向量N.                                                                                      |
+| reflect(I,N)                   | 返回入射矢量I的反射矢量相对于法线矢量N的平面                                                              |
+| refract(I,N,eta)               | 对于折射率为eta的法向量N的平面，                                                                          |
+| length(x)                      | 矢量长度=绝对值                                                                                           |
+| distance(x,y)                  | x和y之间的距离                                                                                            |
+| dot(x,y)                       | 内积                                                                                                      |
+| cross(x,y)                     | 外积                                                                                                      |
+| texture2D(uTexture, texCoords) | 返回uTexture的texCoords坐标的颜色（vec4）                                                                 |
 
 > 参考: http://ec.nikkeibp.co.jp/nsp/dl/08513/HTML5GAMES_AppC.pdf
 
@@ -124,11 +124,11 @@ texture2D(uTexture, texCoords) |	返回uTexture的texCoords坐标的颜色（vec
 
 4).normalMatrix : Matrix3
 这个值传递给着色器，用于计算物体的光照。 它是物体的modelViewMatrix矩阵中，
-左上角3x3子矩阵的逆的转置矩阵。(直接变变换到相机空间) 
+左上角3x3子矩阵的逆的转置矩阵。(直接变变换到相机空间)
 
 简单总结下来，以下4点：
-    1.matrix：模型矩阵  
-    2.matrixWorld 世界矩阵  
+    1.matrix：模型矩阵
+    2.matrixWorld 世界矩阵
     3.modelViewMatrix 视图矩阵  （这三个矩的阵概念可以看我渲染流程的博客）
     4.normalMatrix  模型矩阵的逆转置矩阵  （这里留个问题吧，为什么要用逆转置矩阵呢，可以思考一下）
 

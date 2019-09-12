@@ -1,3 +1,4 @@
+> 参考: https://thebookofshaders.com/07/?lan=ch
 ### 做一个黑框
 
 #### 1、botton-left 黑框
