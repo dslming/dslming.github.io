@@ -87,7 +87,7 @@ https://github.com/mrdoob/three.js/tree/master/src/renderers/shaders
 | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | sign(x)                        | 符号判别, 负:-1, :0,正:1                                                                                  |
 | fract(x)                       | 仅返回小数部分                                                                                            |
-| mod(x,y)                       | x / y太多了                                                                                               |
+| mod(x,y)                       | 求模计算%                                                                                                 |
 | clamp(x,y,a)                   | 夹紧过程min（max（x，y），a）                                                                             |
 | mix(x,y,a)                     | x, y的线性混叠， x(1-a) + y*a;                                                                            |
 | smoothstep(edge0,edge1,x)      | 在x的元素中，边缘0以下的元素为0.0，边缘1以上的元素为1.0。当x在edge0和edge1之间时，它返回立方Hermite插值。 |

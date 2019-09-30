@@ -1,52 +1,66 @@
-<p>一个最基本的three.js 自定义shader框架</p>
 <style>
   body {
     margin: 0;
     padding: 0;
+    background-color: green;
   }
 
   #container {
     position: fixed;
+    width: 300px;
+    height: 300px;
+    background-color: #fff;
   }
 
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/108/three.min.js"></script>
+<script src="../three.min.js"></script>
 <script id="vertexShader" type="x-shader/x-vertex">
     void main() {
         gl_Position = vec4( position, 1.0 );
     }
 </script>
 <script id="fragmentShader" type="x-shader/x-fragment">
-    // u_resolution.xy, 当前屏幕的xy, eg: u_resolution.xy=(100, 200)
-    uniform vec2 u_resolution;
-    void main(){
-        // gl_FragCoord.xy 当前像素的xy, eg: gl_FragCoord.xy=(50, 50)
-        // st 归一化的坐标(x,y都映射到了0~1), eg: st=(0.5, 0.25)
-        vec2 st = gl_FragCoord.xy / u_resolution.xy;
-        // aspect 宽高比, eg: aspect = 100/200 = 0.5
-        float aspect = u_resolution.x / u_resolution.y;
-        // 保持宽高比统一, eg: st=(0.25, 0.25)
-        // 也可以这样理解:
-        //    像素 x 的范围是0~100,像素 y 的范围是0～200,
-        //    归一化后, st.x 和 st.y 的映射都是0~1范围,
-        //    归一化后, st.x 和 st.y 应该保持归一化后相同的宽高比,
-        //    所以, 需要 st.x *= u_resolution.x / u_resolution.y;
-        st.x *= aspect;
-        vec3 color = vec3(0.0);
+#define PI 3.14159265359
+uniform vec2 u_resolution;
+uniform float u_time;
 
-        // if( st.x > 0.1 && st.y > 0.1) {
-        //   paint white(1)
-        // } else {
-        //   paint black(0)
-        // }
-        float left = step(0.1,st.x);
-        float bottom = step(0.1,st.y);
+mat2 scale(vec2 scale){
+    return mat2(scale.x,0.0,
+                0.0,scale.y);
+}
 
-        // The multiplication of left*bottom will be similar to the logical AND.
-        // vec3(0) => (0,0,0), vec3(1) => (1,1,1)
-        color = vec3(left * bottom);
-        gl_FragColor = vec4(color,1.0);
-    }
+float box(in vec2 st, in vec2 size){
+    size = vec2(0.5) - size*0.5;
+    vec2 uv = smoothstep(size,
+                        size+vec2(0.001),
+                        st);
+    uv *= smoothstep(size,
+                    size+vec2(0.001),
+                    vec2(1.0)-st);
+    return uv.x*uv.y;
+}
+
+float cross(in vec2 st, float size){
+    return  box(st, vec2(size,size/4.)) +
+            box(st, vec2(size/4.,size));
+}
+
+void main(){
+  vec2 st = gl_FragCoord.xy/u_resolution.xy;
+  vec3 color = vec3(0.0);
+
+  st -= vec2(0.5);
+  st = scale( vec2(sin(u_time)+1.0) ) * st;
+  st += vec2(0.5);
+
+  // Show the coordinates of the space on the background
+  // color = vec3(st.x,st.y,0.0);
+
+  // Add the shape on the foreground
+  color += vec3(cross(st,0.2));
+
+  gl_FragColor = vec4(color,1.0);
+}
 </script>
 <div id="container"></div>
 
@@ -91,7 +105,10 @@
   }
 
   function onWindowResize(event) {
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    container = document.getElementById('container');
+    let w = container.clientWidth
+    let h = container.clientHeight
+    renderer.setSize(w, h);
     uniforms.u_resolution.value.x = renderer.domElement.width;
     uniforms.u_resolution.value.y = renderer.domElement.height;
     // console.error(uniforms.u_resolution)

@@ -52,7 +52,9 @@ color = vec3(pct);
 4) 情况D
 常规操作,直接理解即可, 同时它也是情况C的对应颜色取反。
 ```js
-float pct = step(0.1,1.-st.x);
+// 等效 => float pct = 1. - step(0.9, st.x);
+// 可以看作是 float pct = step(0.1, st.x);的位置镜然后颜色取反
+float pct = step(0.1, 1.-st.x);
 color = vec3(pct);
 ```
 <img src="05.png">
