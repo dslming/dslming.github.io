@@ -4,6 +4,8 @@
 > 参考
 > WebGL 编程指南.pdf 第5章
 
+### 纹理映射
+
 #### 1、纹理映射的步骤
 纹理映射的过程需要顶点着色器和片元着色器二者的配合。
 
@@ -45,6 +47,48 @@ this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
 // 传送给片元
 this.gl.uniform1i(texture, 0);
 ```
+
+这里着重说一下: `texParameteri`
+```js
+this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MAG_FILTER, this.LINEAR);
+```
+第一个参数:纹理类型
+
+第二个参数: 纹理操作
+- **TEXTURE_MIN_FILTER**,纹理缩小时的滤波器
+- **TEXTURE_MAG_FILTER**,纹理放大时的滤波器
+- **TEXTURE_WRAP_S**,纹理水平填充方式,在s方向
+- **TEXTURE_WRAP_T**,纹理垂直填充方式,在t方向
+
+第三个参数: 纹理算法
+**1)滤波器**
+|常数名称|	意义	|
+|-|-|
+|NEAREST| 使用最接近目标像素中心的点的值
+|LINEAR| 采用最接近目标像素的4点的加权平均值
+|NEAREST_MIPMAP_NEAREST| 选择最佳的Mipmap并根据gl.NEAREST采用值
+|NEAREST_MIPMAP_LINEAR|	选择最佳的Mipmap并根据gl.LINEAR采用值
+|LINEAR_MIPMAP_NEAREST|	选择两个最佳的Mipmap，并根据gl.NEAREST获取每个值，最后采用这些值的加权平均值
+|LINEAR_MIPMAP_LINEAR|	选择两个最佳的Mipmap,并根据gl.NEAREST获取每个值，最后采用这些值的加权平均值
+
+**2) 填充方式**
+常数名称	|意义|	例子
+-|-|-
+REPEAT|	遍历超出范围的值|	1.25=0.25, -0.25=0.75
+MIRRORED_REPEAT|	遍历超出范围的值|	1.25=0.75, -0.25=0.25
+CLAMP_TO_EDGE|	钳位值保持在0到1的范围内|	1.25=1.00, -0.25=0.00
+
+<!-- 第三个参数: 纹理算法
+1)
+- **LINEAR**, 线性
+- **NEAREST**, 使用最接近目标像素中心的点的值。
+- **NEAREST_MIPMAP_NEAREST**,选择最佳的 Mipmap,并根据 gl.NEAREST 采用值。
+- **NEAREST_MIPMAP_LINEAR**,选择最佳的 Mipmap,并根据 gl.LINEAR 采用值。
+- **LINEAR_MIPMAP_LINEAR**,选择两个最佳的 Mipmap,并根据gl.NEAREST获取每个值，最后采用这些值的加权平均值。
+2) 填充方式
+- **REPEAT**,遍历超出范围的值,
+- **CLAMP_TO_EDGE**,
+- **MIRRORED_REPEAT**, -->
 
 mesh信息:
 ```js
@@ -89,3 +133,8 @@ void main(void){
   finalColor = texture(uMainTex, vec2(texCoord.s, texCoord.t));
 }
 ```
+
+#### 参考链接
+[WebGL基础学习篇（Lesson 7）](https://github.com/fem-d/webGL/blob/master/blog/WebGL%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AF%87%EF%BC%88Lesson%207%EF%BC%89.md)
+[纹理参数](https://wgld.org/d/webgl/w028.html)
+

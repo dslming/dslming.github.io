@@ -1,6 +1,6 @@
 > 写在前面的话:
 > 1. 该系列是 FunWithWebGL2 的学习笔记,代码请看[FunWithWebGL2](https://github.com/sketchpunk/FunWithWebGL2)。该笔记持续不定期更新[地址](https://github.com/dslming/dslming.github.com/tree/master/LearningWebGl)。
-> 2. 如有帮助请给予鼓励,买根冰棍。
+> 2. 您可以考虑给me发个小额微信红包以资鼓励
 >    <img src="./wx.png" width="100">
 
 #### 2、FunWithWebGl目录
@@ -12,4 +12,7 @@
 - 009 The Cube(立方体)
 - 010 天空盒
 - 011 加载obj
-- 012 电光源
+- 012 Phong Lighting
+- 013 重构
+- 014 Texture Masks
+- 014 Texture Atlas
