@@ -4,6 +4,7 @@
 > 参考:
 > FunWithWebGL2 014 Texture Masks
 > FunWithWebGL2 015 Texture Atlas
+> FunWithWebGL2 016 Video Texture
 
 ### 一、嵌套纹理
 指定纹理的位置,从而将2张纹理组合成一个新的纹理。
@@ -106,4 +107,64 @@ out vec4 outColor;
 void main(void){ outColor = texture(uAltas,vUV); }
 ```
 
+### 三、视频纹理
+#### 1、加载视频资源
+```js
+var vid = document.createElement("video");
+vid.style.display = "none";
+document.body.appendChild(vid);
+
+vid.queueData = itm;
+vid.addEventListener("loadeddata", Resources.onDownloadSuccess, false);
+vid.onabort = vid.onerror = Resources.onDownloadError;
+vid.autoplay = true;
+vid.loop = true;
+vid.src = itm.src;
+vid.load();
+vid.play();
+window.lm = Resources
+Resources.Videos[itm.name] = vid;
+```
+最终资源存储在 Resources.Videos.vid。
+
+#### 2、获取当前帧更新到纹理
+```js
+gl.fUpdateTexture("vid",Resources.Videos["vid"],false,true);
+
+gl.fUpdateTexture = function (name, img, doYFlip, noMips) {
+  // console.error(img);
+  var tex = this.mTextureCache[name];
+  if (doYFlip == true) this.pixelStorei(this.UNPACK_FLIP_Y_WEBGL, true);	//Flip the texture by the Y Position, So 0,0 is bottom left corner.
+
+  this.bindTexture(this.TEXTURE_2D, tex);														//Set text buffer for work
+  this.texImage2D(this.TEXTURE_2D, 0, this.RGBA, this.RGBA, this.UNSIGNED_BYTE, img);			//Push image to GPU.
+
+  if (noMips === undefined || noMips == false) {
+    this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MAG_FILTER, this.LINEAR);					//Setup up scaling
+    this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MIN_FILTER, this.LINEAR_MIPMAP_NEAREST);	//Setup down scaling
+    this.generateMipmap(this.TEXTURE_2D);	//Precalc different sizes of texture for better quality rendering.
+  } else {
+    this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MAG_FILTER, this.NEAREST);
+    this.texParameteri(this.TEXTURE_2D, this.TEXTURE_MIN_FILTER, this.NEAREST);
+    this.texParameteri(this.TEXTURE_2D, this.TEXTURE_WRAP_S, this.CLAMP_TO_EDGE);
+    this.texParameteri(this.TEXTURE_2D, this.TEXTURE_WRAP_T, this.CLAMP_TO_EDGE);
+  }
+
+  this.bindTexture(this.TEXTURE_2D, null);									//Unbind
+
+  if (doYFlip == true) this.pixelStorei(this.UNPACK_FLIP_Y_WEBGL, false);	//Stop flipping textures
+  return tex;
+}
+```
+
+#### 3、片元着色器
+```glsl
+#version 300 es
+precision mediump float;
+uniform sampler2D uTex;
+in highp vec2 vUV;
+out vec4 outColor;
+
+void main(void){ outColor = texture(uTex,vUV); }
+```
 <全文结束>
