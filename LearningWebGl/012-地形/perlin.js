@@ -40,6 +40,7 @@ class Grad {
 
 class Perlin {
   constructor() {
+    // Perlin还预计算了一个随机排列数组p[n]，p[n]里面存储的是打乱后的0~n-1的排列值。
     this.p = [151, 160, 137, 91, 90, 15,
       131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23,
       190, 6, 148, 247, 120, 234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33,
@@ -54,12 +55,14 @@ class Perlin {
       49, 192, 214, 31, 181, 199, 106, 157, 184, 84, 204, 176, 115, 121, 50, 45, 127, 4, 150, 254,
       138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180];
     this.perm = new Array(512);
+    // 随机梯度
     this.gradP = new Array(512);
     this.seed(0)
   }
 
   // 这不是一个很好的播种功能，但可以。 它支持2 ^ 16个不同的种子值。 如果您需要更多种子，可以写点更好的东西。
   seed(seed) {
+    // 12个方向的梯度
     let grad3 = [
       new Grad(1, 1, 0),
       new Grad(-1, 1, 0),
@@ -73,7 +76,7 @@ class Perlin {
       new Grad(0, -1, 1),
       new Grad(0, 1, -1),
       new Grad(0, -1, -1)];
-    console.error(grad3, "grad3");
+    // console.error(grad3, "grad3");
     if (seed > 0 && seed < 1) {
       // Scale the seed out
       // 扩大种子
@@ -112,12 +115,17 @@ class Perlin {
     // 将整数单元格包装为255（可以在此处引入更小的整数周期）
     X = X & 255; Y = Y & 255;
 
-    // Calculate noise contributions from each of the four corners
-    // 计算四个角中每个角的噪声贡献
-    var n00 = this.gradP[X + this.perm[Y]].dot2(x, y);
-    var n01 = this.gradP[X + this.perm[Y + 1]].dot2(x, y - 1);
-    var n10 = this.gradP[X + 1 + this.perm[Y]].dot2(x - 1, y);
-    var n11 = this.gradP[X + 1 + this.perm[Y + 1]].dot2(x - 1, y - 1);
+    // 相近的四个点随机梯度值(noise 值)
+    var n00 = this.gradP[X + this.perm[Y]]
+    var n01 = this.gradP[X + this.perm[Y + 1]]
+    var n10 = this.gradP[X + 1 + this.perm[Y]]
+    var n11 = this.gradP[X + 1 + this.perm[Y + 1]]
+
+    // 四个点nosie的贡献值。
+    n00 = n00.dot2(x, y)
+    n01 = n01.dot2(x, y - 1)
+    n10 = n10.dot2(x - 1, y)
+    n11 = n11.dot2(x - 1, y - 1)
 
     // Compute the fade curve value for x
     // 计算x的渐变曲线值
