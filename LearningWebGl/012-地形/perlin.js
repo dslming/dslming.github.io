@@ -120,6 +120,7 @@ class Perlin {
     var n01 = this.gradP[X + this.perm[Y + 1]]
     var n10 = this.gradP[X + 1 + this.perm[Y]]
     var n11 = this.gradP[X + 1 + this.perm[Y + 1]]
+    // console.error(X, Y);
 
     // 四个点nosie的贡献值。
     n00 = n00.dot2(x, y)
@@ -133,10 +134,13 @@ class Perlin {
 
     // Interpolate the four results
     // 内插四个结果
-    return lerp(
+    let aaa = lerp(
       lerp(n00, n10, u),
       lerp(n01, n11, u),
       fade(y));
+    // console.error(aaa);
+
+    return aaa
   }
 
   perlin3(x, y, z) {
