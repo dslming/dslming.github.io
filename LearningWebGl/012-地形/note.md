@@ -16,11 +16,37 @@ Perlin Noise 可以用来表现自然界中无法用简单形状来表达的物�
 
 Perlin Noise有两种:Simplex噪声、分形噪声。
 
+#### 2、使用canvas 创建图像
+创建 100*100 像素的 ImageData 对象，其中每个像素都是红色的，然后把它放到画布上。
+<img src="./03.png">
 
+```js
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+// imgData.data.length = width * height * 4
+var imgData=ctx.createImageData(100,100);
+for (var i=0; i<imgData.data.length; i+=4) {
+  // RGBA
+  imgData.data[i+0]=255;
+  imgData.data[i+1]=0;
+  imgData.data[i+2]=0;
+  imgData.data[i+3]=255;
+}
+ctx.putImageData(imgData,10,10);
+```
+
+每个像素由4个值构成, 分别对应RGBA。例如第一个像素的构成:
+```js
+R: imgData.data[0]
+G: imgData.data[1]
+B: imgData.data[2]
+A: imgData.data[3]
+```
 
 
 
 #### 参考
+[Perlin noise](https://www.cnblogs.com/VanHu/p/4941258.html)
 [Perlin噪声](https://zh.m.wikipedia.org/zh/Perlin%E5%99%AA%E5%A3%B0)
 [如何在游戏中使用Perlin Noise](http://devmag.org.za/2009/04/25/perlin-noise/)
 [噪音 - Perlin Noise](https://www.cnblogs.com/babyrender/archive/2008/10/27/BabyRender.html)

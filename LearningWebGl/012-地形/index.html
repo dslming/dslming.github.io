@@ -35,8 +35,8 @@
 <script>
   function initCanvas() {
     let canvas = document.querySelector('.canvas')
-    canvas.width = 1024;
-    canvas.height = 768;
+    canvas.width = 500;
+    canvas.height = 500;
     let ctx = canvas.getContext('2d');
     return { ctx, canvas }
   }
@@ -48,13 +48,16 @@
       for (let y = 0; y < canvas.height; y++) {
         let value = Math.abs(noise.perlin2(x / 100, y / 100));
         value *= 256;
-
+        // 根据坐标(x, y), 计算像素位置在一纬数组data的位置
         let cell = (x + y * canvas.width) * 4;
-        data[cell] = data[cell + 1] = data[cell + 2] = value;
-        data[cell] += Math.max(0, (25 - value) * 8);
+        data[cell] = value
+        data[cell + 1] = 0
+        data[cell + 2] = 0;
+        // data[cell] += Math.max(0, (25 - value) * 8);
         data[cell + 3] = 255; // alpha.
       }
     }
+    // console.error(data);
     return image
   }
 
@@ -69,26 +72,21 @@
   }
 
   function generateImg3d(ctx, canvas, image, heightInfo) {
+    var start = Date.now();
     let data = image.data;
     // Cache width and height values for the canvas.
     var cWidth = canvas.width;
     var cHeight = canvas.height;
 
     var max = -Infinity, min = Infinity;
-    // var noisefn = fn === 'simplex' ? noise.simplex3 : noise.perlin3;
-
     for (var x = 0; x < cWidth; x++) {
       for (var y = 0; y < cHeight; y++) {
-        var value = noise.simplex3(x / 50, y / 50, heightInfo.height);
-
-        if (max < value) max = value;
-        if (min > value) min = value;
-
-        value = (1 + value) * 1.1 * 128;
+        var value = Math.abs(noise.perlin3(x / 100, y / 100, heightInfo.height));
+        value *= 256;
 
         var cell = (x + y * cWidth) * 4;
         data[cell] = data[cell + 1] = data[cell + 2] = value;
-        // data[cell] += Math.max(0, (25 - value) * 8);
+        data[cell] += Math.max(0, (25 - value) * 8);
         data[cell + 3] = 255; // alpha.
       }
     }
@@ -117,5 +115,5 @@
     requestAnimationFrame(loop)
   }
 
-  run3d()
+  run2d()
 </script>
