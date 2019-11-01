@@ -21,3 +21,4 @@
 - 018～021 VR相关
 - 022 UBO
 - 023 调试工具
+- 024 Picking with Framebuffers(3d拾取)
