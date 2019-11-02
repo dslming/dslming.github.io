@@ -1,0 +1,14 @@
+{
+  "short_name": "Vmusic",
+  "name": "好音乐,看的见",
+  "icon": [
+      {
+          "src": "./static/img/icon.png",
+          "type": "image/png",
+          "sizes": "434x166"
+      }
+  ],
+  "start_url": "/",
+  "background_color": "#2196f3",
+  "display": "standalone"
+}
