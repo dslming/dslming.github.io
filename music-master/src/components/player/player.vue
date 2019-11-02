@@ -331,7 +331,8 @@ export default {
       //   // this.url = 'https://' + urlNoHead;
       //   this.url = "https://dslming.github.io/res/china.mp3";
       // });
-      this.url = "https://dslming.github.io/res/demo.mp3";
+      this.url =
+        "https://dslming.github.io/res/demo.mp3?nsukey=KmJARUe7MXeX8CZuhCVQ%2FEYdh%2BO0ARjgJTCREIDKfWom6rro0BRFmU5SsDqUQufYFpHaCJf5sqbhNb5moc8OlShOjdYyNOCx%2FvcDs1T1mACEtB%2BGY1Yg8bf1Qiu23f1kR1ZBDmhci%2FBVLIbxVJygFUU4DO7SVlGOVrOmT0b27hba48gvuEVCk0b2qCg57DiQJdTtOxPBU1MzV92AKiRTQg%3D%3D";
     },
     _getLyric(id) {
       if (this.currentLyric) {
