@@ -82,7 +82,7 @@ export default new Router({
     {
       // 默认跳转到 recommend
       path: '/',
-      redirect: '/recommend'
+      redirect: '/player'
     },
     {
       path: '/recommend',
