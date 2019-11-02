@@ -331,7 +331,7 @@ export default {
       //   // this.url = 'https://' + urlNoHead;
       //   this.url = "https://dslming.github.io/res/china.mp3";
       // });
-      this.url = "https://dslming.github.io/res/china.mp3";
+      this.url = "https://dslming.github.io/res/demo.mp3";
     },
     _getLyric(id) {
       if (this.currentLyric) {
