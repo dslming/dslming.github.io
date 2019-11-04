@@ -8,9 +8,9 @@ export default {
       antd: true,
       dva: true,
       dynamicImport: false,
-      title: 'umi-blog',
+      title: '欢迎来到DSLMing的主页~',
       dll: false,
-      
+
       routes: {
         exclude: [
           /models\//,
