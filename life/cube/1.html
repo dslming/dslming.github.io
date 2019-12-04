@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>Masking experiments by MacSlow</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <link type="text/css" rel="stylesheet" href="stylesheet.css">
+  </head>
+
+  <body>
+    <script type="module">
+      import * as THREE from './three.module.js';
+      import { OrbitControls } from "./OrbitControls.js";
+      import { EffectComposer } from './EffectComposer.js';
+      import { ShaderPass } from './ShaderPass.js';
+      import { TexturePass } from './TexturePass.js';
+      import { ClearPass } from './ClearPass.js';
+      import { MaskPass, ClearMaskPass } from './MaskPass.js';
+      import { CopyShader } from './CopyShader.js';
+      import { FXAAShader } from './FXAAShader.js';
+
+      let fxaaEffect;
+      let controls;
+      let camera, composer, renderer;
+      let box, plane;
+      let bufferOfScene;
+      let sceneMaskPlane;
+      let sceneCube;
+      let light1;
+
+      init();
+      animate();
+
+      function init() {
+        let aspect = window.innerWidth / window.innerHeight;
+        camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
+        camera.aspect = aspect;
+        camera.position.z = 8;
+
+        sceneMaskPlane = new THREE.Scene();
+        sceneCube = new THREE.Scene();
+        // window.scene = sceneMaskPlane
+
+        let boxSize = 4.;
+        let boxMaterial = new THREE.MeshStandardMaterial({ color: 0xDD7733 });
+        boxMaterial.roughnessMap = new THREE.TextureLoader().load("./roughness.jpg");
+        boxMaterial.roughnessMap.repeat.set(2, 2);
+        boxMaterial.roughnessMap.wrapS = THREE.RepeatWrapping;
+        boxMaterial.roughnessMap.wrapT = THREE.RepeatWrapping;
+        boxMaterial.roughness = 1.;
+        boxMaterial.side = THREE.BackSide;
+        boxMaterial.depthTest = THREE.GreaterDepth;
+        box = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial);
+        box.castShadow = true;
+        box.receiveShadow = true;
+        light1 = new THREE.PointLight(0xFFEFDF, 1, 100);
+        light1.castShadow = true;
+        light1.position.set(.1, .4, 1.8);
+        let light1_1 = new THREE.PointLight(0xEFDFCF, .75, 100);
+        light1_1.castShadow = true;
+        light1_1.position.set(-.2, .7, .6);
+        sceneCube.add(light1);
+        sceneCube.add(light1_1);
+        sceneCube.add(box);
+        let thingMaterial1 = new THREE.MeshStandardMaterial({ color: 0xEE5555 });
+        let thing1 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.4, .4, 1.75, 32), thingMaterial1);
+        thing1.castShadow = true;
+        thing1.receiveShadow = true;
+        thing1.position.set(.0, -1.1, .0);
+        sceneCube.fog = new THREE.FogExp2(0x0f0f0f, .1);
+        sceneCube.add(thing1);
+
+        let sideSize = 3.95;
+        plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+        sceneMaskPlane.add(plane);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.sortObjects = false;
+        renderer.setClearColor(0x303030);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.toneMappingExposure = 1.;
+        document.body.appendChild(renderer.domElement);
+
+        // orbit controls
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.target.set(.0, .0, .0);
+        controls.enableDamping = true;
+        controls.dampingFactor = .25;
+        controls.minDistance = 2.;
+        controls.maxDistance = 10.;
+        controls.zoomSpeed = .3;
+        controls.minPolarAngle = Math.PI * .1;
+        controls.maxPolarAngle = Math.PI * .9;
+        controls.autoRotate = false;
+        controls.autoRotateSpeed = 2.5;
+        controls.update();
+        controls.saveState();
+
+        let clearPass = new ClearPass();
+        let clearMaskPass = new ClearMaskPass();
+
+        let maskPass = new MaskPass(sceneMaskPlane, camera);
+
+        let outputPass = new ShaderPass(CopyShader);
+        let parameters = {
+          minFilter: THREE.LinearFilter,
+          magFilter: THREE.LinearFilter,
+          format: THREE.RGBFormat,
+          stencilBuffer: true
+        };
+
+        let renderTarget = new THREE.WebGLRenderTarget(window.innerWidth,
+          window.innerHeight,
+          parameters);
+        bufferOfScene = new THREE.WebGLRenderTarget(window.innerWidth,
+          window.innerHeight,
+          parameters);
+
+        let textureOfScene = new TexturePass(bufferOfScene);
+        composer = new EffectComposer(renderer, renderTarget);
+        composer.addPass(clearPass);
+        composer.addPass(clearMaskPass);
+        composer.addPass(maskPass);
+        composer.addPass(textureOfScene);
+        composer.addPass(clearMaskPass);
+        composer.addPass(outputPass);
+
+        fxaaEffect = new ShaderPass(FXAAShader);
+        var pixelRatio = renderer.getPixelRatio();
+        fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
+        fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
+        composer.addPass(fxaaEffect);
+
+        window.addEventListener('resize', onWindowResize, false);
+      }
+
+      function onWindowResize() {
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        renderer.setSize(width, height);
+        composer.setSize(width, height);
+
+        var pixelRatio = renderer.getPixelRatio();
+        fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
+        fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
+
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+      }
+
+      function animate() {
+        controls.update();
+        requestAnimationFrame(animate);
+        var time = performance.now() * .001;
+
+        // position masking planes correctly
+        plane.position.set(.0, .0, .0);
+        plane.translateZ(2.);
+        plane.rotation.y = Math.PI * .0;
+
+        // do the four render passes
+        renderer.setRenderTarget(bufferOfScene);
+        renderer.render(sceneCube, camera);
+        composer.render(time);
+      }
+    </script>
+  </body>
+
+</html>
