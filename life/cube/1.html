@@ -33,6 +33,8 @@
       animate();
 
       function init() {
+        window.addEventListener('resize', onWindowResize, false);
+
         // 相机
         let aspect = window.innerWidth / window.innerHeight;
         camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
@@ -44,6 +46,20 @@
         sceneCube = new THREE.Scene();
         sceneCube.fog = new THREE.FogExp2(0x0f0f0f, .1);
         window.scene = sceneCube
+
+        // 渲染器
+        renderer = new THREE.WebGLRenderer();
+        renderer.sortObjects = false;
+        renderer.setClearColor(0x303030);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.gammaInput = true;
+        renderer.gammaOutput = true;
+        renderer.toneMapping = THREE.ReinhardToneMapping;
+        renderer.toneMappingExposure = 1.;
+        document.body.appendChild(renderer.domElement);
 
         // 材质
         let boxMaterial = new THREE.MeshStandardMaterial({ color: 0xDD7733 });
@@ -84,22 +100,10 @@
         thing1.name = "thing1"
         sceneCube.add(thing1);
 
+        // 平台
         let sideSize = 3.95;
         plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
         sceneMaskPlane.add(plane);
-
-        renderer = new THREE.WebGLRenderer();
-        renderer.sortObjects = false;
-        renderer.setClearColor(0x303030);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        renderer.gammaInput = true;
-        renderer.gammaOutput = true;
-        renderer.toneMapping = THREE.ReinhardToneMapping;
-        renderer.toneMappingExposure = 1.;
-        document.body.appendChild(renderer.domElement);
 
         // orbit controls
         controls = new OrbitControls(camera, renderer.domElement);
@@ -116,12 +120,7 @@
         controls.update();
         controls.saveState();
 
-        let clearPass = new ClearPass();
-        let clearMaskPass = new ClearMaskPass();
-
-        let maskPass = new MaskPass(sceneMaskPlane, camera);
-
-        let outputPass = new ShaderPass(CopyShader);
+        // ------------------------------后期处理----------------
         let parameters = {
           minFilter: THREE.LinearFilter,
           magFilter: THREE.LinearFilter,
@@ -129,29 +128,41 @@
           stencilBuffer: true
         };
 
+        // 创建效果组合器
+        // 是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。
         let renderTarget = new THREE.WebGLRenderTarget(window.innerWidth,
           window.innerHeight,
           parameters);
+        // 创建效果组合器(渲染器, 渲染目标)
+        composer = new EffectComposer(renderer, renderTarget);
+
+        // 清除背景通道，设置背景颜色等。
+        // let clearPass = new ClearPass();
+        // composer.addPass(clearPass);
+
+        // 该通道可以在当前图像上添加掩码，后续的通道只会影响掩蔽区域，并且使用完后必须清除掩码区域。
+        // let maskPass = new MaskPass(sceneMaskPlane, camera);
+        // composer.addPass(maskPass);
+
         bufferOfScene = new THREE.WebGLRenderTarget(window.innerWidth,
           window.innerHeight,
           parameters);
-
         let textureOfScene = new TexturePass(bufferOfScene);
-        composer = new EffectComposer(renderer, renderTarget);
-        composer.addPass(clearPass);
-        composer.addPass(clearMaskPass);
-        composer.addPass(maskPass);
         composer.addPass(textureOfScene);
-        composer.addPass(clearMaskPass);
-        composer.addPass(outputPass);
 
+        // 清除掩蔽物通道
+        // let clearMaskPass = new ClearMaskPass();
+        // composer.addPass(clearMaskPass);
+
+        // let outputPass = new ShaderPass(CopyShader);
+        // composer.addPass(outputPass);
+
+        // 抗锯齿
         fxaaEffect = new ShaderPass(FXAAShader);
         var pixelRatio = renderer.getPixelRatio();
         fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
         fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
         composer.addPass(fxaaEffect);
-
-        window.addEventListener('resize', onWindowResize, false);
       }
 
       function onWindowResize() {
