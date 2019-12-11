@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title>Masking experiments by MacSlow</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="../stylesheet.css">
+		<script src="./stats.min.js"></script>
+	</head>
+
+	<body>
+		<script type="module">
+
+			import * as THREE from '../three.module.js';
+			import { OrbitControls } from "../OrbitControls.js";
+			import { EffectComposer } from '../EffectComposer.js';
+			import { ShaderPass } from '../ShaderPass.js';
+			import { TexturePass } from '../TexturePass.js';
+			import { ClearPass } from '../ClearPass.js';
+			import { MaskPass, ClearMaskPass } from '../MaskPass.js';
+			import { CopyShader } from '../CopyShader.js';
+			import { FXAAShader } from '../FXAAShader.js';
+			import { RenderPass } from '../RenderPass.js';
+			let stats = new Stats();
+			stats.domElement.style.position = 'absolute';  // 样式， 坐标
+			stats.domElement.style.left = '0px';
+			stats.domElement.style.top = '0px';
+			document.body.appendChild(stats.domElement);
+
+			let fxaaEffect;
+			let controls;
+			let camera, composer, renderer;
+			let box, plane;
+			let box2, plane2;
+			let box3, plane3;
+			let box4, plane4;
+			let box5, plane5;
+			let box6, plane6;
+			let box7;
+
+			let bufferOfScene;
+			let bufferOfScene2;
+			let bufferOfScene3;
+			let bufferOfScene4;
+			let bufferOfScene5;
+			let bufferOfScene6;
+			let bufferOfScene7;
+
+			let sceneMaskPlane;
+			let sceneMaskPlane2;
+			let sceneMaskPlane3;
+			let sceneMaskPlane4;
+			let sceneMaskPlane5;
+			let sceneMaskPlane6;
+
+			let sceneCube;
+			let sceneCube2;
+			let sceneCube3;
+			let sceneCube4;
+			let sceneCube5;
+			let sceneCube6;
+			let sceneCube7;
+
+			let light1, light2, light3, light4, light5, light6;
+
+			init();
+			animate();
+
+			function init() {
+				let aspect = window.innerWidth / window.innerHeight;
+				camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
+				camera.aspect = aspect;
+				camera.position.z = 8;
+
+				sceneMaskPlane = new THREE.Scene();
+				sceneCube = new THREE.Scene();
+
+				sceneMaskPlane2 = new THREE.Scene();
+				sceneCube2 = new THREE.Scene();
+
+				sceneMaskPlane3 = new THREE.Scene();
+				sceneCube3 = new THREE.Scene();
+
+				sceneMaskPlane4 = new THREE.Scene();
+				sceneCube4 = new THREE.Scene();
+
+				sceneMaskPlane5 = new THREE.Scene();
+				sceneCube5 = new THREE.Scene();
+
+				sceneMaskPlane6 = new THREE.Scene();
+				sceneCube6 = new THREE.Scene();
+
+				sceneCube7 = new THREE.Scene();
+
+				let boxSize = 4.;
+				let boxMaterial = new THREE.MeshStandardMaterial({ color: 0xDD7733 });
+				boxMaterial.roughnessMap = new THREE.TextureLoader().load("../roughness.jpg");
+				boxMaterial.roughnessMap.repeat.set(2, 2);
+				boxMaterial.roughnessMap.wrapS = THREE.RepeatWrapping;
+				boxMaterial.roughnessMap.wrapT = THREE.RepeatWrapping;
+				boxMaterial.roughness = 1.;
+				boxMaterial.side = THREE.BackSide;
+				boxMaterial.depthTest = THREE.GreaterDepth;
+				box = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial);
+				box.castShadow = true;
+				box.receiveShadow = true;
+				light1 = new THREE.PointLight(0xFFEFDF, 1, 100);
+				light1.castShadow = true;
+				light1.position.set(.1, .4, 1.8);
+				let light1_1 = new THREE.PointLight(0xEFDFCF, .75, 100);
+				light1_1.castShadow = true;
+				light1_1.position.set(-.2, .7, .6);
+				sceneCube.add(light1);
+				sceneCube.add(light1_1);
+				sceneCube.add(box);
+				let thingMaterial1 = new THREE.MeshStandardMaterial({ color: 0xEE5555 });
+				let thing1 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.4, .4, 1.75, 32), thingMaterial1);
+				thing1.castShadow = true;
+				thing1.receiveShadow = true;
+				thing1.position.set(.0, -1.1, .0);
+				sceneCube.fog = new THREE.FogExp2(0x0f0f0f, .1);
+				sceneCube.add(thing1);
+
+				let boxMaterial2 = new THREE.MeshStandardMaterial({ color: 0xCCDDAA });
+				boxMaterial2.roughnessMap = new THREE.TextureLoader().load("../Marble13_GLOSS_1K.jpg");
+				boxMaterial2.roughnessMap.repeat.set(4, 4);
+				boxMaterial2.roughnessMap.wrapS = THREE.RepeatWrapping;
+				boxMaterial2.roughnessMap.wrapT = THREE.RepeatWrapping;
+				boxMaterial2.roughness = 1.;
+				boxMaterial2.side = THREE.BackSide;
+				boxMaterial2.depthTest = THREE.GreaterDepth;
+				box2 = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial2);
+				box2.castShadow = true;
+				box2.receiveShadow = true;
+				light2 = new THREE.PointLight(0xFFEFDF, 1, 100);
+				light2.castShadow = true;
+				light2.position.set(.7, .3, 1.2);
+				let light2_1 = new THREE.PointLight(0xEFDFCF, .5, 100);
+				light2_1.castShadow = true;
+				light2_1.position.set(-.2, .7, .6);
+				sceneCube2.add(light2);
+				sceneCube2.add(light2_1);
+				sceneCube2.add(box2);
+				let thingMaterial2 = new THREE.MeshStandardMaterial({ color: 0xDDBBCC });
+				let thing2 = new THREE.Mesh(new THREE.BoxBufferGeometry(1, 2., 1), thingMaterial2);
+				thing2.castShadow = true;
+				thing2.receiveShadow = true;
+				thing2.position.set(.0, -.975, .0);
+				sceneCube2.fog = new THREE.FogExp2(0x0f0f0f, .085);
+				sceneCube2.add(thing2);
+
+				let boxMaterial3 = new THREE.MeshStandardMaterial({ color: 0x44EE88 });
+				boxMaterial3.roughnessMap = new THREE.TextureLoader().load("../Tiles05_GLOSS_1K.jpg");
+				boxMaterial3.roughnessMap.repeat.set(1, 1);
+				boxMaterial3.roughnessMap.wrapS = THREE.RepeatWrapping;
+				boxMaterial3.roughnessMap.wrapT = THREE.RepeatWrapping;
+				boxMaterial3.roughness = 1.;
+				boxMaterial3.side = THREE.BackSide;
+				boxMaterial3.depthTest = THREE.GreaterDepth;
+				box3 = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial3);
+				box3.castShadow = true;
+				box3.receiveShadow = true;
+				light3 = new THREE.PointLight(0xFFEFDF, 1, 100);
+				light3.castShadow = true;
+				light3.position.set(.3, .4, -1.);
+				let light3_1 = new THREE.PointLight(0xEFDFCF, .5, 100);
+				light3_1.castShadow = true;
+				light3_1.position.set(.1, .7, .5);
+				sceneCube3.add(light3);
+				sceneCube3.add(light3_1);
+				sceneCube3.add(box3);
+				let thingMaterial3 = new THREE.MeshStandardMaterial({ color: 0x33DDAA });
+				let thing3 = new THREE.Mesh(new THREE.BoxBufferGeometry(.5, .5, 2.), thingMaterial3);
+				thing3.castShadow = true;
+				thing3.receiveShadow = true;
+				thing3.position.set(.0, .0, 1.);
+				sceneCube3.fog = new THREE.FogExp2(0x0f0f0f, .11);
+				sceneCube3.add(thing3);
+
+				let boxMaterial4 = new THREE.MeshStandardMaterial({ color: 0xDD3388 });
+				boxMaterial4.roughnessMap = new THREE.TextureLoader().load("../Tiles05_GLOSS_1K.jpg");
+				boxMaterial4.roughnessMap.repeat.set(1, 1);
+				boxMaterial4.roughnessMap.wrapS = THREE.RepeatWrapping;
+				boxMaterial4.roughnessMap.wrapT = THREE.RepeatWrapping;
+				boxMaterial4.roughness = 1.;
+				boxMaterial4.side = THREE.BackSide;
+				boxMaterial4.depthTest = THREE.GreaterDepth;
+				box4 = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial4);
+				box4.castShadow = true;
+				box4.receiveShadow = true;
+				light4 = new THREE.PointLight(0xFFEFDF, 1, 100);
+				light4.castShadow = true;
+				light4.position.set(.4, .5, 1.);
+				let light4_1 = new THREE.PointLight(0xEFDFCF, .5, 100);
+				light4_1.castShadow = true;
+				light4_1.position.set(-.1, -.1, -.8);
+				sceneCube4.add(light4);
+				sceneCube4.add(light4_1);
+				sceneCube4.add(box4);
+				let thingMaterial4 = new THREE.MeshStandardMaterial({ color: 0xEE2299 });
+				let thing4 = new THREE.Mesh(new THREE.SphereBufferGeometry(.5, 32, 16), thingMaterial4);
+				thing4.castShadow = true;
+				thing4.receiveShadow = true;
+				thing4.position.set(.0, -1.45, -1.45);
+				sceneCube4.fog = new THREE.FogExp2(0x0f0f0f, .09);
+				sceneCube4.add(thing4);
+
+				let boxMaterial5 = new THREE.MeshStandardMaterial({ color: 0x2288DD });
+				boxMaterial5.roughnessMap = new THREE.TextureLoader().load("../Marble13_GLOSS_1K.jpg");
+				boxMaterial5.roughnessMap.repeat.set(1, 1);
+				boxMaterial5.roughnessMap.wrapS = THREE.RepeatWrapping;
+				boxMaterial5.roughnessMap.wrapT = THREE.RepeatWrapping;
+				boxMaterial5.roughness = 1.;
+				boxMaterial5.side = THREE.BackSide;
+				boxMaterial5.depthTest = THREE.GreaterDepth;
+				box5 = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial5);
+				box5.castShadow = true;
+				box5.receiveShadow = true;
+				light5 = new THREE.PointLight(0xFFEFDF, 1, 100);
+				light5.castShadow = true;
+				light5.position.set(.5, -.5, -.75);
+				let light5_1 = new THREE.PointLight(0xEFDFCF, .5, 100);
+				light5_1.castShadow = true;
+				light5_1.position.set(.4, -.2, -.25);
+				sceneCube5.add(light5);
+				sceneCube5.add(light5_1);
+				sceneCube5.add(box5);
+				let thingMaterial5 = new THREE.MeshStandardMaterial({ color: 0x3355AA });
+				let thing5 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.2, .2, 3.975, 32), thingMaterial5);
+				thing5.rotation.set(.0, .0, Math.PI * .5);
+				thing5.castShadow = true;
+				thing5.receiveShadow = true;
+				thing5.position.set(.0, .0, -1.5);
+				sceneCube5.fog = new THREE.FogExp2(0x0f0f0f, .08);
+				sceneCube5.add(thing5);
+
+				let boxMaterial6 = new THREE.MeshStandardMaterial({ color: 0x2288DD });
+				boxMaterial6.roughnessMap = new THREE.TextureLoader().load("../roughness.jpg");
+				boxMaterial6.roughnessMap.repeat.set(3, 3);
+				boxMaterial6.roughnessMap.wrapS = THREE.RepeatWrapping;
+				boxMaterial6.roughnessMap.wrapT = THREE.RepeatWrapping;
+				boxMaterial6.roughness = 1.;
+				boxMaterial6.side = THREE.BackSide;
+				boxMaterial6.depthTest = THREE.GreaterDepth;
+				box6 = new THREE.Mesh(new THREE.BoxBufferGeometry(boxSize, boxSize, boxSize), boxMaterial6);
+				box6.castShadow = true;
+				box6.receiveShadow = true;
+				light6 = new THREE.PointLight(0xFFEFDF, 1, 100);
+				light6.castShadow = true;
+				light6.position.set(.4, .4, -.5);
+				let light6_1 = new THREE.PointLight(0xEFDFCF, .5, 100);
+				light6_1.castShadow = true;
+				light6_1.position.set(-.4, .2, .25);
+				sceneCube6.add(light6);
+				sceneCube6.add(light6_1);
+				sceneCube6.add(box6);
+				let thingMaterial6 = new THREE.MeshStandardMaterial({ color: 0x4477CC });
+				let thing6 = new THREE.Mesh(new THREE.SphereBufferGeometry(.75, 48, 24), thingMaterial6);
+				thing6.castShadow = true;
+				thing6.receiveShadow = true;
+				thing6.position.set(.0, -1.25, .0);
+				sceneCube6.fog = new THREE.FogExp2(0x0f0f0f, .1);
+				sceneCube6.add(thing6);
+
+				let boxMaterial7 = new THREE.MeshBasicMaterial({ color: 0x000000 });
+				box7 = new THREE.Mesh(new THREE.BoxBufferGeometry(4, 4, 4), boxMaterial7);
+				sceneCube7.add(box7);
+
+				let sideSize = 3.95;
+				plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+				sceneMaskPlane.add(plane);
+
+				plane2 = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+				sceneMaskPlane2.add(plane2);
+
+				plane3 = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+				sceneMaskPlane3.add(plane3);
+
+				plane4 = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+				sceneMaskPlane4.add(plane4);
+
+				plane5 = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+				sceneMaskPlane5.add(plane5);
+
+				plane6 = new THREE.Mesh(new THREE.PlaneBufferGeometry(sideSize, sideSize, 1, 1));
+				sceneMaskPlane6.add(plane6);
+
+				renderer = new THREE.WebGLRenderer();
+				renderer.sortObjects = false;
+				renderer.setClearColor(0x303030);
+				renderer.setPixelRatio(window.devicePixelRatio);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+				renderer.shadowMap.enabled = true;
+				renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+				renderer.gammaInput = true;
+				renderer.gammaOutput = true;
+				renderer.toneMapping = THREE.ReinhardToneMapping;
+				renderer.toneMappingExposure = 1.;
+				document.body.appendChild(renderer.domElement);
+
+				// orbit controls
+				controls = new OrbitControls(camera, renderer.domElement);
+				controls.target.set(.0, .0, .0);
+				controls.enableDamping = true;
+				controls.dampingFactor = .25;
+				controls.minDistance = 2.;
+				controls.maxDistance = 10.;
+				controls.zoomSpeed = .3;
+				controls.minPolarAngle = Math.PI * .1;
+				controls.maxPolarAngle = Math.PI * .9;
+				//controls.minAzimuthAngle = -Math.PI*.4;
+				//controls.maxAzimuthAngle = Math.PI*.4;
+				controls.autoRotate = true;
+				controls.autoRotateSpeed = 2.5;
+				controls.update();
+				controls.saveState();
+
+				let clearPass = new ClearPass();
+				let clearMaskPass = new ClearMaskPass();
+
+				let maskPass = new MaskPass(sceneMaskPlane, camera);
+				let maskPass2 = new MaskPass(sceneMaskPlane2, camera);
+				let maskPass3 = new MaskPass(sceneMaskPlane3, camera);
+				let maskPass4 = new MaskPass(sceneMaskPlane4, camera);
+				let maskPass5 = new MaskPass(sceneMaskPlane5, camera);
+				let maskPass6 = new MaskPass(sceneMaskPlane6, camera);
+				let maskPass7 = new MaskPass(sceneCube7, camera);
+
+				let outputPass = new ShaderPass(CopyShader);
+				let parameters = {
+					minFilter: THREE.LinearFilter,
+					magFilter: THREE.LinearFilter,
+					format: THREE.RGBFormat,
+					stencilBuffer: true
+				};
+
+				let renderTarget = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene2 = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene3 = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene4 = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene5 = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene6 = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				bufferOfScene7 = new THREE.WebGLRenderTarget(window.innerWidth,
+					window.innerHeight,
+					parameters);
+				let textureOfScene = new TexturePass(bufferOfScene);
+				let textureOfScene2 = new TexturePass(bufferOfScene2);
+				let textureOfScene3 = new TexturePass(bufferOfScene3);
+				let textureOfScene4 = new TexturePass(bufferOfScene4);
+				let textureOfScene5 = new TexturePass(bufferOfScene5);
+				let textureOfScene6 = new TexturePass(bufferOfScene6);
+				let textureOfScene7 = new TexturePass(bufferOfScene7);
+
+				composer = new EffectComposer(renderer, renderTarget);
+
+				composer.addPass(clearPass);
+				composer.addPass(maskPass7);
+				composer.addPass(textureOfScene7);
+				composer.addPass(clearMaskPass);
+				composer.addPass(maskPass);
+				composer.addPass(textureOfScene);
+				composer.addPass(clearMaskPass);
+				composer.addPass(maskPass2);
+				composer.addPass(textureOfScene2);
+				composer.addPass(clearMaskPass);
+				composer.addPass(maskPass3);
+				composer.addPass(textureOfScene3);
+				composer.addPass(clearMaskPass);
+				composer.addPass(maskPass4);
+				composer.addPass(textureOfScene4);
+				composer.addPass(clearMaskPass);
+				composer.addPass(maskPass5);
+				composer.addPass(textureOfScene5);
+				composer.addPass(clearMaskPass);
+				composer.addPass(maskPass6);
+				composer.addPass(textureOfScene6);
+				composer.addPass(clearMaskPass);
+				composer.addPass(outputPass);
+
+				fxaaEffect = new ShaderPass(FXAAShader);
+				var pixelRatio = renderer.getPixelRatio();
+				fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
+				fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
+				composer.addPass(fxaaEffect);
+
+				window.addEventListener('resize', onWindowResize, false);
+			}
+
+			function onWindowResize() {
+				var width = window.innerWidth;
+				var height = window.innerHeight;
+
+				renderer.setSize(width, height);
+				composer.setSize(width, height);
+
+				var pixelRatio = renderer.getPixelRatio();
+				fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
+				fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
+
+				camera.aspect = width / height;
+				camera.updateProjectionMatrix();
+			}
+
+			function animate() {
+				controls.update();
+				stats.update()
+				requestAnimationFrame(animate);
+
+				var time = performance.now() * .001;
+
+				// position masking planes correctly
+				plane.position.set(.0, .0, .0);
+				plane.translateZ(2.);
+				plane.rotation.y = Math.PI * .0;
+
+				plane2.position.set(.0, .0, .0);
+				plane2.translateZ(2.);
+				plane2.rotation.y = Math.PI * .5;
+
+				plane3.position.set(.0, .0, .0);
+				plane3.translateZ(2.);
+				plane3.rotation.y = Math.PI * 1.;
+
+				plane4.position.set(.0, .0, .0);
+				plane4.translateZ(2.);
+				plane4.rotation.y = Math.PI * 1.5;
+
+				plane5.position.set(.0, .0, .0);
+				plane5.translateZ(2.);
+				plane5.rotation.x = Math.PI * .5;
+
+				plane6.position.set(.0, .0, .0);
+				plane6.translateZ(2.);
+				plane6.rotation.x = Math.PI * 1.5;
+
+				// animate light a bit
+				light1.position.y += .025 * Math.cos(time);
+
+				light2.position.x += .0125 * Math.sin(1.5 * time);
+
+				light3.position.x += .0125 * Math.cos(.75 * time);
+				light3.position.y += .0125 * Math.cos(1.75 * time);
+
+				light5.position.x += .01 * Math.cos(.5 * time);
+				light5.position.y += .01 * Math.cos(.75 * time);
+				light5.position.z += .01 * Math.sin(.5 * time);
+
+				light6.position.x += .01 * Math.cos(.5 * time);
+				light6.position.y += .01 * Math.cos(.75 * time);
+				light6.position.z += .01 * Math.sin(.5 * time);
+
+				// do the four render passes
+				renderer.setRenderTarget(bufferOfScene);
+				renderer.render(sceneCube, camera);
+
+				renderer.setRenderTarget(bufferOfScene2);
+				renderer.render(sceneCube2, camera);
+
+				renderer.setRenderTarget(bufferOfScene3);
+				renderer.render(sceneCube3, camera);
+
+				renderer.setRenderTarget(bufferOfScene4);
+				renderer.render(sceneCube4, camera);
+
+				renderer.setRenderTarget(bufferOfScene5);
+				renderer.render(sceneCube5, camera);
+
+				renderer.setRenderTarget(bufferOfScene6);
+				renderer.render(sceneCube6, camera);
+
+				// trigger the final composite
+				composer.render(time);
+			}
+
+
+			let c = "	,--.\n"
+			c += "	()   \\ \n"
+			c += "	 /    \\ \n"
+			c += "   _/______\\_\n"
+			c += "  (__________)\n"
+			c += "  (/  @  @  \)\n"
+			c += "  (`._,()._,')\n"
+			c += "  (  `-'`-'  )\n"
+			c += "   \\        / \n"
+			c += "	\\,,,,,,/  \n"
+			console.log(c)
+			console.log(`%cWelcome to the real world.\n`, 'background: #F66; color: #FFF')
+		</script>
+	</body>
+
+</html>

@@ -5,21 +5,23 @@
     <title>Masking experiments by MacSlow</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link type="text/css" rel="stylesheet" href="stylesheet.css">
+    <link type="text/css" rel="stylesheet" href="../stylesheet.css">
   </head>
 
   <body>
     <script type="module">
-      import * as THREE from './three.module.js';
-      import { OrbitControls } from "./OrbitControls.js";
-      import { EffectComposer } from './EffectComposer.js';
-      import { ShaderPass } from './ShaderPass.js';
-      import { TexturePass } from './TexturePass.js';
-      import { ClearPass } from './ClearPass.js';
-      import { MaskPass, ClearMaskPass } from './MaskPass.js';
-      import { CopyShader } from './CopyShader.js';
-      import { FXAAShader } from './FXAAShader.js';
+      import * as THREE from '../three.module.js';
+      import { OrbitControls } from "../OrbitControls.js";
+      import { EffectComposer } from '../EffectComposer.js';
+      import { ShaderPass } from '../ShaderPass.js';
+      import { TexturePass } from '../TexturePass.js';
+      import { ClearPass } from '../ClearPass.js';
+      import { MaskPass, ClearMaskPass } from '../MaskPass.js';
+      import { CopyShader } from '../CopyShader.js';
+      import { FXAAShader } from '../FXAAShader.js';
+      import { RenderPass } from '../RenderPass.js';
       window.THREE = THREE
+
       let fxaaEffect;
       let controls;
       let camera, composer, renderer;
@@ -33,8 +35,6 @@
       animate();
 
       function init() {
-        window.addEventListener('resize', onWindowResize, false);
-
         // 相机
         let aspect = window.innerWidth / window.innerHeight;
         camera = new THREE.PerspectiveCamera(50, aspect, 1, 1000);
@@ -42,10 +42,12 @@
         camera.position.z = 8;
 
         // 场景
+        // 显示后期渲染结果的场景,只有一个平面
         sceneMaskPlane = new THREE.Scene();
+        // 3d 场景
         sceneCube = new THREE.Scene();
         sceneCube.fog = new THREE.FogExp2(0x0f0f0f, .1);
-        window.scene = sceneCube
+        window.scene = sceneMaskPlane
 
         // 渲染器
         renderer = new THREE.WebGLRenderer();
@@ -61,14 +63,18 @@
         renderer.toneMappingExposure = 1.;
         document.body.appendChild(renderer.domElement);
 
-        // 材质
+        // 标准网格材质,基于物理的渲染（PBR）
         let boxMaterial = new THREE.MeshStandardMaterial({ color: 0xDD7733 });
-        boxMaterial.roughnessMap = new THREE.TextureLoader().load("./roughness.jpg");
+        boxMaterial.roughnessMap = new THREE.TextureLoader().load("../roughness.jpg");
         boxMaterial.roughnessMap.repeat.set(2, 2);
+        // st超过坐标范围都重复采样
         boxMaterial.roughnessMap.wrapS = THREE.RepeatWrapping;
         boxMaterial.roughnessMap.wrapT = THREE.RepeatWrapping;
+        // 粗糙度,1.0表示完全漫反射
         boxMaterial.roughness = 1.;
+        // 渲染背面
         boxMaterial.side = THREE.BackSide;
+        // 深度检测
         boxMaterial.depthTest = THREE.GreaterDepth;
 
         // 几何体
@@ -84,12 +90,12 @@
         light1.castShadow = true;
         light1.position.set(.1, .4, 1.8);
         light1.name = "light1"
-        let light1_1 = new THREE.PointLight(0xEFDFCF, .75, 100);
-        light1_1.castShadow = true;
-        light1_1.position.set(-.2, .7, .6);
-        light1_1.name = "light1_1"
         sceneCube.add(light1);
-        sceneCube.add(light1_1);
+        let light2 = new THREE.PointLight(0xEFDFCF, .75, 100);
+        light2.castShadow = true;
+        light2.position.set(-.2, .7, .6);
+        light2.name = "light2"
+        sceneCube.add(light2);
 
         // 物件
         let thingMaterial1 = new THREE.MeshStandardMaterial({ color: 0xEE5555 });
@@ -121,48 +127,10 @@
         controls.saveState();
 
         // ------------------------------后期处理----------------
-        let parameters = {
-          minFilter: THREE.LinearFilter,
-          magFilter: THREE.LinearFilter,
-          format: THREE.RGBFormat,
-          stencilBuffer: true
-        };
+        initProcess()
 
-        // 创建效果组合器
-        // 是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。
-        let renderTarget = new THREE.WebGLRenderTarget(window.innerWidth,
-          window.innerHeight,
-          parameters);
-        // 创建效果组合器(渲染器, 渲染目标)
-        composer = new EffectComposer(renderer, renderTarget);
-
-        // 清除背景通道，设置背景颜色等。
-        // let clearPass = new ClearPass();
-        // composer.addPass(clearPass);
-
-        // 该通道可以在当前图像上添加掩码，后续的通道只会影响掩蔽区域，并且使用完后必须清除掩码区域。
-        // let maskPass = new MaskPass(sceneMaskPlane, camera);
-        // composer.addPass(maskPass);
-
-        bufferOfScene = new THREE.WebGLRenderTarget(window.innerWidth,
-          window.innerHeight,
-          parameters);
-        let textureOfScene = new TexturePass(bufferOfScene);
-        composer.addPass(textureOfScene);
-
-        // 清除掩蔽物通道
-        // let clearMaskPass = new ClearMaskPass();
-        // composer.addPass(clearMaskPass);
-
-        // let outputPass = new ShaderPass(CopyShader);
-        // composer.addPass(outputPass);
-
-        // 抗锯齿
-        fxaaEffect = new ShaderPass(FXAAShader);
-        var pixelRatio = renderer.getPixelRatio();
-        fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
-        fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
-        composer.addPass(fxaaEffect);
+        window.addEventListener('resize', onWindowResize, false);
+        onWindowResize()
       }
 
       function onWindowResize() {
@@ -173,9 +141,6 @@
         composer.setSize(width, height);
 
         var pixelRatio = renderer.getPixelRatio();
-        fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
-        fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
-
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
       }
@@ -185,15 +150,58 @@
         requestAnimationFrame(animate);
         var time = performance.now() * .001;
 
-        // position masking planes correctly
-        plane.position.set(.0, .0, .0);
-        plane.translateZ(2.);
-        plane.rotation.y = Math.PI * .0;
-
-        // do the four render passes
-        renderer.setRenderTarget(bufferOfScene);
         renderer.render(sceneCube, camera);
+        renderer.setRenderTarget(bufferOfScene);
         composer.render(time);
+      }
+
+      // 后期处理
+      function initProcess(params) {
+        let parameters = {
+          minFilter: THREE.LinearFilter,
+          magFilter: THREE.LinearFilter,
+          format: THREE.RGBFormat,
+          stencilBuffer: true
+        };
+
+        // 创建效果组合器
+        // 渲染目标是一个缓冲，就是在这个缓冲中，视频卡为正在后台渲染的场景绘制像素。
+        // 它用于不同的效果，例如用于在一个图像显示在屏幕上之前先做一些处理。
+        let renderTarget = new THREE.WebGLRenderTarget(window.innerWidth,
+          window.innerHeight,
+          parameters);
+        // 创建效果组合器(渲染器, 渲染目标)
+        composer = new EffectComposer(renderer, renderTarget);
+
+        // 清除背景通道，设置背景颜色等。
+        let clearPass = new ClearPass();
+        composer.addPass(clearPass);
+
+        // 该通道可以在当前图像上添加掩码，后续的通道只会影响掩蔽区域，并且使用完后必须清除掩码区域。
+        let maskPass = new MaskPass(sceneMaskPlane, camera);
+        composer.addPass(maskPass);
+
+        // 离屏渲染
+        bufferOfScene = new THREE.WebGLRenderTarget(
+          window.innerWidth,
+          window.innerHeight,
+          parameters);
+        let textureOfScene = new TexturePass(bufferOfScene);
+        composer.addPass(textureOfScene);
+
+        // 清除掩蔽物通道
+        let clearMaskPass = new ClearMaskPass();
+        composer.addPass(clearMaskPass);
+
+        let outputPass = new ShaderPass(CopyShader);
+        composer.addPass(outputPass);
+
+        // 抗锯齿
+        fxaaEffect = new ShaderPass(FXAAShader);
+        var pixelRatio = renderer.getPixelRatio();
+        fxaaEffect.uniforms['resolution'].value.x = 1. / (window.innerWidth * pixelRatio);
+        fxaaEffect.uniforms['resolution'].value.y = 1. / (window.innerHeight * pixelRatio);
+        composer.addPass(fxaaEffect);
       }
     </script>
   </body>
