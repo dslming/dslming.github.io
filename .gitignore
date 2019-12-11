@@ -1,12 +1,21 @@
 .DS_Store
-/ThreejsLearning/011-webpack-ff91/node_modules
-/blog/node_modules
-./node_modules
-*/node_modules
-/Room3D/blueprint/node_modules
-/opencv/ref/*
-*.ttf
-*.mp4
-/trash/ref/
-/trash/src/dataset-resized/
-/trash/*.jpg
+node_modules
+/dist
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
