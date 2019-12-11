@@ -4,7 +4,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
-const version = "1.0.0"
+const version = "1.0.1"
 const Timestamp = new Date().getTime();
 
 module.exports = {
