@@ -54,7 +54,7 @@
       import { CopyShader } from '../CopyShader.js';
       import { FXAAShader } from '../FXAAShader.js';
       import { VignetteShader } from "../VignetteShader.js";
-
+      window.THREE = THREE
       let fxaaEffect;
       let controls;
       let camera, composer, renderer;
@@ -589,7 +589,7 @@
       function animate() {
         controls.update();
 
-        requestAnimationFrame(animate);
+        // requestAnimationFrame(animate);
 
         var time = performance.now() * .001;
 
