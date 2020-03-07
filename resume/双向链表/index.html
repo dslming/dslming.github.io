@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双向链表的实现</title>
+  </head>
+
+  <body>
+    <script>
+      class Node {
+        constructor(element) {
+          this.element = element;
+          this.prev = null;
+          this.next = null;
+        }
+      }
+
+      // 双向链表
+      class DoublyLinkedList {
+        constructor() {
+          this.head = new Node("head")
+        }
+
+        find(item) {
+          var current = this.head;
+          while (current && current.element != item) {
+            current = current.next
+          }
+          return current;
+        }
+
+        // 增
+        insert(item, element) {
+          var current = this.find(item);
+          var node = new Node(element);
+
+          node.prev = current;
+          node.next = current.next;
+          current.next = node;
+        }
+
+        // 删
+        remove(item) {
+          var current = this.find(item);
+          if (!(current.next == null)) {
+            current.prev.next = current.next;
+            current.next.prev = current.prev;
+            current.next = null;
+            current.prev = null;
+          }
+        }
+
+        // 查
+        display() {
+          var current = this.head;
+          while (!(current.next == null)) {
+            console.error(current.next.element)
+            current = current.next;
+          }
+        }
+      }
+
+      let list = new DoublyLinkedList()
+      list.insert("head", 0)
+      list.insert(0, 1)
+      list.insert(1, 2)
+      list.remove(0)
+      list.display()
+      window.lm = list
+    </script>
+  </body>
+
+</html>
