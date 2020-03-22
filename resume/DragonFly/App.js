@@ -121,14 +121,7 @@ class App {
       dragonFly.rotation.set(0, 1.47, 0)
     }, e => {
       let load = document.querySelector(".loading > .count")
-      var p = Math.max(parseInt(e.loaded / e.total | 1) * 100, 100)
-      if (isNaN(p)) {
-        if (p != undefined) {
-          load.innerText = JSON.stringify(e).toString()
-        }
-        return
-      }
-
+      var p = Math.min(parseInt(e.loaded | 1 / e.total | 1) * 100, 100)
       load.innerText = `${p}%`
       if (p == 100) {
         setTimeout(() => {
