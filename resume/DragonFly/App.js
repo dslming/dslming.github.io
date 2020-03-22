@@ -5,6 +5,25 @@ window.THREE = THREE
 import HotPoint from './HotPoint.js'
 import Camera from './Camera.js'
 
+// 用到的资源
+var images = [
+  {
+    "uri": "textures/Material_001_baseColor.jpeg"
+  },
+  {
+    "uri": "textures/Material_001_metallicRoughness.png"
+  },
+  {
+    "uri": "textures/Material_007_metallicRoughness.png"
+  },
+  {
+    "uri": "textures/Material_004_metallicRoughness.png"
+  },
+  {
+    "uri": "textures/Material_006_baseColor.png"
+  }
+]
+
 let that = null
 class App {
   constructor() {
@@ -115,6 +134,9 @@ class App {
   }
 
   addWall2() {
+    var assetsLoaded = 0
+    var assetsAll = images.length + 3
+
     var loader = new GLTFLoader();
     loader.load('./model/scene.gltf', (gltf) => {
       let dragonFly = gltf.scene
@@ -122,22 +144,44 @@ class App {
       dragonFly.scale.set(20, 20, 20)
       dragonFly.position.y = -50
       dragonFly.rotation.set(0, 1.47, 0)
+
+      this.loadOver()
     }, e => {
-      let load = document.querySelector(".loading > .count")
       var p = Math.min(parseInt(e.loaded | 1 / e.total | 1) * 100, 100)
-      load.innerText = `${p}%`
       if (p == 100) {
-        setTimeout(() => {
-          document.querySelector(".box-loading").style.opacity = 0
-          document.querySelector(".box-loading").style.zIndex = -1
-        }, 500);
-        this.camCtl.setPosition(0, 0, 300, true)
-        this.camCtl.dolly(10, true)
-        setTimeout(() => {
-          this.camCtl.rotate(180 * THREE.Math.DEG2RAD, 0, true)
-        }, 2000);
+        assetsLoaded += 1
       }
     })
+
+    this.setLoadingText(5)
+    images.forEach(item => {
+      var path = "model/" + item.uri
+      var loader = new THREE.TextureLoader();
+      loader.load(path, () => {
+        assetsLoaded += 1
+        let p = parseInt(assetsLoaded / assetsAll * 100)
+        this.setLoadingText(p)
+        console.error(assetsLoaded, p);
+      });
+    });
+  }
+
+  setLoadingText(process) {
+    let load = document.querySelector(".loading > .count")
+    load.innerText = process + "%"
+  }
+
+  loadOver() {
+    this.setLoadingText(100)
+    setTimeout(() => {
+      document.querySelector(".box-loading").style.opacity = 0
+      document.querySelector(".box-loading").style.zIndex = -1
+    }, 800);
+    this.camCtl.setPosition(0, 0, 300, true)
+    setTimeout(() => {
+      this.camCtl.dolly(10, true)
+      this.camCtl.rotate(180 * THREE.Math.DEG2RAD, 0, true)
+    }, 2000);
   }
 
   updateScreenPosition() {
