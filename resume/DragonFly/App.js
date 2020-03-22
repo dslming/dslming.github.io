@@ -120,9 +120,16 @@ class App {
       dragonFly.position.y = -50
       dragonFly.rotation.set(0, 1.47, 0)
     }, e => {
-      alert(e.loaded)
-      const p = parseInt(e.loaded / e.total) * 100
-      document.querySelector(".loading > .count").innerText = `${p}%`
+      let load = document.querySelector(".loading > .count")
+      var p = parseInt(e.loaded / e.total) * 100
+      if (isNaN(p)) {
+        if (p != undefined) {
+          load.innerText = JSON.stringify(e).toString()
+        }
+        return
+      }
+
+      load.innerText = `${p}%`
       if (p == 100) {
         setTimeout(() => {
           document.querySelector(".box-loading").style.opacity = 0
