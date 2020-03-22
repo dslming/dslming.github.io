@@ -136,6 +136,8 @@ class App {
   addWall2() {
     var assetsLoaded = 0
     var assetsAll = images.length + 3
+    var timer = 0
+    var current = 0
 
     var loader = new GLTFLoader();
     loader.load('./model/scene.gltf', (gltf) => {
@@ -144,7 +146,7 @@ class App {
       dragonFly.scale.set(20, 20, 20)
       dragonFly.position.y = -50
       dragonFly.rotation.set(0, 1.47, 0)
-
+      clearInterval(timer)
       this.loadOver()
     }, e => {
       var p = Math.min(parseInt(e.loaded | 1 / e.total | 1) * 100, 100)
@@ -164,11 +166,21 @@ class App {
         console.error(assetsLoaded, p);
       });
     });
+
+    timer = setInterval(() => {
+      let load = document.querySelector(".loading > .count")
+      let n = load.innerText.substr(0, load.innerText.indexOf(" "))
+      let newP = Number(n)
+      if (newP + 1 < 100) {
+        newP += 1
+        this.setLoadingText(newP)
+      }
+    }, 1000);
   }
 
   setLoadingText(process) {
     let load = document.querySelector(".loading > .count")
-    load.innerText = process + "%"
+    load.innerText = process + " %"
   }
 
   loadOver() {
