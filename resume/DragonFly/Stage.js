@@ -1,5 +1,5 @@
 import * as THREE from './lib/three.module.js'
-import { OrbitControls } from './lib/OrbitControls.js'
+// import { OrbitControls } from './lib/OrbitControls.js'
 
 let that = null;
 export class Stage {
@@ -57,7 +57,7 @@ export class Stage {
     this.scene.add(this.camera);
     window.addEventListener("resize", this.handleResize);
     this.handleResize();
-    this.initControls();
+    // this.initControls();
     this.camera.position.set(0, 0, 300)
   }
 
@@ -107,7 +107,7 @@ export class Stage {
   _loop() {
     that.camera.updateProjectionMatrix();
     that.camera.updateMatrixWorld()
-    that.renderer.render(that.scene, that.camera);
+    // that.renderer.render(that.scene, that.camera);
 
     that.fuArr.forEach(fun => {
       fun()

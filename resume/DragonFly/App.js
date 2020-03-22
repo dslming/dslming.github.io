@@ -3,6 +3,7 @@ import { Stage } from './Stage.js'
 import { GLTFLoader } from './lib/GLTFLoader.js'
 window.THREE = THREE
 import HotPoint from './HotPoint.js'
+import Camera from './Camera.js'
 
 let that = null
 class App {
@@ -16,6 +17,8 @@ class App {
     this.addPoint()
     this.initRay()
     this.stage.run()
+    this.camCtl = new Camera(this.stage).ctl
+
     this.stage.onUpdate(() => {
       this.updateScreenPosition()
     })
@@ -128,6 +131,11 @@ class App {
           document.querySelector(".box-loading").style.opacity = 0
           document.querySelector(".box-loading").style.zIndex = -1
         }, 500);
+        this.camCtl.setPosition(0, 0, 300, true)
+        this.camCtl.dolly(10, true)
+        setTimeout(() => {
+          this.camCtl.rotate(180 * THREE.Math.DEG2RAD, 0, true)
+        }, 2000);
       }
     })
   }
