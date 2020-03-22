@@ -89,7 +89,7 @@ class App {
         });
       } else {
         that.hotPoints.forEach(item => {
-          item.click = false
+          // item.click = false
         });
       }
     }
