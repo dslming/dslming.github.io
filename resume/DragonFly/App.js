@@ -121,6 +121,14 @@ class App {
       dragonFly.scale.set(20, 20, 20)
       dragonFly.position.y = -50
       dragonFly.rotation.set(0, 1.47, 0)
+    }, e => {
+      const p = parseInt(e.loaded / e.total) * 100
+      document.querySelector(".loading > .count").innerText = `${p}%`
+      if (p == 100) {
+        setTimeout(() => {
+          document.querySelector(".box-loading").style.opacity = 0
+        }, 500);
+      }
     })
   }
 

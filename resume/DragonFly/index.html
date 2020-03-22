@@ -51,6 +51,28 @@
         overflow: hidden;
       }
 
+      .box-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+
+      .loading {
+        width: 200px;
+        height: 100px;
+        font-size: 20px;
+        color: #ffffff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        text-align: center;
+      }
+
     </style>
   </head>
 
@@ -70,6 +92,11 @@
       <p class="p-content">腹部细长、扁形或呈圆筒形,末端有肛附器</p>
     </div>
     <div id="app"></div>
+
+    <div class="box-loading">
+      <div class="loading">Loading <p class="count">0%</p>
+      </div>
+    </div>
     <script type="module" src="./App.js"></script>
   </body>
 
