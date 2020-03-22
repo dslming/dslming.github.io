@@ -1,9 +1,7 @@
 import * as THREE from './lib/three.module.js'
 import { Stage } from './Stage.js'
-// import { FBXLoader } from './lib/FBXLoader.js'
 import { GLTFLoader } from './lib/GLTFLoader.js'
 window.THREE = THREE
-const TweenLite = window.TweenLite
 import HotPoint from './HotPoint.js'
 
 let that = null
@@ -122,11 +120,13 @@ class App {
       dragonFly.position.y = -50
       dragonFly.rotation.set(0, 1.47, 0)
     }, e => {
+      alert(e.loaded)
       const p = parseInt(e.loaded / e.total) * 100
       document.querySelector(".loading > .count").innerText = `${p}%`
       if (p == 100) {
         setTimeout(() => {
           document.querySelector(".box-loading").style.opacity = 0
+          document.querySelector(".box-loading").style.zIndex = -1
         }, 500);
       }
     })
