@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>蜻蜓可视化</title>
+    <meta charset="UTF-8" />
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+
+      .annotation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        margin-left: 15px;
+        margin-top: 15px;
+        padding: 1em;
+        width: 300px;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: .5em;
+        font-size: 30px;
+        line-height: 1.2;
+        transition: opacity .4s;
+        opacity: 0
+      }
+
+      .annotation .p-content {
+        margin-top: 5px;
+      }
+
+      .annotation::before {
+        position: absolute;
+        top: 12px;
+        right: 100%;
+        display: block;
+        content: "";
+        border: 8px solid #0000;
+        border-right-color: #000c;
+        border-left: 0;
+      }
+
+      html,
+      body,
+      #app {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <div class="annotation tip1">
+      <p><strong>蜻蜓头部</strong></p>
+      <p class="p-content">视觉极为灵敏,单眼3个;触角1对,细而较短;咀嚼式口器</p>
+    </div>
+
+    <div class="annotation tip2">
+      <p><strong>蜻蜓翅膀</strong></p>
+      <p class="p-content">成虫有两对等长的窄而透明的翅,脉序网状,翅前缘近翅顶处常有翅痣。</p>
+    </div>
+
+    <div class="annotation tip3">
+      <p><strong>蜻蜓腹部</strong></p>
+      <p class="p-content">腹部细长、扁形或呈圆筒形,末端有肛附器</p>
+    </div>
+    <div id="app"></div>
+    <script type="module" src="./App.js"></script>
+  </body>
+
+</html>
