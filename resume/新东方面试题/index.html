@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+  </head>
+
+  <body>
+    <script>
+      // 新东方面试题
+      // 2020.3.23
+
+      /**
+       * 第1题
+       * 算法复杂度,算法中最大的时间O(n^2)
+       */
+      function getNthNumber(a, b, N) {
+        let c = a.concat(b)
+        let ret = []
+
+        // 去重复
+        c.forEach(item => {
+          let findRet = ret.find(current => { return current == item })
+          if (findRet == undefined) {
+            ret.push(item)
+          }
+        })
+
+        // 排序
+        ret.sort((a, b) => {
+          return a - b
+        })
+
+        let index = ret.length - (N | 1)
+        return ret[index]
+      }
+      var a = [1, 2, 3, 4, 5];
+      var b = [9, 8, 7, 3, 2, 1];
+      console.error(getNthNumber(a, b, 1))
+
+      // 第2,3题
+      // 实现bind,extends
+      // js的事件流
+
+      // 第4题
+      // Node 的包管理方式
+      // A.js A.json  A.node
+      // module A
+      // module.export   exports
+      // var a = require("A");
+    </script>
+  </body>
+
+</html>
